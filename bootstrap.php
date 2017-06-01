@@ -6,7 +6,7 @@ declare(strict_types=1);
  * @author Kevork Aghazarian
  * @website http://www.lowcalphp.com
  */
-namespace LowCal;
+
 use LowCal\Helper\Config;
 use LowCal\Base;
 
@@ -39,7 +39,6 @@ try
 
 	###INIT CONFIG###
 	\LowCal\Helper\Config::loadArray($LOWCAL_CONFIG_ARRAY);
-	\LowCal\Helper\Config::loadFile($LOWCAL_CONFIG_ARRAY['BASE_DIR'].'config.php');
 	\LowCal\Helper\Config::loadConfig('config');
 
 	###INIT LOWCAL###
