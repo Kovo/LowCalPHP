@@ -1,0 +1,19 @@
+###ENVIRONMENT VARAIBLES
+SetEnv LOWCAL_ENV local
+
+###BASIC CONFIG
+Options -Indexes +FollowSymLinks
+ServerSignature Off
+IndexIgnore *
+RewriteEngine on
+
+###HTACCESS PROTECTION
+<Files ~ "^.*\.([Hh][Tt][Aa])">
+order allow,deny
+deny from all
+satisfy all
+</Files>
+
+##CATCHALL FOR ROUTING
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* bootstrap.php [NC]
