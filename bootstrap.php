@@ -38,12 +38,13 @@ try
 
 	###INIT CONFIG###
 	\LowCal\Helper\Config::loadArray($LOWCAL_CONFIG_ARRAY);
+	\LowCal\Helper\Config::loadFile('config.php');
 	\LowCal\Helper\Config::loadConfig('config');
 
 	###INIT LOWCAL###
 	$_LOWCAL = new \LowCal\Base();
 
-	###CUSTOM BOOTSTRAP###
+	###BEGIN YOUR APP###
 	include \LowCal\Helper\Config::get('BASE_DIR').'init.php';
 }
 catch(\Throwable $t)

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Helper;
+
 /**
  * Class Config
  * @package LowCal\Helper
