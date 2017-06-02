@@ -6,7 +6,6 @@ declare(strict_types=1);
  * @author Kevork Aghazarian
  * @website http://www.lowcalphp.com
  */
-
 use LowCal\Helper\Config;
 use LowCal\Base;
 
@@ -43,12 +42,12 @@ try
 
 	###INIT LOWCAL###
 	$_LOWCAL = new \LowCal\Base();
+
+	###CUSTOM BOOTSTRAP###
+	include \LowCal\Helper\Config::get('BASE_DIR').'init.php';
 }
-catch(\Exception $e)
+catch(\Throwable $t)
 {
-	error_log('LowCal start-up error. Msg: '.$e->getMessage().' / Code: '.$e->getCode());
+	error_log('LowCal start-up error. Msg: '.$t->getMessage().' / Code: '.$t->getCode());
 	exit();
 }
-
-###CUSTOM BOOTSTRAP###
-include \LowCal\Helper\Config::get('BASE_DIR').'init.php';
