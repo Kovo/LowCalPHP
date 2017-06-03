@@ -3,7 +3,9 @@ declare(strict_types=1);
 namespace LowCal;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
+use LowCal\Module\Request;
 use LowCal\Module\Response;
+use LowCal\Module\Security;
 
 /**
  * Class Base
@@ -16,13 +18,27 @@ class Base
 	 */
 	protected $_Response = null;
 
+	/**
+	 * @var null|Security
+	 */
+	protected $_Security = null;
+
+	/**
+	 * @var null|Request
+	 */
+	protected $_Request = null;
+
+	/**
+	 * Base constructor.
+	 * @throws \Exception
+	 */
 	function __construct()
 	{
 		if(Config::get('DOMAIN_PROTECTION'))
 		{
 			try
 			{
-				//$this->security()->domainCheck();
+				$this->security()->domainCheck();
 			}
 			catch(\Throwable $t)
 			{
@@ -108,5 +124,31 @@ class Base
 		}
 
 		return $this->_Response;
+	}
+
+	/**
+	 * @return Security
+	 */
+	public function security(): Security
+	{
+		if($this->_Security === null)
+		{
+			$this->_Security = new Security($this);
+		}
+
+		return $this->_Security;
+	}
+
+	/**
+	 * @return Request
+	 */
+	public function request(): Request
+	{
+		if($this->_Request === null)
+		{
+			$this->_Request = new Request($this);
+		}
+
+		return $this->_Request;
 	}
 }

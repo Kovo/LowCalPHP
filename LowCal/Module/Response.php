@@ -16,17 +16,17 @@ class Response extends Module
 	/**
 	 * @var int
 	 */
-	protected $_statusCode = 200;
+	protected $_status_code = 200;
 
 	/**
 	 * @var string
 	 */
-	protected $_httpVersion = '1.1';
+	protected $_http_version = '1.1';
 
 	/**
 	 * @var array
 	 */
-	protected $_statusText = array(
+	protected $_status_text = array(
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',
@@ -144,9 +144,9 @@ class Response extends Module
 	 */
 	public function setStatusCode(int $code): Response
 	{
-		$this->_statusCode = $code;
+		$this->_status_code = $code;
 
-		$this->setHeader(sprintf('HTTP/%s %s %s', $this->_httpVersion, $this->_statusCode, $this->_statusText[$this->_statusCode]), '', true, $this->_statusCode);
+		$this->setHeader(sprintf('HTTP/%s %s %s', $this->_http_version, $this->_status_code, $this->_status_text[$this->_status_code]), '', true, $this->_status_code);
 
 		return $this;
 	}
@@ -157,7 +157,7 @@ class Response extends Module
 	 */
 	public function setHttpVersion(string $version): Response
 	{
-		$this->_httpVersion = $version;
+		$this->_http_version = $version;
 
 		return $this;
 	}
@@ -167,7 +167,7 @@ class Response extends Module
 	 */
 	public function getStatusCode(): int
 	{
-		return $this->_statusCode;
+		return $this->_status_code;
 	}
 
 	/**
@@ -175,7 +175,7 @@ class Response extends Module
 	 */
 	public function getHttpVersion(): string
 	{
-		return $this->_httpVersion;
+		return $this->_http_version;
 	}
 
 	/**
@@ -183,6 +183,6 @@ class Response extends Module
 	 */
 	public function getStatusText(): string
 	{
-		return $this->_statusText[$this->_statusCode];
+		return $this->_status_text[$this->_status_code];
 	}
 }
