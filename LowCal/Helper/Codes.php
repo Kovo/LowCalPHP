@@ -8,5 +8,6 @@ namespace LowCal\Helper;
  */
 class Codes
 {
-	const EXCEPTION_MISSING_CLASS = 1;
+	const INTERNAL_EXCEPTION_MISSING_CLASS = 1;
+	const SECURITY_EXCEPTION_DOMAINCHECK = 2;
 }

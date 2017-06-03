@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace LowCal;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
+use LowCal\Module\Response;
 
 /**
  * Class Base
@@ -11,9 +12,9 @@ use LowCal\Helper\Config;
 class Base
 {
 	/**
-	 * @var array
+	 * @var null|Response
 	 */
-	protected $_registeredModules = array();
+	protected $_Response = null;
 
 	function __construct()
 	{
@@ -23,17 +24,24 @@ class Base
 			{
 				//$this->security()->domainCheck();
 			}
-			catch(\Exception $e)
+			catch(\Throwable $t)
 			{
-				$solution = Config::get('DOMAIN_SOLUTION');
-
-				if($solution['type'] === 'redirect')
+				if($t->getCode() === Codes::SECURITY_EXCEPTION_DOMAINCHECK)
 				{
-					//$this->response()->redirect($solution['value']);
+					$solution = Config::get('DOMAIN_SOLUTION');
+
+					if($solution['type'] === 'redirect')
+					{
+						$this->response()->redirect($solution['value']);
+					}
+					else
+					{
+						//$this->view()->render($solution['value']);
+					}
 				}
 				else
 				{
-					//$this->view()->render($solution['value']);
+					throw new \Exception($t->getMessage(), $t->getCode());
 				}
 			}
 		}
@@ -49,10 +57,10 @@ class Base
 	}
 
 	/**
-	 * @param $buffer
+	 * @param string $buffer
 	 * @return string
 	 */
-	public function compressOutput($buffer): string
+	public function compressOutput(string $buffer): string
 	{
 		$buffer = explode("<!--compress-html-->", $buffer);
 		$count = count($buffer);
@@ -90,43 +98,15 @@ class Base
 	}
 
 	/**
-	 * @param string $module_name
-	 * @return Base
+	 * @return Response
 	 */
-	public function registerModule(string $module_name): Base
+	public function response(): Response
 	{
-		if(!isset($this->_registeredModules[$module_name]))
+		if($this->_Response === null)
 		{
-			$this->_registeredModules[$module_name] = false;
+			$this->_Response = new Response($this);
 		}
 
-		return $this;
-	}
-
-	/**
-	 * @param string $module_name
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	public function module(string $module_name)
-	{
-		if(isset($this->_registeredModules[$module_name]))
-		{
-			if($this->_registeredModules[$module_name] === false)
-			{
-				$this->_registeredModules[$module_name] = new $module_name();
-
-				if(method_exists($this->_registeredModules[$module_name], 'init'))
-				{
-					$this->_registeredModules[$module_name]->init($this);
-				}
-			}
-
-			return $this->_registeredModules[$module_name];
-		}
-		else
-		{
-			throw new \Exception($module_name.' module not found!', Codes::EXCEPTION_MISSING_CLASS);
-		}
+		return $this->_Response;
 	}
 }
