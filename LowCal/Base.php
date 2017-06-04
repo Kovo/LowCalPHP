@@ -3,9 +3,11 @@ declare(strict_types=1);
 namespace LowCal;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
+use LowCal\Module\Locale;
 use LowCal\Module\Request;
 use LowCal\Module\Response;
 use LowCal\Module\Security;
+use LowCal\Module\View;
 
 /**
  * Class Base
@@ -27,6 +29,16 @@ class Base
 	 * @var null|Request
 	 */
 	protected $_Request = null;
+
+	/**
+	 * @var null|View
+	 */
+	protected $_View = null;
+
+	/**
+	 * @var null|Locale
+	 */
+	protected $_Locale = null;
 
 	/**
 	 * Base constructor.
@@ -52,7 +64,7 @@ class Base
 					}
 					else
 					{
-						//$this->view()->render($solution['value']);
+						$this->view()->render($solution['value']);
 					}
 				}
 				else
@@ -150,5 +162,31 @@ class Base
 		}
 
 		return $this->_Request;
+	}
+
+	/**
+	 * @return View
+	 */
+	public function view(): View
+	{
+		if($this->_View === null)
+		{
+			$this->_View = new View($this);
+		}
+
+		return $this->_View;
+	}
+
+	/**
+	 * @return Locale
+	 */
+	public function locale(): Locale
+	{
+		if($this->_Locale === null)
+		{
+			$this->_Locale = new Locale($this);
+		}
+
+		return $this->_Locale;
 	}
 }
