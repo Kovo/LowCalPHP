@@ -22,4 +22,10 @@ class Codes
 	const ROUTING_ERROR_NO_URI = 44;
 
 	const LOCALE_FILE_NOT_FOUND = 50;
+
+	const DB_IDENTIFIER_MISSING = 60;
+	const DB_BAD_TYPE = 61;
+	const DB_CONNECT_ERROR = 62;
+
+	const LOG_IDENTIFIER_MISSING = 70;
 }
