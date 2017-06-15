@@ -22,6 +22,15 @@ class Mysqli extends Module implements Db
 	 */
 	protected $_db_object = null;
 
+	/**
+	 * @param string $user
+	 * @param string $password
+	 * @param string $name
+	 * @param string $host
+	 * @param int $port
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function connect(string $user, string $password, string $name, string $host, int $port): bool
 	{
 		if($this->_is_connected === false)
@@ -36,6 +45,8 @@ class Mysqli extends Module implements Db
 
 					$this->_Base->log()->add('mysqli', $error_string);
 
+					$this->_is_connected = false;
+
 					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 				}
 
@@ -43,51 +54,41 @@ class Mysqli extends Module implements Db
 				{
 					sleep($this->_connectRetryDelay);
 
-					$this->_db_object =  new mysqli($this->_host, $this->_user, $this->_password, $this->_dbName, $this->_port);
+					$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
 
 					if($this->_db_object->connect_error)
 					{
-						$this->_Base->log()->add(PzPHP_Config::get('SETTING_MYSQL_ERROR_LOG_FILE_NAME'), 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno);
+						$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
+
+						$this->_Base->log()->add('mysqli', $error_string);
 
 						if(strpos($this->_db_object->connect_error, 'access denied') !== false)
 						{
-							$this->_status = self::DISCONNECTED;
+							$this->_is_connected = false;
 
-							return false;
+							throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 						}
-
-						continue;
 					}
 					else
 					{
-						$this->_status = self::CONNECTED;
-
 						break;
 					}
 				}
 
-				if($this->_status === self::CONNECTING)
+				if($this->_is_connected === false)
 				{
-					$this->_status = self::DISCONNECTED;
+					$error_string = 'Failed to connect to database after several attempts.';
 
-					return false;
-				}
-				else
-				{
-					return true;
+					$this->_Base->log()->add('mysqli', $error_string);
+
+					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 				}
 			}
-			else
-			{
-				$this->_status = self::CONNECTED;
+		}
 
-				return true;
-			}
-		}
-		else
-		{
-			return true;
-		}
+		$this->_is_connected = true;
+
+		return true;
 	}
 
 	public function disconnect(): bool

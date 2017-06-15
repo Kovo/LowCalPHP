@@ -133,7 +133,7 @@ class IO
 			}
 			else
 			{
-				return self::_recursiveRmdir($filename);
+				return self::recursiveRmdir($filename);
 			}
 		}
 		else
@@ -203,32 +203,32 @@ class IO
 	}
 
 	/**
-	 * @param $sourcefoldername
-	 * @param $targetfoldername
-	 * @param $filename
+	 * @param string $source_folder_name
+	 * @param string $target_folder_name
+	 * @param string $filename
 	 * @return bool
 	 */
-	public static function copyFile($sourcefoldername, $targetfoldername, $filename)
+	public static function copyFile(string $source_folder_name, string $target_folder_name, string $filename): bool
 	{
-		return self::recursiveCopy($sourcefoldername.$filename, $targetfoldername.$filename);
+		return self::recursiveCopy($source_folder_name.$filename, $target_folder_name.$filename);
 	}
 
 	/**
-	 * @param $filename
-	 * @param $foldername
-	 * @param $newfilename
+	 * @param string $filename
+	 * @param string $foldername
+	 * @param string $newfilename
 	 * @return bool
 	 */
-	public static function renameFile($filename, $foldername, $newfilename)
+	public static function renameFile(string $filename, string $foldername, string $newfilename): bool
 	{
 		return rename($foldername.$filename, $foldername.$newfilename);
 	}
 
 	/**
-	 * @param $dir
+	 * @param string $dir
 	 * @return bool
 	 */
-	private static function _recursiveRmdir($dir)
+	public static function recursiveRmdir(string $dir): bool
 	{
 		if(is_dir($dir))
 		{
@@ -237,7 +237,7 @@ class IO
 			{
 				if($file != "." && $file != "..")
 				{
-					self::_recursiveRmdir("$dir/$file");
+					self::recursiveRmdir("$dir/$file");
 				}
 			}
 
@@ -254,11 +254,11 @@ class IO
 	}
 
 	/**
-	 * @param $src
-	 * @param $dst
+	 * @param string $src
+	 * @param string $dst
 	 * @return bool
 	 */
-	public static function recursiveCopy($src, $dst)
+	public static function recursiveCopy(string $src, string $dst): bool
 	{
 		if(is_dir($src))
 		{
@@ -289,10 +289,10 @@ class IO
 	}
 
 	/**
-	 * @param $path
+	 * @param string $path
 	 * @return int
 	 */
-	public static function pathType($path)
+	public static function pathType(string $path): int
 	{
 		if(substr($path,0,7)==='http://' || substr($path,0,8)==='https://' || substr($path,0,6)==='ftp://')
 		{
@@ -305,10 +305,10 @@ class IO
 	}
 
 	/**
-	 * @param $path
+	 * @param string $path
 	 * @return string
 	 */
-	public static function addTrailingSlash($path)
+	public static function addTrailingSlash(string $path)
 	{
 		if(substr($path, -1) !== DIRECTORY_SEPARATOR)
 		{
@@ -319,31 +319,31 @@ class IO
 	}
 
 	/**
-	 * @param $fullPath
+	 * @param string $full_path
 	 * @return string
 	 */
-	public static function extractPath($fullPath)
+	public static function extractPath(string $full_path): string
 	{
-		if(!is_dir($fullPath))
+		if(!is_dir($full_path))
 		{
-			$explode = explode(DIRECTORY_SEPARATOR, $fullPath);
+			$explode = explode(DIRECTORY_SEPARATOR, $full_path);
 			array_pop($explode);
 
 			return implode(DIRECTORY_SEPARATOR, $explode).DIRECTORY_SEPARATOR;
 		}
 		else
 		{
-			return self::addTrailingSlash($fullPath);
+			return self::addTrailingSlash($full_path);
 		}
 	}
 
 	/**
-	 * @param $fullPath
+	 * @param string $full_path
 	 * @return string
 	 */
-	public static function extractFilename($fullPath)
+	public static function extractFilename(string $full_path): string
 	{
-		$explode = explode(DIRECTORY_SEPARATOR, $fullPath);
+		$explode = explode(DIRECTORY_SEPARATOR, $full_path);
 
 		return array_pop($explode);
 	}
