@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Db;
+use LowCal\Base;
 use LowCal\Helper\Codes;
-use LowCal\Helper\Config;
 use LowCal\Interfaces\Db;
 use LowCal\Module\Module;
 
@@ -21,6 +21,30 @@ class Mysqli extends Module implements Db
 	 * @var null|\mysqli
 	 */
 	protected $_db_object = null;
+
+	/**
+	 * @var null|int
+	 */
+	protected $_connect_retry_attempts = null;
+
+	/**
+	 * @var null|int
+	 */
+	protected $_connect_retry_delay = null;
+
+	/**
+	 * Mysqli constructor.
+	 * @param Base $Base
+	 * @param int $connect_retry_attempts
+	 * @param int $connect_retry_delay
+	 */
+	function __construct(Base $Base, int $connect_retry_attempts, int $connect_retry_delay)
+	{
+		parent::__construct($Base);
+
+		$this->_connect_retry_attempts = $connect_retry_attempts;
+		$this->_connect_retry_delay = $connect_retry_delay;
+	}
 
 	/**
 	 * @param string $user
@@ -50,28 +74,31 @@ class Mysqli extends Module implements Db
 					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 				}
 
-				for($x=0;$x<$this->_connectRetryAttempts;$x++)
+				if(!empty($this->_connect_retry_attempts))
 				{
-					sleep($this->_connectRetryDelay);
-
-					$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
-
-					if($this->_db_object->connect_error)
+					for($x=0;$x<$this->_connect_retry_attempts;$x++)
 					{
-						$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
+						sleep($this->_connect_retry_delay);
 
-						$this->_Base->log()->add('mysqli', $error_string);
+						$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
 
-						if(strpos($this->_db_object->connect_error, 'access denied') !== false)
+						if($this->_db_object->connect_error)
 						{
-							$this->_is_connected = false;
+							$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
 
-							throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
+							$this->_Base->log()->add('mysqli', $error_string);
+
+							if(strpos($this->_db_object->connect_error, 'access denied') !== false)
+							{
+								$this->_is_connected = false;
+
+								throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
+							}
 						}
-					}
-					else
-					{
-						break;
+						else
+						{
+							break;
+						}
 					}
 				}
 
@@ -84,15 +111,49 @@ class Mysqli extends Module implements Db
 					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 				}
 			}
+
+			$this->_is_connected = true;
+
+			return true;
 		}
 
-		$this->_is_connected = true;
-
-		return true;
+		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function disconnect(): bool
 	{
-		return true;
+		if($this->_is_connected === true && is_object($this->_db_object))
+		{
+			$this->_db_object->close();
+
+			$this->_db_object = null;
+
+			$this->_is_connected = false;
+
+			return true;
+		}
+
+		return false;
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function isConnected(): bool
+	{
+		return $this->_is_connected;
+	}
+
+	/**
+	 * @return \mysqli|null
+	 */
+	public function getDbObject(): ?\mysqli
+	{
+		return $this->_db_object;
+	}
+
+
 }

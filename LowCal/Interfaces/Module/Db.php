@@ -17,4 +17,14 @@ interface Db
 	 * @return bool
 	 */
 	public function disconnect(): bool;
+
+	/**
+	 * @return bool
+	 */
+	public function isConnected(): bool;
+
+	/**
+	 * @return \mysqli|\CouchbaseBucket
+	 */
+	public function getDbObject();
 }

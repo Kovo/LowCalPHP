@@ -153,4 +153,29 @@ class Db extends Module
 	{
 		return $this->server($identifier)->getInteractionObject();
 	}
+
+	public function select()
+	{
+
+	}
+
+	public function insert()
+	{
+
+	}
+
+	public function update()
+	{
+
+	}
+
+	public function delete()
+	{
+
+	}
+
+	public function query()
+	{
+
+	}
 }
