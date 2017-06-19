@@ -47,6 +47,16 @@ class Server extends Module
 	protected $_port = null;
 
 	/**
+	 * @var int
+	 */
+	protected $_connect_retry_attempts = 0;
+
+	/**
+	 * @var int
+	 */
+	protected $_connect_retry_delay = 0;
+
+	/**
 	 * @var null|Mysqli|Couchbase
 	 */
 	protected $_interaction_object = null;
@@ -105,6 +115,22 @@ class Server extends Module
 	public function getPort(): ?int
 	{
 		return $this->_port;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getConnectRetryAttempts(): int
+	{
+		return $this->_connect_retry_attempts;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getConnectRetryDelay(): int
+	{
+		return $this->_connect_retry_delay;
 	}
 
 	/**
@@ -185,6 +211,28 @@ class Server extends Module
 	}
 
 	/**
+	 * @param int $connect_retry_attempts
+	 * @return Server
+	 */
+	public function setConnectRetryAttempts(int $connect_retry_attempts): Server
+	{
+		$this->_connect_retry_attempts = $connect_retry_attempts;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $connect_retry_delay
+	 * @return Server
+	 */
+	public function setConnectRetryDelay(int $connect_retry_delay): Server
+	{
+		$this->_connect_retry_delay = $connect_retry_delay;
+
+		return $this;
+	}
+
+	/**
 	 * @throws \Exception
 	 */
 	public function init(): void
@@ -192,7 +240,7 @@ class Server extends Module
 		switch($this->_type)
 		{
 			case Config::get('DATABASE_MYSQLI'):
-				$this->_interaction_object = new Mysqli($this->_Base);
+				$this->_interaction_object = new Mysqli($this->_Base, $this->_connect_retry_attempts, $this->_connect_retry_delay);
 				break;
 			case Config::get('DATABASE_COUCHBASE'):
 				$this->_interaction_object = new Couchbase($this->_Base);

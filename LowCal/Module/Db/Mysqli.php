@@ -46,6 +46,11 @@ class Mysqli extends Module implements Db
 		$this->_connect_retry_delay = $connect_retry_delay;
 	}
 
+	function __destruct()
+	{
+		$this->disconnect();
+	}
+
 	/**
 	 * @param string $user
 	 * @param string $password
@@ -125,7 +130,7 @@ class Mysqli extends Module implements Db
 	 */
 	public function disconnect(): bool
 	{
-		if($this->_is_connected === true && is_object($this->_db_object))
+		if($this->_is_connected === true && is_object($this->_db_object) && method_exists($this->_db_object, 'close'))
 		{
 			$this->_db_object->close();
 
@@ -155,5 +160,80 @@ class Mysqli extends Module implements Db
 		return $this->_db_object;
 	}
 
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function query(string $query): Results
+	{
+		$Results = new Results($this->_Base);
 
+		$Results->setResultsO($this->_db_object->query($query));
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function select(string $query): Results
+	{
+		$Results = new Results($this->_Base);
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function update(string $query): Results
+	{
+		$Results = new Results($this->_Base);
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function delete(string $query): Results
+	{
+		$Results = new Results($this->_Base);
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function insert(string $query): Results
+	{
+		$Results = new Results($this->_Base);
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function changeDatabase(string $name): bool
+	{
+		return $this->_db_object->select_db($name);
+	}
+
+	/**
+	 * @param string $user_name
+	 * @param string $password
+	 * @param string|null $db_name
+	 * @return bool
+	 */
+	public function changeUser(string $user_name, string $password, string $db_name = null): bool
+	{
+		return $this->_db_object->change_user($user_name, $password, $db_name);
+	}
 }

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Interfaces;
+use LowCal\Module\Db\Results;
 
 /**
  * Interfaces Db
@@ -27,4 +28,48 @@ interface Db
 	 * @return \mysqli|\CouchbaseBucket
 	 */
 	public function getDbObject();
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function query(string $query): Results;
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function select(string $query): Results;
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function update(string $query): Results;
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function delete(string $query): Results;
+
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function insert(string $query): Results;
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function changeDatabase(string $name): bool;
+
+	/**
+	 * @param string $user_name
+	 * @param string $password
+	 * @param string|null $db_name
+	 * @return bool
+	 */
+	public function changeUser(string $user_name, string $password, string $db_name = null): bool;
 }

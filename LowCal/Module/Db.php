@@ -4,6 +4,7 @@ namespace LowCal\Module;
 use LowCal\Helper\Codes;
 use LowCal\Module\Db\Couchbase;
 use LowCal\Module\Db\Mysqli;
+use LowCal\Module\Db\Results;
 use LowCal\Module\Db\Server;
 
 /** 
@@ -30,11 +31,14 @@ class Db extends Module
 	 * @param string $name
 	 * @param string $host
 	 * @param int $port
+	 * @param int $connect_retry_attempts
+	 * @param int $connect_retry_delay
+	 * @param bool $auto_connect
 	 * @param bool $assign_active
 	 * @return Db
 	 * @throws \Exception
 	 */
-	public function addServer(string $identifier, int $type, string $user = '', string $password = '', string $name = '', string $host = 'localhost', int $port = 3306, bool $auto_connect = false, bool $assign_active = true): Db
+	public function addServer(string $identifier, int $type, string $user = '', string $password = '', string $name = '', string $host = 'localhost', int $port = 3306, int $connect_retry_attempts = 0, int $connect_retry_delay = 0, bool $auto_connect = false, bool $assign_active = true): Db
 	{
 		if(empty($identifier))
 		{
@@ -50,6 +54,8 @@ class Db extends Module
 		$this->_servers[$identifier]->setName($name);
 		$this->_servers[$identifier]->setHost($host);
 		$this->_servers[$identifier]->setPort($port);
+		$this->_servers[$identifier]->setConnectRetryAttempts($connect_retry_attempts);
+		$this->_servers[$identifier]->setConnectRetryDelay($connect_retry_delay);
 
 		$this->_servers[$identifier]->init();
 
@@ -154,28 +160,73 @@ class Db extends Module
 		return $this->server($identifier)->getInteractionObject();
 	}
 
-	public function select()
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
+	public function query(string $query, string $server_identifier = ''): Results
 	{
-
+		return $this->interact($server_identifier)->query($query);
 	}
 
-	public function insert()
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
+	public function select(string $query, string $server_identifier = ''): Results
 	{
-
+		return $this->interact($server_identifier)->select($query);
 	}
 
-	public function update()
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
+	public function insert(string $query, string $server_identifier = ''): Results
 	{
-
+		return $this->interact($server_identifier)->insert($query);
 	}
 
-	public function delete()
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
+	public function update(string $query, string $server_identifier = ''): Results
 	{
-
+		return $this->interact($server_identifier)->update($query);
 	}
 
-	public function query()
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
+	public function delete(string $query, string $server_identifier = ''): Results
 	{
+		return $this->interact($server_identifier)->delete($query);
+	}
 
+	/**
+	 * @param string $db_name
+	 * @param string $server_identifier
+	 * @return bool
+	 */
+	public function changeDatabase(string $db_name, string $server_identifier = ''): bool
+	{
+		return $this->interact($server_identifier)->changeDatabase($db_name);
+	}
+
+	/**
+	 * @param string $db_name
+	 * @param string $server_identifier
+	 * @return bool
+	 */
+	public function changeUser(string $user_name, string $password, string $db_name = null, string $server_identifier = ''): bool
+	{
+		return $this->interact($server_identifier)->changeUser($user_name, $password, $db_name);
 	}
 }
