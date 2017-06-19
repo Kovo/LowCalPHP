@@ -209,24 +209,4 @@ class Db extends Module
 	{
 		return $this->interact($server_identifier)->delete($query);
 	}
-
-	/**
-	 * @param string $db_name
-	 * @param string $server_identifier
-	 * @return bool
-	 */
-	public function changeDatabase(string $db_name, string $server_identifier = ''): bool
-	{
-		return $this->interact($server_identifier)->changeDatabase($db_name);
-	}
-
-	/**
-	 * @param string $db_name
-	 * @param string $server_identifier
-	 * @return bool
-	 */
-	public function changeUser(string $user_name, string $password, string $db_name = null, string $server_identifier = ''): bool
-	{
-		return $this->interact($server_identifier)->changeUser($user_name, $password, $db_name);
-	}
 }

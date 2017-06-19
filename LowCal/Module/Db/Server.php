@@ -240,7 +240,7 @@ class Server extends Module
 		switch($this->_type)
 		{
 			case Config::get('DATABASE_MYSQLI'):
-				$this->_interaction_object = new Mysqli($this->_Base, $this->_connect_retry_attempts, $this->_connect_retry_delay);
+				$this->_interaction_object = new Mysqli($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
 				break;
 			case Config::get('DATABASE_COUCHBASE'):
 				$this->_interaction_object = new Couchbase($this->_Base);
@@ -272,5 +272,25 @@ class Server extends Module
 	public function disconnect(): bool
 	{
 		return $this->_interaction_object->disconnect();
+	}
+
+	/**
+	 * @param string $db_name
+	 * @return bool
+	 */
+	public function changeDatabase(string $db_name): bool
+	{
+		return $this->_interaction_object->changeDatabase($db_name);
+	}
+
+	/**
+	 * @param string $user_name
+	 * @param string $password
+	 * @param string|null $db_name
+	 * @return bool
+	 */
+	public function changeUser(string $user_name, string $password, string $db_name = null): bool
+	{
+		return $this->_interaction_object->changeUser($user_name, $password, $db_name);
 	}
 }

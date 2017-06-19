@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace LowCal\Module\Db;
 use LowCal\Base;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Strings;
 use LowCal\Interfaces\Db;
 use LowCal\Module\Module;
 
@@ -20,28 +21,45 @@ class Mysqli extends Module implements Db
 	/**
 	 * @var null|\mysqli
 	 */
-	protected $_db_object = null;
+	protected $_db_object= null;
 
 	/**
-	 * @var null|int
+	 * @var string
 	 */
-	protected $_connect_retry_attempts = null;
+	protected $_server_identifier = '';
 
 	/**
-	 * @var null|int
+	 * @var int
 	 */
-	protected $_connect_retry_delay = null;
+	protected $_connect_retry_attempts = 0;
+
+	/**
+	 * @var int
+	 */
+	protected $_connect_retry_delay = 0;
+
+	/**
+	 * @var string
+	 */
+	protected $_last_error_message = '';
+
+	/**
+	 * @var int
+	 */
+	protected $_last_error_number = 0;
 
 	/**
 	 * Mysqli constructor.
 	 * @param Base $Base
+	 * @param string $server_identifier
 	 * @param int $connect_retry_attempts
 	 * @param int $connect_retry_delay
 	 */
-	function __construct(Base $Base, int $connect_retry_attempts, int $connect_retry_delay)
+	function __construct(Base $Base, string $server_identifier, int $connect_retry_attempts, int $connect_retry_delay)
 	{
 		parent::__construct($Base);
 
+		$this->_server_identifier = $server_identifier;
 		$this->_connect_retry_attempts = $connect_retry_attempts;
 		$this->_connect_retry_delay = $connect_retry_delay;
 	}
@@ -134,7 +152,7 @@ class Mysqli extends Module implements Db
 		{
 			$this->_db_object->close();
 
-			$this->_db_object = null;
+			$this->_db_object= '';
 
 			$this->_is_connected = false;
 
@@ -180,6 +198,36 @@ class Mysqli extends Module implements Db
 	public function select(string $query): Results
 	{
 		$Results = new Results($this->_Base);
+
+		try
+		{
+			$this->_Base->db()->server($this->_server_identifier)->connect();
+
+			$query = Strings::trim($query);
+			$result = $this->_db_object->query($query);
+
+			if(empty($result))
+			{
+				$this->_last_error_message = $this->_db_object->error;
+				$this->_last_error_number = $this->_db_object->errno;
+
+				$this->_Base->log()->add('mysqli', 'Query failed: "'.$query.' | Error: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
+			}
+			else
+			{
+				$this->_last_error_message = '';
+				$this->_last_error_number = '';
+
+				$Results->setResultsO($result);
+			}
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('mysqli', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
+		}
 
 		return $Results;
 	}
@@ -232,7 +280,7 @@ class Mysqli extends Module implements Db
 	 * @param string|null $db_name
 	 * @return bool
 	 */
-	public function changeUser(string $user_name, string $password, string $db_name = null): bool
+	public function changeUser(string $user_name, string $password, string $db_name= ''): bool
 	{
 		return $this->_db_object->change_user($user_name, $password, $db_name);
 	}
