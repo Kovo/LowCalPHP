@@ -10,74 +10,99 @@ use LowCal\Module\Module;
 class Results extends Module
 {
 	/**
-	 * @var array
+	 * @var array|\mysqli_result
 	 */
-	protected $_resultsArray = array();
+	protected $_results = null;
 
 	/**
-	 * @var null|\mysqli_result|object
+	 * @var null|string
 	 */
-	protected $_resultsObject = null;
+	protected $_result_type = null;
 
 	/**
-	 * @var null|int|string
+	 * @var bool
 	 */
-	protected $_resultArrayPointer = null;
+	protected $_result_array_traversed = false;
 
-	/**
-	 * @return array
-	 */
-	public function getResultsA(): array
+	function __destruct()
 	{
-		return $this->_resultsArray;
+		$this->free();
 	}
 
-	/**
-	 * @return object|\mysqli_result
-	 */
-	public function getResultsO()
+	public function free(): void
 	{
-		return $this->_resultsObject;
-	}
-
-	/**
-	 * @param string $key
-	 * @return bool|mixed
-	 */
-	public function getSpecificResult(string $key)
-	{
-		if(array_key_exists($key, $this->_resultsArray))
+		if($this->_result_type === '\mysqli_result')
 		{
-			return $this->_resultsArray[$key];
+			$this->_results->free();
 		}
 
-		return false;
-	}
-
-	public function getNextResult()
-	{
-
+		$this->_results = null;
 	}
 
 	/**
-	 * @param array $results
+	 * @param \mysqli_result|array $results
 	 * @return Results
+	 * @throws \Exception
 	 */
-	public function setResultsA(array $results): Results
+	public function setResults($results): Results
 	{
-		$this->_resultsArray = $results;
+		if(is_array($results))
+		{
+			$this->_results = $results;
+			reset($this->_results);
+
+			$this->_result_type = 'array';
+		}
+		elseif(is_object($results) && get_class($results) === '\mysqli_result')
+		{
+			$this->_results = $results;
+
+			$this->_result_type = '\mysqli_result';
+		}
+		elseif(is_object($results))
+		{
+			$this->_results = json_decode(json_encode($results), true);
+
+			$this->_result_type = 'array';
+		}
 
 		return $this;
 	}
 
 	/**
-	 * @param object $results
-	 * @return Results
+	 * @return array|\mysqli_result|null
 	 */
-	public function setResultsO(object $results): Results
+	public function getResults()
 	{
-		$this->_resultsObject = $results;
+		return $this->_results;
+	}
 
-		return $this;
+	/**
+	 * @return array|null
+	 */
+	public function getNextResult(): ?array
+	{
+		if($this->_result_type === 'array')
+		{
+			if(key($this->_results) !== null)
+			{
+				if(!$this->_result_array_traversed)
+				{
+					$this->_result_array_traversed = true;
+
+					return array(current($this->_results));
+				}
+				else
+				{
+					return array(next($this->_results));
+				}
+			}
+		}
+		elseif($this->_result_type === '\mysqli_result')
+		{
+			return $this->_results->fetch_assoc();
+		}
+
+		return null;
 	}
 }

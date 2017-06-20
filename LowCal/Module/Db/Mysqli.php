@@ -186,19 +186,6 @@ class Mysqli extends Module implements Db
 	{
 		$Results = new Results($this->_Base);
 
-		$Results->setResultsO($this->_db_object->query($query));
-
-		return $Results;
-	}
-
-	/**
-	 * @param string $query
-	 * @return Results
-	 */
-	public function select(string $query): Results
-	{
-		$Results = new Results($this->_Base);
-
 		try
 		{
 			$this->_Base->db()->server($this->_server_identifier)->connect();
@@ -218,7 +205,7 @@ class Mysqli extends Module implements Db
 				$this->_last_error_message = '';
 				$this->_last_error_number = '';
 
-				$Results->setResultsO($result);
+				$Results->setResults($result);
 			}
 		}
 		catch(\Exception $e)
@@ -228,8 +215,15 @@ class Mysqli extends Module implements Db
 
 			$this->_Base->log()->add('mysqli', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
+	}
 
-		return $Results;
+	/**
+	 * @param string $query
+	 * @return Results
+	 */
+	public function select(string $query): Results
+	{
+		return $this->query($query);
 	}
 
 	/**
@@ -280,7 +274,7 @@ class Mysqli extends Module implements Db
 	 * @param string|null $db_name
 	 * @return bool
 	 */
-	public function changeUser(string $user_name, string $password, string $db_name= ''): bool
+	public function changeUser(string $user_name, string $password, string $db_name= null): bool
 	{
 		return $this->_db_object->change_user($user_name, $password, $db_name);
 	}
