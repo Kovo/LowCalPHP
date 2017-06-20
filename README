@@ -2,8 +2,5 @@ LowCal PHP
 ======
 LowCal PHP is powerful, lightweight, and flexible framework.
 
-LowCal PHP leverages the tools and methods found inside its library, allowing developers to easily extend functionality to suit the needs of their projects.
-
 LowCal PHP is not meant to be a direct substitute for larger frameworks like CakePHP, Symfony, Zend, etc... Instead, it is built for developers who value performance and ease of use, over bulk, and strict constraints that come with larger frameworks.
 
-For more information, examples, and documentation, visit http://www.lowcalphp.com.
