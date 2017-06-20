@@ -46,8 +46,13 @@ class Db extends Module
 
 		$this->_servers[$identifier] = new Server($this->_Base);
 
-		$this->_servers[$identifier]->setIdentifier($identifier)->setType($type)->setUser($user)->setPassword($password)
-									->setName($name)->setHost($host)->setPort($port)
+		$this->_servers[$identifier]->setIdentifier($identifier)
+									->setType($type)
+									->setUser($user)
+									->setPassword($password)
+									->setName($name)
+									->setHost($host)
+									->setPort($port)
 									->setConnectRetryAttempts(Config::get('SETTING_DB_CONNECT_RETRY_ATTEMPTS'))
 									->setConnectRetryDelay(Config::get('SETTING_DB_CONNECT_RETRY_DELAY_SECONDS'))
 									->setDeadlockFirstIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_DELAY_SECONDS'))
@@ -206,5 +211,26 @@ class Db extends Module
 	public function delete(string $query, string $server_identifier = ''): Results
 	{
 		return $this->interact($server_identifier)->delete($query);
+	}
+
+	/**
+	 * @param $value
+	 * @param int $decimal_places
+	 * @param string $server_identifier
+	 * @return array|mixed|string
+	 */
+	public function sanitizeQueryValueNumeric($value, int $decimal_places = 2, string $server_identifier = '')
+	{
+		return $this->interact($server_identifier)->sanitize($value, true, $decimal_places);
+	}
+
+	/**
+	 * @param $value
+	 * @param string $server_identifier
+	 * @return array|mixed|string
+	 */
+	public function sanitizeQueryValueNonNumeric($value, string $server_identifier = '')
+	{
+		return $this->interact($server_identifier)->sanitize($value, false);
 	}
 }

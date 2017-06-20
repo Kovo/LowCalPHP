@@ -103,6 +103,41 @@ class Security extends Module
 	);
 
 	/**
+	 * Clean everything (javascript tags, styling tags, comments, html tags, convert all <,> to html entities).
+	 *
+	 * @var int
+	 */
+	const CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES = 0;
+
+	/**
+	 * Clean everything (javascript tags, styling tags, comments, html tags).
+	 *
+	 * @var int
+	 */
+	const CLEAN_HTML_JS_STYLE_COMMENTS = 1;
+
+	/**
+	 * Clean almost everything (javascript tags, styling tags, comments).
+	 *
+	 * @var int
+	 */
+	const CLEAN_JS_STYLE_COMMENTS = 2;
+
+	/**
+	 * Clean some things (styling tags, comments).
+	 *
+	 * @var int
+	 */
+	const CLEAN_STYLE_COMMENTS = 3;
+
+	/**
+	 * Don't clean anything.
+	 *
+	 * @var int
+	 */
+	const CLEAN_NOTHING = false;
+
+	/**
 	 * Security constructor.
 	 * @param Base $Base
 	 */

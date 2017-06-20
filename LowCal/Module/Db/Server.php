@@ -388,6 +388,7 @@ class Server extends Module
 		switch($this->_type)
 		{
 			case Config::get('DATABASE_MYSQLI'):
+				$this->connect();
 				return $this->_interaction_object->getDbObject()->select_db($db_name);
 			case Config::get('DATABASE_COUCHBASE'):
 				return true;
@@ -408,6 +409,7 @@ class Server extends Module
 		switch($this->_type)
 		{
 			case Config::get('DATABASE_MYSQLI'):
+				$this->connect();
 				return $this->_interaction_object->getDbObject()->change_user($user_name, $password, $db_name);
 			case Config::get('DATABASE_COUCHBASE'):
 				return true;

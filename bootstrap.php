@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice, contribtuions, and original author information.
  * @author Kevork Aghazarian
@@ -24,7 +24,7 @@ try
 
 		if($file !== false)
 		{
-			include $file;
+			require_once $file;
 
 			return true;
 		}
@@ -37,12 +37,12 @@ try
 	$LOWCAL_CONFIG_ARRAY['LOWCAL_ENV'] = getenv('LOWCAL_ENV');
 
 	###INIT CONFIG###
-	\LowCal\Helper\Config::loadArray($LOWCAL_CONFIG_ARRAY);
-	\LowCal\Helper\Config::loadFile('config.php');
-	\LowCal\Helper\Config::loadConfig('config');
+	Config::loadArray($LOWCAL_CONFIG_ARRAY);
+	Config::loadFile('config.php');
+	Config::loadConfig('config');
 
 	###INIT LOWCAL###
-	$_LOWCAL = new \LowCal\Base();
+	$_LOWCAL = new Base();
 
 	###BEGIN YOUR APP###
 	include \LowCal\Helper\Config::get('BASE_DIR').'init.php';
