@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Db;
+use LowCal\Helper\Codes;
 use LowCal\Module\Module;
 
 /**
@@ -112,7 +113,7 @@ class Results extends Module
 	}
 
 	/**
-	 * @param \mysqli_result|array $results
+	 * @param $results
 	 * @return Results
 	 * @throws \Exception
 	 */
@@ -137,6 +138,10 @@ class Results extends Module
 
 			$this->_result_type = 'array';
 		}
+		else
+		{
+			throw new \Exception('Invalid result type provided. Expected array, object, or mysqli_result.', Codes::DB_INVALID_RESULT_TYPE);
+		}
 
 		return $this;
 	}
@@ -151,6 +156,7 @@ class Results extends Module
 
 	/**
 	 * @return array|null
+	 * @throws \Exception
 	 */
 	public function getNextResult(): ?array
 	{
@@ -173,6 +179,10 @@ class Results extends Module
 		elseif($this->_result_type === '\mysqli_result')
 		{
 			return $this->_results->fetch_assoc();
+		}
+		else
+		{
+			throw new \Exception('Invalid result type provided. Expected array, object, or mysqli_result.', Codes::DB_INVALID_RESULT_TYPE);
 		}
 
 		return null;
