@@ -3,9 +3,13 @@ declare(strict_types=1);
 namespace LowCal;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
+use LowCal\Module\Cache;
+use LowCal\Module\Db;
 use LowCal\Module\Locale;
+use LowCal\Module\Log;
 use LowCal\Module\Request;
 use LowCal\Module\Response;
+use LowCal\Module\Routing;
 use LowCal\Module\Security;
 use LowCal\Module\View;
 
@@ -16,19 +20,9 @@ use LowCal\Module\View;
 class Base
 {
 	/**
-	 * @var null|Response
-	 */
-	protected $_Response = null;
-
-	/**
 	 * @var null|Security
 	 */
 	protected $_Security = null;
-
-	/**
-	 * @var null|Request
-	 */
-	protected $_Request = null;
 
 	/**
 	 * @var null|View
@@ -36,9 +30,39 @@ class Base
 	protected $_View = null;
 
 	/**
+	 * @var null|Cache
+	 */
+	protected $_Cache = null;
+
+	/**
+	 * @var null|Db
+	 */
+	protected $_Db = null;
+
+	/**
 	 * @var null|Locale
 	 */
 	protected $_Locale = null;
+
+	/**
+	 * @var null|Log
+	 */
+	protected $_Log = null;
+
+	/**
+	 * @var null|Request
+	 */
+	protected $_Request = null;
+
+	/**
+	 * @var null|Response
+	 */
+	protected $_Response = null;
+
+	/**
+	 * @var null|Routing
+	 */
+	protected $_Routing = null;
 
 	/**
 	 * Base constructor.
@@ -98,9 +122,9 @@ class Base
 		{
 			if(isset($buffer[$i]))
 			{
-				if(stristr($buffer[$i], '<!--compress-html no compression-->'))
+				if(stristr($buffer[$i], '<!--compress-html no-compression-->'))
 				{
-					$buffer[$i] = str_replace("<!--compress-html no compression-->", " ", $buffer[$i]);
+					$buffer[$i] = str_replace("<!--compress-html no-compression-->", " ", $buffer[$i]);
 				}
 				else
 				{
@@ -126,29 +150,55 @@ class Base
 	}
 
 	/**
-	 * @return Response
+	 * @return Cache
 	 */
-	public function response(): Response
+	public function cache(): Cache
 	{
-		if($this->_Response === null)
+		if($this->_Cache === null)
 		{
-			$this->_Response = new Response($this);
+			$this->_Cache = new Cache($this);
 		}
 
-		return $this->_Response;
+		return $this->_Cache;
 	}
 
 	/**
-	 * @return Security
+	 * @return Db
 	 */
-	public function security(): Security
+	public function db(): Db
 	{
-		if($this->_Security === null)
+		if($this->_Db === null)
 		{
-			$this->_Security = new Security($this);
+			$this->_Db = new Db($this);
 		}
 
-		return $this->_Security;
+		return $this->_Db;
+	}
+
+	/**
+	 * @return Locale
+	 */
+	public function locale(): Locale
+	{
+		if($this->_Locale === null)
+		{
+			$this->_Locale = new Locale($this);
+		}
+
+		return $this->_Locale;
+	}
+
+	/**
+	 * @return Log
+	 */
+	public function log(): Log
+	{
+		if($this->_Log === null)
+		{
+			$this->_Log = new Log($this);
+		}
+
+		return $this->_Log;
 	}
 
 	/**
@@ -165,6 +215,45 @@ class Base
 	}
 
 	/**
+	 * @return Response
+	 */
+	public function response(): Response
+	{
+		if($this->_Response === null)
+		{
+			$this->_Response = new Response($this);
+		}
+
+		return $this->_Response;
+	}
+
+	/**
+	 * @return Routing
+	 */
+	public function routing(): Routing
+	{
+		if($this->_Routing === null)
+		{
+			$this->_Routing = new Routing($this);
+		}
+
+		return $this->_Routing;
+	}
+
+	/**
+	 * @return Security
+	 */
+	public function security(): Security
+	{
+		if($this->_Security === null)
+		{
+			$this->_Security = new Security($this);
+		}
+
+		return $this->_Security;
+	}
+
+	/**
 	 * @return View
 	 */
 	public function view(): View
@@ -175,18 +264,5 @@ class Base
 		}
 
 		return $this->_View;
-	}
-
-	/**
-	 * @return Locale
-	 */
-	public function locale(): Locale
-	{
-		if($this->_Locale === null)
-		{
-			$this->_Locale = new Locale($this);
-		}
-
-		return $this->_Locale;
 	}
 }
