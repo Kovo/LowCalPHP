@@ -24,6 +24,21 @@ class Results extends Module
 	 */
 	protected $_result_array_traversed = false;
 
+	/**
+	 * @var null|int
+	 */
+	protected $_affected_rows = null;
+
+	/**
+	 * @var null|int
+	 */
+	protected $_insert_id = null;
+
+	/**
+	 * @var null|int
+	 */
+	protected $_returned_rows = null;
+
 	function __destruct()
 	{
 		$this->free();
@@ -37,6 +52,63 @@ class Results extends Module
 		}
 
 		$this->_results = null;
+	}
+
+	/**
+	 * @param int|null $rows
+	 * @return Results
+	 */
+	public function setAffectedRows(?int $rows): Results
+	{
+		$this->_affected_rows = $rows;
+
+		return $this;
+	}
+
+	/**
+	 * @param int|null $insert_id
+	 * @return Results
+	 */
+	public function setInsertId(?int $insert_id): Results
+	{
+		$this->_insert_id = $insert_id;
+
+		return $this;
+	}
+
+	/**
+	 * @param int|null $returned_rows
+	 * @return Results
+	 */
+	public function setReturnedRows(?int $returned_rows): Results
+	{
+		$this->_returned_rows = $returned_rows;
+
+		return $this;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getAffectedRows(): ?int
+	{
+		return $this->_affected_rows;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getInsertId(): ?int
+	{
+		return $this->_insert_id;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getReturnedRows(): ?int
+	{
+		return $this->_returned_rows;
 	}
 
 	/**
@@ -55,7 +127,7 @@ class Results extends Module
 		}
 		elseif(is_object($results) && get_class($results) === '\mysqli_result')
 		{
-			$this->_results = $results;
+			$this->_results = clone $results;
 
 			$this->_result_type = '\mysqli_result';
 		}

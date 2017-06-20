@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace LowCal\Module;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
 use LowCal\Module\Db\Couchbase;
 use LowCal\Module\Db\Mysqli;
 use LowCal\Module\Db\Results;
@@ -31,14 +32,12 @@ class Db extends Module
 	 * @param string $name
 	 * @param string $host
 	 * @param int $port
-	 * @param int $connect_retry_attempts
-	 * @param int $connect_retry_delay
 	 * @param bool $auto_connect
 	 * @param bool $assign_active
 	 * @return Db
 	 * @throws \Exception
 	 */
-	public function addServer(string $identifier, int $type, string $user = '', string $password = '', string $name = '', string $host = 'localhost', int $port = 3306, int $connect_retry_attempts = 0, int $connect_retry_delay = 0, bool $auto_connect = false, bool $assign_active = true): Db
+	public function addServer(string $identifier, int $type, string $user = '', string $password = '', string $name = '', string $host = 'localhost', int $port = 3306, bool $auto_connect = false, bool $assign_active = true): Db
 	{
 		if(empty($identifier))
 		{
@@ -47,15 +46,14 @@ class Db extends Module
 
 		$this->_servers[$identifier] = new Server($this->_Base);
 
-		$this->_servers[$identifier]->setIdentifier($identifier);
-		$this->_servers[$identifier]->setType($type);
-		$this->_servers[$identifier]->setUser($user);
-		$this->_servers[$identifier]->setPassword($password);
-		$this->_servers[$identifier]->setName($name);
-		$this->_servers[$identifier]->setHost($host);
-		$this->_servers[$identifier]->setPort($port);
-		$this->_servers[$identifier]->setConnectRetryAttempts($connect_retry_attempts);
-		$this->_servers[$identifier]->setConnectRetryDelay($connect_retry_delay);
+		$this->_servers[$identifier]->setIdentifier($identifier)->setType($type)->setUser($user)->setPassword($password)
+									->setName($name)->setHost($host)->setPort($port)
+									->setConnectRetryAttempts(Config::get('SETTING_DB_CONNECT_RETRY_ATTEMPTS'))
+									->setConnectRetryDelay(Config::get('SETTING_DB_CONNECT_RETRY_DELAY_SECONDS'))
+									->setDeadlockFirstIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_DELAY_SECONDS'))
+									->setDeadlockSecondIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_DELAY_SECONDS'))
+									->setDeadlockFirstIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_RETRIES'))
+									->setDeadlockSecondIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_RETRIES'));
 
 		$this->_servers[$identifier]->init();
 

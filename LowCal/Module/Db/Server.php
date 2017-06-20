@@ -57,9 +57,37 @@ class Server extends Module
 	protected $_connect_retry_delay = 0;
 
 	/**
+	 * @var float
+	 */
+	protected $_deadlock_first_interval_delay = 0.0;
+
+	/**
+	 * @var float
+	 */
+	protected $_deadlock_second_interval_delay = 0.0;
+
+	/**
+	 * @var int
+	 */
+	protected $_deadlock_first_interval_retries = 0;
+
+	/**
+	 * @var int
+	 */
+	protected $_deadlock_second_interval_retries = 0;
+
+	/**
 	 * @var null|Mysqli|Couchbase
 	 */
 	protected $_interaction_object = null;
+
+	/**
+	 * @return bool
+	 */
+	public function isConnected(): bool
+	{
+		return $this->_interaction_object->isConnected();
+	}
 
 	/**
 	 * @return null|string
@@ -131,6 +159,38 @@ class Server extends Module
 	public function getConnectRetryDelay(): int
 	{
 		return $this->_connect_retry_delay;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getDeadlockFirstIntervalDelay(): float
+	{
+		return $this->_deadlock_first_interval_delay;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getDeadlockSecondIntervalDelay(): float
+	{
+		return $this->_deadlock_second_interval_delay;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDeadlockFirstIntervalRetries(): int
+	{
+		return $this->_deadlock_first_interval_retries;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDeadlockSecondIntervalRetries(): int
+	{
+		return $this->_deadlock_second_interval_retries;
 	}
 
 	/**
@@ -233,6 +293,50 @@ class Server extends Module
 	}
 
 	/**
+	 * @param float $deadlock_first_interval_delay
+	 * @return Server
+	 */
+	public function setDeadlockFirstIntervalDelay(float $deadlock_first_interval_delay): Server
+	{
+		$this->_deadlock_first_interval_delay = $deadlock_first_interval_delay;
+
+		return $this;
+	}
+
+	/**
+	 * @param float $deadlock_second_interval_delay
+	 * @return Server
+	 */
+	public function setDeadlockSecondIntervalDelay(float $deadlock_second_interval_delay): Server
+	{
+		$this->_deadlock_second_interval_delay = $deadlock_second_interval_delay;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $deadlock_first_interval_retries
+	 * @return Server
+	 */
+	public function setDeadlockFirstIntervalRetries(int $deadlock_first_interval_retries): Server
+	{
+		$this->_deadlock_first_interval_retries = $deadlock_first_interval_retries;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $deadlock_second_interval_retries
+	 * @return Server
+	 */
+	public function setDeadlockSecondIntervalRetries(int $deadlock_second_interval_retries): Server
+	{
+		$this->_deadlock_second_interval_retries = $deadlock_second_interval_retries;
+
+		return $this;
+	}
+
+	/**
 	 * @throws \Exception
 	 */
 	public function init(): void
@@ -240,7 +344,7 @@ class Server extends Module
 		switch($this->_type)
 		{
 			case Config::get('DATABASE_MYSQLI'):
-				$this->_interaction_object = new Mysqli($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
+				$this->_interaction_object = new Mysqli($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay, $this->_deadlock_first_interval_delay, $this->_deadlock_second_interval_delay, $this->_deadlock_first_interval_retries, $this->_deadlock_second_interval_retries);
 				break;
 			case Config::get('DATABASE_COUCHBASE'):
 				$this->_interaction_object = new Couchbase($this->_Base);
@@ -277,10 +381,19 @@ class Server extends Module
 	/**
 	 * @param string $db_name
 	 * @return bool
+	 * @throws \Exception
 	 */
 	public function changeDatabase(string $db_name): bool
 	{
-		return $this->_interaction_object->changeDatabase($db_name);
+		switch($this->_type)
+		{
+			case Config::get('DATABASE_MYSQLI'):
+				return $this->_interaction_object->getDbObject()->select_db($db_name);
+			case Config::get('DATABASE_COUCHBASE'):
+				return true;
+			default:
+				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);
+		}
 	}
 
 	/**
@@ -288,9 +401,18 @@ class Server extends Module
 	 * @param string $password
 	 * @param string|null $db_name
 	 * @return bool
+	 * @throws \Exception
 	 */
 	public function changeUser(string $user_name, string $password, string $db_name = null): bool
 	{
-		return $this->_interaction_object->changeUser($user_name, $password, $db_name);
+		switch($this->_type)
+		{
+			case Config::get('DATABASE_MYSQLI'):
+				return $this->_interaction_object->getDbObject()->change_user($user_name, $password, $db_name);
+			case Config::get('DATABASE_COUCHBASE'):
+				return true;
+			default:
+				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);
+		}
 	}
 }

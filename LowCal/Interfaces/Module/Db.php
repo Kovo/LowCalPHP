@@ -60,16 +60,12 @@ interface Db
 	public function insert(string $query): Results;
 
 	/**
-	 * @param string $name
-	 * @return bool
+	 * @return string
 	 */
-	public function changeDatabase(string $name): bool;
+	public function getLastErrorMessage(): string;
 
 	/**
-	 * @param string $user_name
-	 * @param string $password
-	 * @param string|null $db_name
-	 * @return bool
+	 * @return int
 	 */
-	public function changeUser(string $user_name, string $password, string $db_name = null): bool;
+	public function getLastErrorNumber(): int;
 }
