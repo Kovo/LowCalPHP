@@ -6,13 +6,16 @@ declare(strict_types=1);
  * @author Kevork Aghazarian
  * @website http://www.lowcalphp.com
  */
+/*
+ * NOTE: Try not to modify bootstrap.php to make your application compatible with future updates.
+ */
 use LowCal\Helper\Config;
 use LowCal\Base;
 
 try
 {
 	###AUTOLOAD###
-	spl_autoload_register(function($className){
+	spl_autoload_register(function($className):bool{
 		$className = str_replace ('\\', '/', $className);
 
 		$file = stream_resolve_include_path(__DIR__.DIRECTORY_SEPARATOR.$className.'.php');
@@ -45,7 +48,7 @@ try
 	$_LOWCAL = new Base();
 
 	###BEGIN YOUR APP###
-	include \LowCal\Helper\Config::get('BASE_DIR').'init.php';
+	include Config::get('BASE_DIR').'init.php';
 }
 catch(\Throwable $t)
 {
