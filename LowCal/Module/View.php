@@ -4,7 +4,7 @@ namespace LowCal\Module;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 
-/** 
+/**
  * Class View
  * @package LowCal\Module
  */
