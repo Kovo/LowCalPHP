@@ -11,6 +11,11 @@ use LowCal\Interfaces\Db;
 class Couchbase extends \LowCal\Module\Db\Db implements Db
 {
 	/**
+	 * @var null|\CouchbaseCluster
+	 */
+	protected $_cluster_object = null;
+
+	/**
 	 * Couchbase constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier
@@ -44,9 +49,9 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	{
 		if($this->_is_connected === false)
 		{
-			$this->_db_object = new \CouchbaseCluster($host.':'.$port);
+			$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
 
-			if($this->_db_object->connect_error)
+			if($this->_cluster_object->connect_error)
 			{
 				if(strpos($this->_db_object->connect_error, 'access denied') !== false)
 				{
