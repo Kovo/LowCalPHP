@@ -347,7 +347,7 @@ class Server extends Module
 				$this->_interaction_object = new Mysqli($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay, $this->_deadlock_first_interval_delay, $this->_deadlock_second_interval_delay, $this->_deadlock_first_interval_retries, $this->_deadlock_second_interval_retries);
 				break;
 			case Config::get('DATABASE_COUCHBASE'):
-				$this->_interaction_object = new Couchbase($this->_Base);
+				$this->_interaction_object = new Couchbase($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
 				break;
 			default:
 				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);
