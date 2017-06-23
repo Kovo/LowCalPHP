@@ -49,7 +49,14 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	{
 		if($this->_is_connected === false)
 		{
-			$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+			try
+			{
+				$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+			}
+			catch(\Exception $e)
+			{
+
+			}
 
 			if($this->_cluster_object->connect_error)
 			{
