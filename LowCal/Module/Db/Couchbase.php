@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Db;
+use Couchbase\N1qlQuery;
 use LowCal\Base;
+use LowCal\Helper\Codes;
+use LowCal\Helper\Strings;
 use LowCal\Interfaces\Db;
 
 /**
@@ -49,27 +52,20 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	{
 		if($this->_is_connected === false)
 		{
+			if(!empty($password))
+			{
+				$Authenticator = new \CouchbaseAuthenticator();
+				$Authenticator->bucket($name, $password);
+			}
+
 			try
 			{
 				$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
 			{
-
-			}
-
-			if($this->_cluster_object->connect_error)
-			{
-				if(strpos($this->_db_object->connect_error, 'access denied') !== false)
-				{
-					$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
-
-					$this->_Base->log()->add('mysqli', $error_string);
-
-					$this->_is_connected = false;
-
-					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
-				}
+				$this->_Base->log()->add('couchbase', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
 
 				if(!empty($this->_connect_retry_attempts))
 				{
@@ -77,39 +73,42 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 					{
 						sleep($this->_connect_retry_delay);
 
-						$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
-
-						if($this->_db_object->connect_error)
+						try
 						{
-							$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
-
-							$this->_Base->log()->add('mysqli', $error_string);
-
-							if(strpos($this->_db_object->connect_error, 'access denied') !== false)
-							{
-								$this->_is_connected = false;
-
-								throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
-							}
+							$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+							$this->_is_connected = true;
 						}
-						else
+						catch(\Exception $e)
 						{
-							break;
+							$this->_Base->log()->add('couchbase', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
+
+							continue;
 						}
 					}
 				}
-
-				if($this->_is_connected === false)
-				{
-					$error_string = 'Failed to connect to database after several attempts.';
-
-					$this->_Base->log()->add('mysqli', $error_string);
-
-					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
-				}
 			}
 
-			$this->_is_connected = true;
+			if($this->_is_connected === false)
+			{
+				$error_string = 'Failed to connect to database after several attempts.';
+
+				$this->_Base->log()->add('couchbase', $error_string);
+
+				throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
+			}
+
+			try
+			{
+				$this->_db_object = $this->_cluster_object->openBucket($name);
+			}
+			catch(\Exception $e)
+			{
+				$error_string = 'Failed to open to bucket.';
+
+				$this->_Base->log()->add('couchbase', $error_string);
+
+				throw new \Exception($error_string, Codes::DB_CANNOT_OPEN_DATABASE);
+			}
 
 			return true;
 		}
@@ -134,6 +133,14 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * @return \CouchbaseCluster
+	 */
+	public function getClusterObject(): \CouchbaseCluster
+	{
+		return $this->_cluster_object;
+	}
+
+	/**
 	 * @param string $query
 	 * @return Results
 	 */
@@ -146,7 +153,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_Base->db()->server($this->_server_identifier)->connect();
 
 			$query = Strings::trim($query);
-			$result = $this->_db_object->query($query);
+			$result = $this->_db_object->query(N1qlQuery::fromString($query));
 
 			if(empty($result))
 			{

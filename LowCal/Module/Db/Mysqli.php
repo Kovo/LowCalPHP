@@ -80,7 +80,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 			{
 				if(strpos($this->_db_object->connect_error, 'access denied') !== false)
 				{
-					$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
+					$error_string = 'Exception during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
 
 					$this->_Base->log()->add('mysqli', $error_string);
 
@@ -99,7 +99,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 
 						if($this->_db_object->connect_error)
 						{
-							$error_string = 'Excpetion during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
+							$error_string = 'Exception during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
 
 							$this->_Base->log()->add('mysqli', $error_string);
 

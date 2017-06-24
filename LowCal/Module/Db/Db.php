@@ -19,7 +19,7 @@ class Db extends Module
 	/**
 	 * @var null|\mysqli|\CouchbaseBucket
 	 */
-	protected $_db_object= null;
+	protected $_db_object = null;
 
 	/**
 	 * @var string
