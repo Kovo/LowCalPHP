@@ -45,7 +45,7 @@ class Config
 	/**
 	 * @param string $lowcal_config_file
 	 */
-	public static function loadConfig(string $lowcal_config_file): void
+	public static function loadConfigForEnv(string $lowcal_config_file): void
 	{
 		$lowcal_config_file = self::get('BASE_DIR').$lowcal_config_file.'_'.self::get('LOWCAL_ENV').'.php';
 

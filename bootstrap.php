@@ -42,7 +42,7 @@ try
 	###INIT CONFIG###
 	Config::loadArray($LOWCAL_CONFIG_ARRAY);
 	Config::loadFile('config.php');
-	Config::loadConfig('config');
+	Config::loadConfigForEnv('config');
 
 	###INIT LOWCAL###
 	$_LOWCAL = new Base();
