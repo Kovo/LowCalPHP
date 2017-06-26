@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Interfaces;
+use LowCal\Module\Db\Couchbase;
+use LowCal\Module\Db\Mysqli;
 use LowCal\Module\Db\Results;
 use LowCal\Module\Security;
 
@@ -31,7 +33,7 @@ interface Db
 	public function isConnected(): bool;
 
 	/**
-	 * @return \mysqli|\CouchbaseBucket
+	 * @return \mysqli|\Couchbase\Bucket
 	 */
 	public function getDbObject();
 

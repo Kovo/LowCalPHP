@@ -76,7 +76,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 		{
 			$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
 
-			if($this->_db_object->connect_error)
+			if(!empty($this->_db_object->connect_error))
 			{
 				if(strpos($this->_db_object->connect_error, 'access denied') !== false)
 				{
@@ -84,9 +84,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 
 					$this->_Base->log()->add('mysqli', $error_string);
 
-					$this->_is_connected = false;
-
-					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
+					throw new \Exception($error_string, Codes::DB_AUTH_CONNECT_ERROR);
 				}
 
 				if(!empty($this->_connect_retry_attempts))
@@ -97,7 +95,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 
 						$this->_db_object = new \mysqli($host, $user, $password, $name, $port);
 
-						if($this->_db_object->connect_error)
+						if(!empty($this->_db_object->connect_error))
 						{
 							$error_string = 'Exception during connection attempt: '.$this->_db_object->connect_error.' | '.$this->_db_object->connect_errno;
 
@@ -105,13 +103,13 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 
 							if(strpos($this->_db_object->connect_error, 'access denied') !== false)
 							{
-								$this->_is_connected = false;
-
-								throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
+								throw new \Exception($error_string, Codes::DB_AUTH_CONNECT_ERROR);
 							}
 						}
 						else
 						{
+							$this->_is_connected = true;
+
 							break;
 						}
 					}
@@ -126,13 +124,13 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 					throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 				}
 			}
-
-			$this->_is_connected = true;
-
-			return true;
+			else
+			{
+				$this->_is_connected = true;
+			}
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -143,15 +141,13 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 		if($this->_is_connected === true && is_object($this->_db_object) && method_exists($this->_db_object, 'close'))
 		{
 			$this->_db_object->close();
-
-			$this->_db_object= '';
-
-			$this->_is_connected = false;
-
-			return true;
 		}
 
-		return false;
+		$this->_db_object = null;
+
+		$this->_is_connected = false;
+
+		return true;
 	}
 
 	/**

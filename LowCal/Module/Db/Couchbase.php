@@ -14,7 +14,7 @@ use LowCal\Interfaces\Db;
 class Couchbase extends \LowCal\Module\Db\Db implements Db
 {
 	/**
-	 * @var null|\CouchbaseCluster
+	 * @var null|\Couchbase\Cluster
 	 */
 	protected $_cluster_object = null;
 
@@ -121,18 +121,18 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 		{
 			if(!empty($password))
 			{
-				$Authenticator = new \CouchbaseAuthenticator();
+				$Authenticator = new \Couchbase\ClassicAuthenticator();
 				$Authenticator->bucket($name, $password);
 			}
 
 			try
 			{
-				$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
 			{
-				$this->_Base->log()->add('couchbase', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
+				$this->_Base->log()->add('couchbase_db', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
 
 				if(!empty($this->_connect_retry_attempts))
 				{
@@ -142,14 +142,14 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						try
 						{
-							$this->_cluster_object = new \CouchbaseCluster($host.':'.$port);
+							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
 							$this->_is_connected = true;
+
+							break;
 						}
 						catch(\Exception $e)
 						{
-							$this->_Base->log()->add('couchbase', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
-
-							continue;
+							$this->_Base->log()->add('couchbase_db', 'Exception during connection attempt: '.$e->getMessage().' | '.$e->getCode());
 						}
 					}
 				}
@@ -159,7 +159,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$error_string = 'Failed to connect to database after several attempts.';
 
-				$this->_Base->log()->add('couchbase', $error_string);
+				$this->_Base->log()->add('couchbase_db', $error_string);
 
 				throw new \Exception($error_string, Codes::DB_CONNECT_ERROR);
 			}
@@ -172,15 +172,13 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$error_string = 'Failed to open to bucket.';
 
-				$this->_Base->log()->add('couchbase', $error_string);
+				$this->_Base->log()->add('couchbase_db', $error_string);
 
 				throw new \Exception($error_string, Codes::DB_CANNOT_OPEN_DATABASE);
 			}
-
-			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -188,21 +186,38 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	 */
 	public function disconnect(): bool
 	{
+		$this->_cluster_object = null;
+		$this->_db_object = null;
+
+		$this->_is_connected = false;
+
 		return true;
 	}
 
 	/**
-	 * @return \CouchbaseBucket|null
+	 * @return \Couchbase\Bucket|null
 	 */
-	public function getDbObject(): ?\CouchbaseBucket
+	public function getDbObject(): ?\Couchbase\Bucket
 	{
 		return $this->_db_object;
 	}
 
 	/**
-	 * @return \CouchbaseCluster
+	 * @param \Couchbase\Bucket $Bucket
+	 * @return Couchbase
 	 */
-	public function getClusterObject(): \CouchbaseCluster
+	public function setDBObject(\Couchbase\Bucket $Bucket): Couchbase
+	{
+		$this->_db_object = null; //hopefully couchbase sdk closes the connection
+		$this->_db_object = $Bucket;
+
+		return $this;
+	}
+
+	/**
+	 * @return \Couchbase\Cluster
+	 */
+	public function getClusterObject(): \Couchbase\Cluster
 	{
 		return $this->_cluster_object;
 	}
@@ -243,7 +258,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('mysqli', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
+			$this->_Base->log()->add('couchbase_db', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
 
 		return $Results;

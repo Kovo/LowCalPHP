@@ -389,9 +389,34 @@ class Server extends Module
 		{
 			case Config::get('DATABASE_MYSQLI'):
 				$this->connect();
-				return $this->_interaction_object->getDbObject()->select_db($db_name);
+
+				if($this->_interaction_object->getDbObject()->select_db($db_name))
+				{
+					return true;
+				}
+				else
+				{
+					$this->_Base->log()->add('mysqli', 'Failed to change database to '.$db_name.'.');
+
+					return false;
+				}
 			case Config::get('DATABASE_COUCHBASE'):
-				return true;
+				$this->connect();
+
+				try
+				{
+					$this->_interaction_object->setDBObject(
+						$this->_interaction_object->getClusterObject()->openBucket($db_name)
+					);
+
+					return true;
+				}
+				catch(\Exception $e)
+				{
+					$this->_Base->log()->add('couchbase_db', 'Failed to open the '.$db_name.' bucket.');
+
+					return false;
+				}
 			default:
 				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);
 		}
@@ -412,7 +437,7 @@ class Server extends Module
 				$this->connect();
 				return $this->_interaction_object->getDbObject()->change_user($user_name, $password, $db_name);
 			case Config::get('DATABASE_COUCHBASE'):
-				return true;
+				return false;
 			default:
 				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);
 		}

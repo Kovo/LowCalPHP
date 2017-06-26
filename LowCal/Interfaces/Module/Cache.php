@@ -31,9 +31,9 @@ interface Cache
 	public function isConnected(): bool;
 
 	/**
-	 * @return \Memcached|\CouchbaseBucket|Local
+	 * @return \Memcached|\Couchbase\Bucket|Local
 	 */
-	public function getDbObject();
+	public function getCacheObject();
 
 	/**
 	 * @param string $key
