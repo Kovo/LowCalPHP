@@ -44,4 +44,5 @@ class Codes
 	const CACHE_BAD_TYPE = 91;
 	const CACHE_CONNECT_ERROR = 92;
 	const CACHE_CANNOT_OPEN_DATABASE = 93;
+	const CACHE_CANNOT_SET_LOCK = 94;
 }

@@ -39,7 +39,13 @@ interface Cache
 	 * @param string $key
 	 * @return Results
 	 */
-	public function get(string $key): Results;
+	public function get(string $key, bool $check_lock = false): Results;
+
+	/**
+	 * @param string $key
+	 * @return Results
+	 */
+	public function getAndLock(string $key): Results;
 
 	/**
 	 * @param string $key

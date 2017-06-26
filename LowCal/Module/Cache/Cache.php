@@ -35,6 +35,32 @@ class Cache extends Module
 	protected $_connect_retry_delay = 0;
 
 	/**
+	 * @var string
+	 */
+	protected $_last_error_message = '';
+
+	/**
+	 * @var int
+	 */
+	protected $_last_error_number = 0;
+
+	/**
+	 * @return string
+	 */
+	public function getLastErrorMessage(): string
+	{
+		return $this->_last_error_message;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getLastErrorNumber(): int
+	{
+		return $this->_last_error_number;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function isConnected(): bool

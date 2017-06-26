@@ -87,6 +87,8 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 						}
 						else
 						{
+							$this->_is_connected = true;
+
 							break;
 						}
 					}
@@ -101,13 +103,13 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 					throw new \Exception($error_string, Codes::CACHE_CONNECT_ERROR);
 				}
 			}
-
-			$this->_is_connected = true;
-
-			return true;
+			else
+			{
+				$this->_is_connected = true;
+			}
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -119,7 +121,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 		{
 			$this->_cache_object->quit();
 
-			$this->_cache_object= '';
+			$this->_cache_object= null;
 
 			$this->_is_connected = false;
 
@@ -139,9 +141,80 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 
 	/**
 	 * @param string $key
+	 * @param null $cas_token
 	 * @return Results
 	 */
-	public function get(string $key): Results;
+	public function get(string $key, bool $check_lock = false, &$cas_token = null): Results
+	{
+		$Results = new Results($this->_Base);
+
+		try
+		{
+			$this->_Base->cache()->server($this->_server_identifier)->connect();
+
+			if($check_lock)
+			{
+				while($this->get($key.'_LOCK')->value)
+				{
+					usleep(mt_rand(1000,500000));
+				}
+			}
+
+			$this->_last_error_message = '';
+			$this->_last_error_number = '';
+
+			$Results->value = $this->_cache_object->get($key, null, $cas_token);
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('memcached', 'Exception during reading of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+		}
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $key
+	 * @return Results
+	 */
+	public function getAndLock(string $key): Results
+	{
+		$Results = new Results($this->_Base);
+
+		try
+		{
+			$this->_Base->cache()->server($this->_server_identifier)->connect();
+
+			while($this->get($key.'_LOCK')->value)
+			{
+				usleep(mt_rand(1000,500000));
+			}
+
+			if($this->add($key.'_LOCK')->value)
+			{
+				$this->_last_error_message = '';
+				$this->_last_error_number = '';
+
+				$Results->value = $this->_cache_object->get($key, null, $cas_token);
+			}
+			else
+			{
+				throw new \Exception('Cannot set lock key for '.$key.'.', Codes::CACHE_CANNOT_SET_LOCK);
+			}
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('memcached', 'Exception during reading of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+		}
+
+		return $Results;
+	}
 
 	/**
 	 * @param string $key

@@ -175,6 +175,16 @@ class Cache extends Module
 	 * @param string $server_identifier
 	 * @return Results
 	 */
+	public function getAndLock(string $query, string $server_identifier = ''): Results
+	{
+		return $this->interact($server_identifier)->getAndLock($query);
+	}
+
+	/**
+	 * @param string $query
+	 * @param string $server_identifier
+	 * @return Results
+	 */
 	public function set(string $query, string $server_identifier = ''): Results
 	{
 		return $this->interact($server_identifier)->set($query);
