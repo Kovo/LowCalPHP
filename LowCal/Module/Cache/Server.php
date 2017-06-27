@@ -247,14 +247,14 @@ class Server extends Module
 	{
 		switch($this->_type)
 		{
-			case Config::get('CACHE_MODE_LOCAL'):
+			case Config::get('CACHE_TYPE_LOCAL'):
 				$this->_interaction_object = new Local($this->_Base, $this->_identifier);
 				break;
-			case Config::get('CACHE_MODE_MEMCACHED'):
-				$this->_interaction_object = new Memcached($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
+			case Config::get('CACHE_TYPE_MEMCACHED'):
+				$this->_interaction_object = new Memcached($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay, Config::get('SETTING_CACHE_LOCK_EXPIRE_TIME_SECONDS'));
 				break;
-			case Config::get('CACHE_MODE_COUCHBASE'):
-				$this->_interaction_object = new Couchbase($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
+			case Config::get('CACHE_TYPE_COUCHBASE'):
+				$this->_interaction_object = new Couchbase($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay, Config::get('SETTING_CACHE_LOCK_EXPIRE_TIME_SECONDS'));
 				break;
 			default:
 				throw new \Exception('Invalid Cache type provided.', Codes::CACHE_BAD_TYPE);

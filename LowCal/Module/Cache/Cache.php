@@ -45,6 +45,11 @@ class Cache extends Module
 	protected $_last_error_number = 0;
 
 	/**
+	 * @var int
+	 */
+	protected $_lock_timeout_seconds = 0;
+
+	/**
 	 * @return string
 	 */
 	public function getLastErrorMessage(): string
@@ -58,6 +63,25 @@ class Cache extends Module
 	public function getLastErrorNumber(): int
 	{
 		return $this->_last_error_number;
+	}
+
+	/**
+	 * @param int $timeout_seconds
+	 * @return Cache
+	 */
+	public function setLockTimeout(int $timeout_seconds): Cache
+	{
+		$this->_lock_timeout_seconds = $timeout_seconds;
+
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getLockTimeout(): int
+	{
+		return $this->_lock_timeout_seconds;
 	}
 
 	/**

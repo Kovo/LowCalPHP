@@ -343,10 +343,10 @@ class Server extends Module
 	{
 		switch($this->_type)
 		{
-			case Config::get('DATABASE_MYSQLI'):
+			case Config::get('DATABASE_TYPE_MYSQLI'):
 				$this->_interaction_object = new Mysqli($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay, $this->_deadlock_first_interval_delay, $this->_deadlock_second_interval_delay, $this->_deadlock_first_interval_retries, $this->_deadlock_second_interval_retries);
 				break;
-			case Config::get('DATABASE_COUCHBASE'):
+			case Config::get('DATABASE_TYPE_COUCHBASE'):
 				$this->_interaction_object = new Couchbase($this->_Base, $this->_identifier, $this->_connect_retry_attempts, $this->_connect_retry_delay);
 				break;
 			default:
@@ -387,7 +387,7 @@ class Server extends Module
 	{
 		switch($this->_type)
 		{
-			case Config::get('DATABASE_MYSQLI'):
+			case Config::get('DATABASE_TYPE_MYSQLI'):
 				$this->connect();
 
 				if($this->_interaction_object->getDbObject()->select_db($db_name))
@@ -400,7 +400,7 @@ class Server extends Module
 
 					return false;
 				}
-			case Config::get('DATABASE_COUCHBASE'):
+			case Config::get('DATABASE_TYPE_COUCHBASE'):
 				$this->connect();
 
 				try
@@ -433,10 +433,10 @@ class Server extends Module
 	{
 		switch($this->_type)
 		{
-			case Config::get('DATABASE_MYSQLI'):
+			case Config::get('DATABASE_TYPE_MYSQLI'):
 				$this->connect();
 				return $this->_interaction_object->getDbObject()->change_user($user_name, $password, $db_name);
-			case Config::get('DATABASE_COUCHBASE'):
+			case Config::get('DATABASE_TYPE_COUCHBASE'):
 				return false;
 			default:
 				throw new \Exception('Invalid DB type provided.', Codes::DB_BAD_TYPE);

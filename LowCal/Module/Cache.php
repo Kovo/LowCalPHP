@@ -28,14 +28,14 @@ class Cache extends Module
 	/**
 	 * @param string $identifier
 	 * @param int $type
+	 * @param string $host
+	 * @param int $port
 	 * @param string $user
 	 * @param string $password
 	 * @param string $name
-	 * @param string $host
-	 * @param int $port
 	 * @param bool $auto_connect
 	 * @param bool $assign_active
-	 * @return Db
+	 * @return Cache
 	 * @throws \Exception
 	 */
 	public function addServer(string $identifier, int $type, string $host = 'localhost', int $port = 3306, string $user = '', string $password = '', string $name = '', bool $auto_connect = false, bool $assign_active = true): Cache
@@ -74,7 +74,7 @@ class Cache extends Module
 
 	/**
 	 * @param string $identifier
-	 * @return Db
+	 * @return Cache
 	 * @throws \Exception
 	 */
 	public function removeServer(string $identifier = ''): Cache
@@ -115,7 +115,7 @@ class Cache extends Module
 
 	/**
 	 * @param string $identifier
-	 * @return Db
+	 * @return Cache
 	 * @throws \Exception
 	 */
 	public function setActiveServerIdentifier(string $identifier): Cache
@@ -161,62 +161,53 @@ class Cache extends Module
 	}
 
 	/**
-	 * @param string $query
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $set_lock
+	 * @param null $cas_token
 	 * @param string $server_identifier
 	 * @return Results
 	 */
-	public function get(string $query, string $server_identifier = ''): Results
+	public function get(string $key, bool $check_lock = false, bool $set_lock = false, &$cas_token = null, string $server_identifier = ''): Results
 	{
-		return $this->interact($server_identifier)->get($query);
+		return $this->interact($server_identifier)->get($key, $check_lock, $set_lock, $cas_token);
 	}
 
 	/**
-	 * @param string $query
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
 	 * @param string $server_identifier
-	 * @return Results
+	 * @return bool
 	 */
-	public function getAndLock(string $query, string $server_identifier = ''): Results
+	public function set(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $server_identifier = ''): bool
 	{
-		return $this->interact($server_identifier)->getAndLock($query);
+		return $this->interact($server_identifier)->set($key, $value, $timeout, $delete_lock);
 	}
 
 	/**
-	 * @param string $query
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
 	 * @param string $server_identifier
-	 * @return Results
+	 * @return bool
 	 */
-	public function set(string $query, string $server_identifier = ''): Results
+	public function add(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $server_identifier = ''): bool
 	{
-		return $this->interact($server_identifier)->set($query);
+		return $this->interact($server_identifier)->add($key, $value, $timeout, $delete_lock);
 	}
 
 	/**
-	 * @param string $query
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $delete_lock
 	 * @param string $server_identifier
-	 * @return Results
+	 * @return bool
 	 */
-	public function add(string $query, string $server_identifier = ''): Results
+	public function delete(string $key, bool $check_lock = false, bool $delete_lock = false, string $server_identifier = ''): bool
 	{
-		return $this->interact($server_identifier)->add($query);
-	}
-
-	/**
-	 * @param string $query
-	 * @param string $server_identifier
-	 * @return Results
-	 */
-	public function update(string $query, string $server_identifier = ''): Results
-	{
-		return $this->interact($server_identifier)->update($query);
-	}
-
-	/**
-	 * @param string $query
-	 * @param string $server_identifier
-	 * @return Results
-	 */
-	public function delete(string $query, string $server_identifier = ''): Results
-	{
-		return $this->interact($server_identifier)->delete($query);
+		return $this->interact($server_identifier)->delete($key, $check_lock, $delete_lock);
 	}
 }

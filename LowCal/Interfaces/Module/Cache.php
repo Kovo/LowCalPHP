@@ -37,37 +37,35 @@ interface Cache
 
 	/**
 	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $set_lock
 	 * @return Results
 	 */
-	public function get(string $key, bool $check_lock = false): Results;
+	public function get(string $key, bool $check_lock = false, bool $set_lock = false): Results;
 
 	/**
 	 * @param string $key
-	 * @return Results
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @return bool
 	 */
-	public function getAndLock(string $key): Results;
+	public function set(string $key, $value, int $timeout = 0, bool $delete_lock = false): bool;
 
 	/**
 	 * @param string $key
-	 * @return Results
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @return bool
 	 */
-	public function set(string $key): Results;
+	public function add(string $key, $value, int $timeout = 0, bool $delete_lock = false): bool;
 
 	/**
 	 * @param string $key
-	 * @return Results
+	 * @param bool $check_lock
+	 * @param bool $delete_lock
+	 * @return bool
 	 */
-	public function add(string $key): Results;
-
-	/**
-	 * @param string $key
-	 * @return Results
-	 */
-	public function update(string $key): Results;
-
-	/**
-	 * @param string $key
-	 * @return Results
-	 */
-	public function delete(string $key): Results;
+	public function delete(string $key, bool $check_lock = false, bool $delete_lock = false): bool;
 }
