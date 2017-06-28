@@ -133,7 +133,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('local', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local_cache', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 		}
 
 		return $Results;
@@ -188,7 +188,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('local', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local_cache', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}
@@ -234,7 +234,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('local', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local_cache', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}
@@ -279,7 +279,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('local', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local_cache', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}

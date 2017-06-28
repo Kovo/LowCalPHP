@@ -434,14 +434,14 @@ class Request extends Module
 					continue;
 				}
 
-				$keyValuePair = explode('=', $param, 2);
+				$key_value_pair = explode('=', $param, 2);
 
-				$parts[] = (isset($keyValuePair[1])?
-					rawurlencode(urldecode($keyValuePair[0])).'='.rawurlencode(urldecode($keyValuePair[1])):
-					rawurlencode(urldecode($keyValuePair[0]))
+				$parts[] = (isset($key_value_pair[1])?
+					rawurlencode(urldecode($key_value_pair[0])).'='.rawurlencode(urldecode($key_value_pair[1])):
+					rawurlencode(urldecode($key_value_pair[0]))
 				);
 
-				$order[] = urldecode($keyValuePair[0]);
+				$order[] = urldecode($key_value_pair[0]);
 			}
 
 			array_multisort($order, SORT_ASC, $parts);

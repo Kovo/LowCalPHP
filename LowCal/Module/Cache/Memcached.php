@@ -185,6 +185,11 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 		}
 		catch(\Exception $e)
 		{
+			if($e->getCode() === Codes::CACHE_CANNOT_SET_LOCK)
+			{
+				throw new \Exception($e->getMessage(), $e->getCode());
+			}
+
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 

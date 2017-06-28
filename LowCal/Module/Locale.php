@@ -99,6 +99,21 @@ class Locale extends Module
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function languagesExist(): bool
+	{
+		if(empty($this->_languages))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	/**
 	 * @param string $localeoverride
 	 * @return Locale
 	 * @throws \Exception
