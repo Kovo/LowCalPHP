@@ -33,6 +33,11 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	protected $_deadlock_second_interval_retries = 0;
 
 	/**
+	 * @var null|\mysqli
+	 */
+	protected $_db_object = null;
+
+	/**
 	 * Mysqli constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace LowCal\Module\Cache;
 use LowCal\Base;
+use LowCal\Helper\Codes;
 use LowCal\Interfaces\Cache;
 
 /**
@@ -10,6 +11,11 @@ use LowCal\Interfaces\Cache;
  */
 class Local extends \LowCal\Module\Cache\Cache implements Cache
 {
+	/**
+	 * @var null|Local
+	 */
+	protected $_cache_object = null;
+
 	/**
 	 * @var array
 	 */
@@ -84,26 +90,23 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $set_lock
-	 * @param null $cas_token
 	 * @return Results
 	 */
-	public function get(string $key, bool $check_lock = false, bool $set_lock = false, &$cas_token = null): Results
+	public function get(string $key, bool $check_lock = false, bool $set_lock = false): Results
 	{
 		$Results = new Results($this->_Base);
 
 		try
 		{
-			$this->_Base->cache()->server($this->_server_identifier)->connect();
-
 			if($check_lock)
 			{
-				while($this->_cache_object->get($key.'_LOCK'))
+				while($this->_checkLock($key.'_LOCK'))
 				{
-					usleep(mt_rand(1000,500000));
+					sleep(1);
 				}
 			}
 
-			if($set_lock && !$this->_cache_object->add($key.'_LOCK', true, $this->_lock_timeout_seconds))
+			if($set_lock && !$this->add($key.'_LOCK', true, $this->_lock_timeout_seconds))
 			{
 				throw new \Exception('Cannot set lock key for '.$key.'.', Codes::CACHE_CANNOT_SET_LOCK);
 			}
@@ -111,17 +114,48 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = '';
 			$this->_last_error_number = '';
 
-			$Results->value = $this->_cache_object->get($key, null, $cas_token);
+			if(array_key_exists($key, $this->_cache_bucket))
+			{
+				if($this->_cache_bucket[$key]['timeout'] === 0 || time() < $this->_cache_bucket[$key]['timeout'])
+				{
+					$Results->value = $this->_cache_bucket[$key]['value'];
+				}
+				else
+				{
+					$this->_cache_bucket[$key]['value'] = null;
+					$this->_cache_bucket[$key] = null;
+					unset($this->_cache_bucket[$key]);
+				}
+			}
 		}
 		catch(\Exception $e)
 		{
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('memcached', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 		}
 
 		return $Results;
+	}
+
+	/**
+	 * @param string $key
+	 * @return bool
+	 */
+	protected function _checkLock(string $key): bool
+	{
+		if(isset($this->_cache_locks[$key]))
+		{
+			if(time() < $this->_cache_locks[$key])
+			{
+				return true;
+			}
+
+			unset($this->_cache_locks[$key]);
+		}
+
+		return false;
 	}
 
 	/**
@@ -137,32 +171,24 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 		{
 			$this->_Base->cache()->server($this->_server_identifier)->connect();
 
-			if($this->_cache_object->set($key, $value, $timeout))
+			$this->_cache_bucket[$key] = array(
+				'timeout' => ($timeout==0?0:time()+$timeout),
+				'value' => $value
+			);
+
+			if($delete_lock)
 			{
-				if($delete_lock)
-				{
-					$this->_cache_object->delete($key.'_LOCK');
-				}
-
-				$this->_last_error_message = '';
-				$this->_last_error_number = '';
-
-				return true;
+				$this->delete($key.'_LOCK');
 			}
-			else
-			{
-				$this->_last_error_message = $this->_cache_object->getResultMessage();
-				$this->_last_error_number = $this->_cache_object->getResultCode();
 
-				return false;
-			}
+			return true;
 		}
 		catch(\Exception $e)
 		{
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('memcached', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}
@@ -181,22 +207,24 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 		{
 			$this->_Base->cache()->server($this->_server_identifier)->connect();
 
-			if($this->_cache_object->add($key, $value, $timeout))
+			if(!array_key_exists($key, $this->_cache_bucket))
 			{
+				$this->_cache_bucket[$key] = array(
+					'timeout' => ($timeout==0?0:time()+$timeout),
+					'value' => $value
+				);
+
 				if($delete_lock)
 				{
-					$this->_cache_object->delete($key.'_LOCK');
+					$this->delete($key.'_LOCK');
 				}
-
-				$this->_last_error_message = '';
-				$this->_last_error_number = '';
 
 				return true;
 			}
 			else
 			{
-				$this->_last_error_message = $this->_cache_object->getResultMessage();
-				$this->_last_error_number = $this->_cache_object->getResultCode();
+				$this->_last_error_message = 'Cannot add key/value pair.';
+				$this->_last_error_number = Codes::CACHE_CANNOT_SET_KEYVALUE;
 
 				return false;
 			}
@@ -206,7 +234,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('memcached', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}
@@ -226,38 +254,32 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 
 			if($check_lock)
 			{
-				while($this->_cache_object->get($key.'_LOCK'))
+				while($this->_checkLock($key.'_LOCK'))
 				{
-					usleep(mt_rand(1000,500000));
+					sleep(1);
 				}
 			}
 
-			if($this->_cache_object->delete($key))
+			if(array_key_exists($key, $this->_cache_bucket))
 			{
-				if($delete_lock)
-				{
-					$this->_cache_object->delete($key.'_LOCK');
-				}
-
-				$this->_last_error_message = '';
-				$this->_last_error_number = '';
-
-				return true;
+				$this->_cache_bucket[$key]['value'] = null;
+				$this->_cache_bucket[$key] = null;
+				unset($this->_cache_bucket[$key]);
 			}
-			else
+
+			if($delete_lock)
 			{
-				$this->_last_error_message = $this->_cache_object->getResultMessage();
-				$this->_last_error_number = $this->_cache_object->getResultCode();
-
-				return false;
+				$this->delete($key.'_LOCK');
 			}
+
+			return true;
 		}
 		catch(\Exception $e)
 		{
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('memcached', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			$this->_Base->log()->add('local', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 
 			return false;
 		}

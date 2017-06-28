@@ -29,6 +29,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	protected $_n1ql_query_adhoc = true;
 
 	/**
+	 * @var null|\Couchbase\Bucket
+	 */
+	protected $_db_object = null;
+
+	/**
 	 * Couchbase constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier

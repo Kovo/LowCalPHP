@@ -17,11 +17,6 @@ class Db extends Module
 	protected $_is_connected = false;
 
 	/**
-	 * @var null|\mysqli|\Couchbase\Bucket
-	 */
-	protected $_db_object = null;
-
-	/**
 	 * @var string
 	 */
 	protected $_server_identifier = '';

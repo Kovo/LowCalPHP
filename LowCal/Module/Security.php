@@ -560,7 +560,7 @@ class Security extends Module
 	 */
 	public function regenerateSalt(): string
 	{
-		return Strings::createCode(mt_rand(40,45), Strings::ALPHANUMERIC_PLUS);
+		return Strings::createCode(random_int(40,45), Strings::ALPHANUMERIC_PLUS);
 	}
 
 	/**
@@ -577,21 +577,21 @@ class Security extends Module
 	public function regeneratePoisonConstraints(): array
 	{
 		return array(
-			array(mt_rand(0,5),mt_rand(1,2)),
-			array(mt_rand(8,12),mt_rand(1,2)),
-			array(mt_rand(13,20),mt_rand(1,2)),
-			array(mt_rand(22,34),mt_rand(1,2)),
-			array(mt_rand(35,48),mt_rand(1,2)),
-			array(mt_rand(49,65),mt_rand(1,2)),
-			array(mt_rand(68,80),mt_rand(1,2)),
-			array(mt_rand(85,124),mt_rand(1,2)),
-			array(mt_rand(135,287),mt_rand(1,2)),
-			array(mt_rand(289,555),mt_rand(1,2)),
-			array(mt_rand(580,987),mt_rand(1,2)),
-			array(mt_rand(999,8754),mt_rand(1,2)),
-			array(mt_rand(9000,89547),mt_rand(1,3)),
-			array(mt_rand(99853,985412),mt_rand(1,2)),
-			array(mt_rand(998541,1245551),mt_rand(1,3))
+			array(random_int(0,5),random_int(1,2)),
+			array(random_int(8,12),random_int(1,2)),
+			array(random_int(13,20),random_int(1,2)),
+			array(random_int(22,34),random_int(1,2)),
+			array(random_int(35,48),random_int(1,2)),
+			array(random_int(49,65),random_int(1,2)),
+			array(random_int(68,80),random_int(1,2)),
+			array(random_int(85,124),random_int(1,2)),
+			array(random_int(135,287),random_int(1,2)),
+			array(random_int(289,555),random_int(1,2)),
+			array(random_int(580,987),random_int(1,2)),
+			array(random_int(999,8754),random_int(1,2)),
+			array(random_int(9000,89547),random_int(1,3)),
+			array(random_int(99853,985412),random_int(1,2)),
+			array(random_int(998541,1245551),random_int(1,3))
 		);
 	}
 

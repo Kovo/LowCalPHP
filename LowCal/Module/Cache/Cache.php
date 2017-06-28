@@ -15,11 +15,6 @@ class Cache extends Module
 	protected $_is_connected = false;
 
 	/**
-	 * @var null|\Memcached|\Couchbase\Bucket|Local
-	 */
-	protected $_cache_object = null;
-
-	/**
 	 * @var string
 	 */
 	protected $_server_identifier = '';

@@ -169,7 +169,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 			{
 				while($this->_cache_object->get($key.'_LOCK'))
 				{
-					usleep(mt_rand(1000,500000));
+					usleep(random_int(1000,500000));
 				}
 			}
 
@@ -298,7 +298,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 			{
 				while($this->_cache_object->get($key.'_LOCK'))
 				{
-					usleep(mt_rand(1000,500000));
+					usleep(random_int(1000,500000));
 				}
 			}
 

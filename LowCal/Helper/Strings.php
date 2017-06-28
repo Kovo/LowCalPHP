@@ -31,7 +31,7 @@ class Strings
 	 * @param bool $regenerateSeed
 	 * @return string
 	 */
-	public static function createCode(int $length, int $type = self::ALPHANUMERIC, bool $regenerateSeed = true): string
+	public static function createCode(int $length, int $type = self::ALPHANUMERIC): string
 	{
 		if($type === self::ALPHANUMERIC)
 		{
@@ -48,21 +48,11 @@ class Strings
 
 		$amount_chars = strlen($chars);
 
-		if($regenerateSeed)
-		{
-			list($usec, $sec) = explode(' ', microtime());
-			$seed = (float) $sec + ((float) $usec * mt_rand(mt_rand(1,1000000000),mt_rand(1000000001,2000000000)));
-
-			mt_srand(
-				(int)$seed+mt_rand(mt_rand(1,1000000000),mt_rand(1000000001,2000000000))
-			);
-		}
-
 		$pass = '';
 
 		for($i=0;$i<$length;$i++)
 		{
-			$num = mt_rand()%$amount_chars;
+			$num = random_int(0,PHP_INT_MAX)%$amount_chars;
 			$tmp = substr($chars, $num, 1);
 			$pass = $pass.$tmp;
 		}
