@@ -11,21 +11,25 @@ use LowCal\Module\Cache\Server;
 
 /** 
  * Class Cache
+ * The main cache module.
  * @package LowCal\Module
  */
 class Cache extends Module
 {
 	/**
+	 * Array of registered cache servers.
 	 * @var array
 	 */
 	protected $_servers = array();
 
 	/**
+	 * The current active server id the cache module will reference.
 	 * @var null|string
 	 */
 	protected $_active_server_id = null;
 
 	/**
+	 * Register a server with the cache module.
 	 * @param string $identifier
 	 * @param int $type
 	 * @param string $host
@@ -73,6 +77,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Unregister a registered server. Will also try to disconnect the target cache connection.
 	 * @param string $identifier
 	 * @return Cache
 	 * @throws \Exception
@@ -106,6 +111,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Get the active server ID.
 	 * @return null|string
 	 */
 	public function getActiveServerIdentifier(): ?string
@@ -114,6 +120,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Set the active server ID.
 	 * @param string $identifier
 	 * @return Cache
 	 * @throws \Exception
@@ -131,6 +138,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Returns the active server object for further interaction.
 	 * @param string $identifier
 	 * @return Server
 	 * @throws \Exception
@@ -152,6 +160,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Returns the interaction object from the server object for further interaction.
 	 * @param string $identifier
 	 * @return Memcached|Couchbase|null|Local
 	 */
@@ -161,6 +170,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Abstracted get method.
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $set_lock
@@ -174,6 +184,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Abstracted set method.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -187,6 +198,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Abstracted add method.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -200,6 +212,7 @@ class Cache extends Module
 	}
 
 	/**
+	 * Abstracted delete method.
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $delete_lock

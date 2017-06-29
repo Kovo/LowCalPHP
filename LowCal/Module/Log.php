@@ -6,26 +6,31 @@ use LowCal\Helper\IO;
 
 /** 
  * Class Log
+ * The main Log module.
  * @package LowCal\Module
  */
 class Log extends Module
 {
 	/**
+	 * REGEX pattern used to identify log files when rotating.
 	 * @var string
 	 */
 	const REGEX_LOG_PATTERN = "#(?:.*)-([0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1]))\\.log#";
 
 	/**
+	 * Flag used for the type of log being written to.
 	 * @var int
 	 */
 	const TYPE_FILE = 1;
 
 	/**
+	 * Registry of log files.
 	 * @var array
 	 */
 	protected $_log_files = array();
 
 	/**
+	 * Registers a log and will rotate if necessary/possible.
 	 * @param string $identifier
 	 * @param string $directory
 	 * @param bool $rotate
@@ -105,6 +110,7 @@ class Log extends Module
 	}
 
 	/**
+	 * Write to a registered log.
 	 * @param string $identifier
 	 * @param string $message
 	 * @return Log
@@ -128,6 +134,7 @@ class Log extends Module
 	}
 
 	/**
+	 * Write to a registered log file.
 	 * @param string $message
 	 * @param string $directory
 	 * @param string $filename

@@ -5,11 +5,13 @@ use LowCal\Base;
 
 /**
  * Class Module
+ * The core class used by many modules and submodules.
  * @package LowCal\Module
  */
 class Module
 {
 	/**
+	 * LowCal Base object is stored here.
 	 * @var null|Base
 	 */
 	protected $_Base = null;

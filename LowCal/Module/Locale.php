@@ -1,31 +1,76 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 
 /**
  * Class Locale
+ * The main Locale module class.
  * @package LowCal\Module
  */
 class Locale extends Module
 {
 	/**
+	 * All loaded translations are stored in this array.
 	 * @var array
 	 */
 	protected $_translations = array();
 
 	/**
+	 * A registry of defined languages.
 	 * @var array
 	 */
 	protected $_languages = array();
 
 	/**
+	 * Return the short-hand of the current language.
 	 * @var string
 	 */
 	protected $_current_locale = '';
 
 	/**
+	 * The base translation dir used for loading files.
+	 * @var string
+	 */
+	protected $_translations_dir = '';
+
+	/**
+	 * Locale constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+
+		$this->_translations_dir = Config::get('TRANSLATIONS_DIR');
+	}
+
+	/**
+	 * Set the base translations directory.
+	 * @param string $directory
+	 * @return Locale
+	 */
+	public function setTranslationsDirectory(string $directory): Locale
+	{
+		$this->_translations_dir = $directory;
+
+		return $this;
+	}
+
+	/**
+	 * Returns current translations base directory.
+	 * @return string
+	 */
+	public function getTranslationsDirectory(): string
+	{
+		return $this->_translations_dir;
+	}
+
+	/**
+	 * Get an array of exposed translations keys.
+	 * To expose a translation, make sure its key starts with "exposed".
 	 * @return array
 	 */
 	public function getExposed(): array
@@ -47,6 +92,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Register a language.
 	 * @param string $shortForm
 	 * @param string $longForm
 	 * @param bool $autoload
@@ -65,6 +111,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Set the current language by short-hand id.
 	 * @param string $shortform
 	 * @param bool $autoload
 	 * @return Locale
@@ -83,6 +130,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Check and see if language exists.
 	 * @param string $lang
 	 * @return bool
 	 */
@@ -99,6 +147,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Check and see if any language exists.
 	 * @return bool
 	 */
 	public function languagesExist(): bool
@@ -114,6 +163,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Load a translation file based on active language short-hand.
 	 * @param string $localeoverride
 	 * @return Locale
 	 * @throws \Exception
@@ -122,9 +172,9 @@ class Locale extends Module
 	{
 		$short_locale = ($localeoverride===''?$this->_current_locale:$this->getShortLocaleId($localeoverride));
 
-		if(file_exists(Config::get('TRANSLATIONS_DIR').$short_locale.'.php'))
+		if(file_exists($this->_translations_dir.$short_locale.'.php'))
 		{
-			require_once Config::get('TRANSLATIONS_DIR').$short_locale.'.php';
+			require_once $this->_translations_dir.$short_locale.'.php';
 
 			if(!isset($this->_translations[$short_locale]))
 			{
@@ -145,6 +195,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Add another translations file not located in the base directory for translations.
 	 * @param string $file
 	 * @param string $localeoverride
 	 * @return Locale
@@ -177,6 +228,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Get short-hand id for provided language identifier (if it is registered).
 	 * @param string $locale
 	 * @return string
 	 */
@@ -198,6 +250,7 @@ class Locale extends Module
 
 
 	/**
+	 * Get long-hand id for provided language identifier (if it is registered).
 	 * @param string $locale
 	 * @return string
 	 */
@@ -218,6 +271,8 @@ class Locale extends Module
 	}
 
 	/**
+	 * Return the translation based on current active language and key.
+	 * You can provide replacements to drop into the translation string as well. Replacements are identified as: %replace me%
 	 * @param string $key
 	 * @param array $replacements
 	 * @param string $locale_override
@@ -249,6 +304,7 @@ class Locale extends Module
 	}
 
 	/**
+	 * Get current locale id.
 	 * @return string
 	 */
 	public function getCurrentLocale(): string

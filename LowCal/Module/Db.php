@@ -10,21 +10,25 @@ use LowCal\Module\Db\Server;
 
 /** 
  * Class Db
+ * The main DB module.
  * @package LowCal\Module
  */
 class Db extends Module
 {
 	/**
+	 * Array of registered cache servers.
 	 * @var array
 	 */
 	protected $_servers = array();
 
 	/**
+	 * The current active server id the db module will reference.
 	 * @var null|string
 	 */
 	protected $_active_server_id = null;
 
 	/**
+	 * Register a server with the db module.
 	 * @param string $identifier
 	 * @param int $type
 	 * @param string $user
@@ -76,6 +80,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Unregister a registered server. Will also try to disconnect the target db connection.
 	 * @param string $identifier
 	 * @return Db
 	 * @throws \Exception
@@ -109,6 +114,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Get the active server ID.
 	 * @return null|string
 	 */
 	public function getActiveServerIdentifier(): ?string
@@ -117,6 +123,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Set the active server ID.
 	 * @param string $identifier
 	 * @return Db
 	 * @throws \Exception
@@ -134,6 +141,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Returns the active server object for further interaction.
 	 * @param string $identifier
 	 * @return Server
 	 * @throws \Exception
@@ -155,6 +163,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Returns the interaction object from the server object for further interaction.
 	 * @param string $identifier
 	 * @return Couchbase|Mysqli|null
 	 */
@@ -164,6 +173,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted query method.
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
@@ -174,6 +184,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted select method.
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
@@ -184,6 +195,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted insert method.
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
@@ -194,6 +206,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted update method.
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
@@ -204,6 +217,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted delete method.
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
@@ -214,6 +228,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted sanitization method targeted for numeric values.
 	 * @param $value
 	 * @param int $decimal_places
 	 * @param string $server_identifier
@@ -225,6 +240,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted sanitization method targeted for non-numeric values.
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
