@@ -7,21 +7,25 @@ use LowCal\Module\View\PHP;
 
 /**
  * Class View
+ * This is the main View module class. It handles registering and interacting with different templating engines.
  * @package LowCal\Module
  */
 class View extends Module
 {
 	/**
+	 * The view engine type.
 	 * @var null|int
 	 */
 	protected $_engine_type = null;
 
 	/**
+	 * The view engine object.
 	 * @var null|PHP
 	 */
 	protected $_engine_object = null;
 
 	/**
+	 * Set the view engine type.
 	 * @param int $view_engine_id
 	 * @return View
 	 */
@@ -33,6 +37,7 @@ class View extends Module
 	}
 
 	/**
+	 * Get the view engine type.
 	 * @return int
 	 */
 	public function getViewEngineType(): int
@@ -41,6 +46,7 @@ class View extends Module
 	}
 
 	/**
+	 * Set the view engine object.
 	 * @param PHP $ViewEngine
 	 * @return View
 	 */
@@ -52,6 +58,7 @@ class View extends Module
 	}
 
 	/**
+	 * Get the view engine object.
 	 * @return PHP|null
 	 */
 	public function getViewEngineObject()
@@ -60,6 +67,7 @@ class View extends Module
 	}
 
 	/**
+	 * Abstracted render method.
 	 * @param string $view
 	 * @param array $parameters
 	 * @return string

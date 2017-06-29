@@ -2,66 +2,107 @@
 declare(strict_types=1);
 namespace LowCal\Module;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Strings;
 
 /**
  * Class Routing
+ * The main Routing module handles all routing for LowCal applications.
  * @package LowCal\Module
  */
 class Routing extends Module
 {
+	/**
+	 * Key value for pattern of a specific route.
+	 * @var int
+	 */
 	const PATTERN = 0;
+
+	/**
+	 * Key value for controller of a specific route.
+	 * @var int
+	 */
 	const CONTROLLER = 1;
+
+	/**
+	 * Key value for action of a specific route.
+	 * @var int
+	 */
 	const ACTION = 2;
+
+	/**
+	 * Key value for constraints of a specific route.
+	 * @var int
+	 */
 	const CONSTRAINTS = 3;
+
+	/**
+	 * Regex pattern used for detecting terms in route rules.
+	 * @var string
+	 */
 	const REGEX_TERM_PATTERN = "#(\\()?<[^>]++>(\\))?#";
+
+	/**
+	 * Rehex pattern used for detecting optional terms in route rules.
+	 * @var string
+	 */
 	const REGEX_TERM_OPT_PATTERN = "#\\(<[^>]++>\\)#";
 
 	/**
+	 * Array of registered routing rules.
 	 * @var array
 	 */
 	protected $_routes = array();
 
 	/**
+	 * The base site url.
 	 * @var string
 	 */
 	protected $_site_url = '';
 
 	/**
+	 * The base site uri (if necessary).
 	 * @var string
 	 */
 	protected $_base_uri = '';
 
 	/**
+	 * Whether the Routing module should throw exceptions when required terms are not provided.
 	 * @var bool
 	 */
 	protected $_throw_exception_for_req_terms_miss = true;
 
 	/**
+	 * Whether the Routing module should throw exceptions when constraints fail.
 	 * @var bool
 	 */
 	protected $_throw_exception_for_constraint_term_miss = true;
 
 	/**
+	 * Current route being considered.
 	 * @var string
 	 */
 	protected $_current_route = '';
 
 	/**
+	 * Current terms being considered.
 	 * @var array
 	 */
 	protected $_current_terms = array();
 
 	/**
+	 * Exposed routes.
 	 * @var array
 	 */
 	protected $_exposed = array();
 
 	/**
+	 * Whether secure routes will be enforced or not.
 	 * @var bool
 	 */
 	protected $_secure = false;
 
 	/**
+	 * Enforce secure routes.
 	 * @return Routing
 	 */
 	public function secure(): Routing
@@ -72,6 +113,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Do not enforce secure routes.
 	 * @return Routing
 	 */
 	public function unsecure(): Routing
@@ -82,6 +124,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * If secure routes are being enforced or not.
 	 * @return bool
 	 */
 	public function secured(): bool
@@ -90,6 +133,8 @@ class Routing extends Module
 	}
 
 	/**
+	 * This method allows you to override route rules by using GET parameters to identify which
+	 * controllers/methods should be executed.
 	 * @return null|string
 	 * @throws \Exception
 	 */
@@ -154,6 +199,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Parse the URI of the incoming request and see if it matches any routes.
 	 * @return array
 	 */
 	protected function _listenParseURI(): array
@@ -244,6 +290,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get current route being considered.
 	 * @return string
 	 */
 	public function getCurrentRoute(): string
@@ -252,6 +299,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Listen for incoming request and execute necessary methods to validate and respond.
 	 * @param bool $allow_get_override
 	 * @return null|string
 	 * @throws \Exception
@@ -293,6 +341,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Reroutes existing route with new terms.
 	 * @param string $identifier
 	 * @param array $terms
 	 * @return null|string
@@ -315,7 +364,6 @@ class Routing extends Module
 					$final_route_values['terms'] = array('lang' => '')+$final_route_values['terms'];
 				}
 
-				## Save current values
 				$this->_current_route = $identifier;
 				$this->_current_terms = (isset($final_route_values['terms'])?$final_route_values['terms']:array());
 
@@ -334,6 +382,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Final procedures after a valid route is found, including loading up controller, calling before, action, and after methods.
 	 * @param array $result_from_parse
 	 * @return null|string
 	 * @throws \Exception
@@ -394,6 +443,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Strip the base URI from the URL.
 	 * @param string $uri
 	 * @return string
 	 */
@@ -423,6 +473,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Add a new routing rule.
 	 * @param string $identifier
 	 * @param string $pattern
 	 * @param string $controller
@@ -433,10 +484,12 @@ class Routing extends Module
 	 */
 	public function add(string $identifier, string $pattern, string $controller, string $action, array $constraints = array(), bool $expose = false): Routing
 	{
-		if(!isset($this->_routes[$identifier]))
-		{
-			$this->set($identifier, $pattern, $controller, $action, $constraints);
-		}
+		$this->_routes[$identifier] = array(
+			self::PATTERN => $this->stripBothSlashes($pattern),
+			self::CONTROLLER => $controller,
+			self::ACTION => $action,
+			self::CONSTRAINTS => $constraints,
+		);
 
 		if($expose)
 		{
@@ -447,6 +500,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get site url.
 	 * @return string
 	 */
 	public function getSiteUrl(): string
@@ -455,6 +509,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get base uri.
 	 * @return string
 	 */
 	public function getBaseUri(): string
@@ -463,6 +518,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get exposed routes.
 	 * @return array
 	 */
 	public function getExposed(): array
@@ -471,26 +527,7 @@ class Routing extends Module
 	}
 
 	/**
-	 * @param string $identifier
-	 * @param string $pattern
-	 * @param string $controller
-	 * @param string $action
-	 * @param array $constraints
-	 * @return Routing
-	 */
-	public function set(string $identifier, string $pattern, string $controller, string $action, array $constraints): Routing
-	{
-		$this->_routes[$identifier] = array(
-			self::PATTERN => $this->stripBothSlashes($pattern),
-			self::CONTROLLER => $controller,
-			self::ACTION => $action,
-			self::CONSTRAINTS => $constraints,
-		);
-
-		return $this;
-	}
-
-	/**
+	 * Get action for specified route.
 	 * @param string $identifier
 	 * @return null|string
 	 */
@@ -507,6 +544,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get controller for specified route.
 	 * @param string $identifier
 	 * @return null|string
 	 */
@@ -523,6 +561,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Remove a routing rule.
 	 * @param string $identifier
 	 * @return Routing
 	 */
@@ -534,6 +573,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Set the site url.
 	 * @param string $base_url
 	 * @return Routing
 	 */
@@ -545,6 +585,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Set the site uri.
 	 * @param string $base_uri
 	 * @return Routing
 	 */
@@ -556,6 +597,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Enable exceptions for required term misses.
 	 * @return Routing
 	 */
 	public function enableExceptionsForReqTermMiss(): Routing
@@ -566,6 +608,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Disable exceptions for required term misses.
 	 * @return Routing
 	 */
 	public function disableExceptionsForReqTermMiss(): Routing
@@ -576,6 +619,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Enable exceptions for constraint failures.
 	 * @return Routing
 	 */
 	public function enableExceptionsForConstraintTermMiss(): Routing
@@ -586,6 +630,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Disable exceptions for constraint failures.
 	 * @return Routing
 	 */
 	public function disableExceptionsForConstraintTermMiss(): Routing
@@ -596,6 +641,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Strip trailing slash from provided url/uri.
 	 * @param string $string
 	 * @return string
 	 */
@@ -609,6 +655,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Add trailing slash from provided url/uri.
 	 * @param string $string
 	 * @return string
 	 */
@@ -622,6 +669,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Strip leading slash from provided url/uri.
 	 * @param string $string
 	 * @return string
 	 */
@@ -635,6 +683,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Add leading slash from provided url/uri.
 	 * @param string $string
 	 * @return string
 	 */
@@ -648,6 +697,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Strip leading and trailing slash from provided url/uri.
 	 * @param string $string
 	 * @return string
 	 */
@@ -660,6 +710,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get a fully qualified route with filled-in terms (usually for views).
 	 * @param string $identifier
 	 * @param array $terms
 	 * @param string|null $override_site_url
@@ -669,24 +720,24 @@ class Routing extends Module
 	 */
 	public function get(string $identifier, array $terms = array(), string $override_site_url = null, $secure = false): string
 	{
-		if($override_site_url === null)
-		{
-			$siteUrl = $this->_site_url;
-		}
-		else
-		{
-			$siteUrl = $override_site_url;
-		}
-
-		$siteUrl = $this->stripBaseUri($siteUrl);
-
-		if(($this->_secure || $secure) && $secure !== false)
-		{
-			$siteUrl = str_replace('http://','https://', $siteUrl);
-		}
-
 		if(isset($this->_routes[$identifier]))
 		{
+			if($override_site_url === null)
+			{
+				$siteUrl = $this->_site_url;
+			}
+			else
+			{
+				$siteUrl = $override_site_url;
+			}
+
+			$siteUrl = $this->stripBaseUri($siteUrl);
+
+			if(($this->_secure || $secure) && $secure !== false)
+			{
+				$siteUrl = str_replace('http://','https://', $siteUrl);
+			}
+
 			if(isset($this->_routes[$identifier][self::CONSTRAINTS]['lang']))
 			{
 				$terms['lang'] = $this->_Base->locale()->getCurrentLocale();
@@ -703,6 +754,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Fetch a raw routing rule.
 	 * @param string $identifier
 	 * @return string
 	 * @throws \Exception
@@ -720,6 +772,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Checks to see if detected part is a term or not.
 	 * @param string $part_string
 	 * @return bool
 	 */
@@ -736,6 +789,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Checks to see if detected part is an optional term or not.
 	 * @param string $part_string
 	 * @return bool
 	 */
@@ -752,6 +806,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Merges terms into route pattern if they are valid.
 	 * @param array $terms
 	 * @param string $pattern
 	 * @param array $constraints
@@ -826,6 +881,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Checks to see if provided term matches part of url/uri.
 	 * @param string $part_string
 	 * @param string $term
 	 * @return bool
@@ -836,6 +892,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Validates part/term with its intended constraint (if any).
 	 * @param array $constraints
 	 * @param string $term
 	 * @param string $value
@@ -856,6 +913,7 @@ class Routing extends Module
 	}
 
 	/**
+	 * Get request uri if possible.
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -863,11 +921,11 @@ class Routing extends Module
 	{
 		if(isset($_SERVER['REDIRECT_URL']))
 		{
-			return trim($_SERVER['REDIRECT_URL']);
+			return Strings::trim($_SERVER['REDIRECT_URL']);
 		}
 		elseif($_SERVER['REQUEST_URI'])
 		{
-			return trim($_SERVER['REQUEST_URI']);
+			return Strings::trim($_SERVER['REQUEST_URI']);
 		}
 		else
 		{

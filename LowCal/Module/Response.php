@@ -1,29 +1,35 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 
 /**
  * Class Response
+ * Main Response class used to set response variables, etc...
  * @package LowCal\Module
  */
 class Response extends Module
 {
 	/**
+	 * Headers to send with response.
 	 * @var array
 	 */
 	protected $_headers = array();
 
 	/**
+	 * Status code to send with response.
 	 * @var int
 	 */
 	protected $_status_code = 200;
 
 	/**
+	 * HTTP version to send with the response.
 	 * @var string
 	 */
 	protected $_http_version = '1.1';
 
 	/**
+	 * Array of http status codes.
 	 * @var array
 	 */
 	protected $_status_text = array(
@@ -90,6 +96,28 @@ class Response extends Module
 	);
 
 	/**
+	 * Response constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+
+		$headers_to_send = headers_list();
+
+		if(!empty($headers_to_send))
+		{
+			foreach($headers_to_send as $header)
+			{
+				$explode = explode(':', $header);
+
+				$this->_headers[array_shift($explode)] = implode(':', $explode);
+			}
+		}
+	}
+
+	/**
+	 * Set a header value.
 	 * @param string $name
 	 * @param string $value
 	 * @param bool $replace
@@ -106,6 +134,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Get set headers.
 	 * @return array
 	 */
 	public function getHeaders(): array
@@ -114,6 +143,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Get a specific set header.
 	 * @param string $name
 	 * @return string
 	 */
@@ -123,6 +153,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Redirect this request as opposed to responding to it directly.
 	 * @param string $url
 	 * @param bool $exit
 	 */
@@ -139,6 +170,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Set the http status.
 	 * @param int $code
 	 * @return Response
 	 */
@@ -152,6 +184,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Set the http version.
 	 * @param string $version
 	 * @return Response
 	 */
@@ -163,6 +196,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Get set status code.
 	 * @return int
 	 */
 	public function getStatusCode(): int
@@ -171,6 +205,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Get set http version.
 	 * @return string
 	 */
 	public function getHttpVersion(): string
@@ -179,6 +214,7 @@ class Response extends Module
 	}
 
 	/**
+	 * Get set status code text.
 	 * @return string
 	 */
 	public function getStatusText(): string

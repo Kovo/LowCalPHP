@@ -11,7 +11,7 @@ use LowCal\Module\Cache\Server;
 
 /** 
  * Class Cache
- * The main cache module.
+ * The main cache module used for connecting to and interacting with cache providers.
  * @package LowCal\Module
  */
 class Cache extends Module

@@ -8,66 +8,79 @@ use LowCal\Helper\Strings;
 
 /**
  * Class Security
+ * The main Security module handles all cryptographic processes in LowCal; providing methods for password hashing, etc...
  * @package LowCal\Module
  */
 class Security extends Module
 {
 	/**
 	 * Flag for two-way encryption.
+	 * @var int
 	 */
 	const TWO_WAY = 3;
 
 	/**
 	 * Flag for one-way encryption.
+	 * @var int
 	 */
 	const ONE_WAY = 4;
 
 	/**
 	 * Flag for strict hashing/encryption.
+	 * @var int
 	 */
 	const STRICT = 5;
 
 	/**
 	 * Custom rules flag array key for override hash.
+	 * @var int
 	 */
 	const HASH = 6;
 
 	/**
 	 * Custom rules flag array key for override salt.
+	 * @var int
 	 */
 	const SALT = 7;
 
 	/**
 	 * Custom rules flag array key for override poison constraints.
+	 * @var int
 	 */
 	const POISON_CONSTRAINTS = 8;
 
 	/**
 	 * Custom rules flag array key for override unique salt.
+	 * @var int
 	 */
 	const UNIQUE_SALT = 9;
 
 	/**
 	 * Flag to indicate encrypted string is poisoned.
+	 * @var int
 	 */
 	const DE_POISON = 10;
 
 	/**
+	 * Depth for rehashing.
 	 * @var int
 	 */
 	protected $_salt_depth = 1024;
 
 	/**
+	 * Default hash method.
 	 * @var string
 	 */
 	protected $_hash = 'md5';
 
 	/**
+	 * Default salt.
 	 * @var string
 	 */
 	protected $_salt = 'B^M#@^|>2x =<7r)t%M%y@X]8mK3b+9:e86.*6;|diL#&^|o$Ovu#K*Y>q!a<.r]_d#';
 
 	/**
+	 * Default poison constraints.
 	 * @var array
 	 */
 	protected $_poison_constraints = array(
@@ -89,6 +102,7 @@ class Security extends Module
 	);
 
 	/**
+	 * Default caesar hashing table "from".
 	 * @var array
 	 */
 	protected $_hash_table_from = array(
@@ -96,6 +110,7 @@ class Security extends Module
 	);
 
 	/**
+	 * Default caesar hashing table "to".
 	 * @var array
 	 */
 	protected $_hash_table_to = array(
@@ -104,35 +119,30 @@ class Security extends Module
 
 	/**
 	 * Clean everything (javascript tags, styling tags, comments, html tags, convert all <,> to html entities).
-	 *
 	 * @var int
 	 */
 	const CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES = 0;
 
 	/**
 	 * Clean everything (javascript tags, styling tags, comments, html tags).
-	 *
 	 * @var int
 	 */
 	const CLEAN_HTML_JS_STYLE_COMMENTS = 1;
 
 	/**
 	 * Clean almost everything (javascript tags, styling tags, comments).
-	 *
 	 * @var int
 	 */
 	const CLEAN_JS_STYLE_COMMENTS = 2;
 
 	/**
 	 * Clean some things (styling tags, comments).
-	 *
 	 * @var int
 	 */
 	const CLEAN_STYLE_COMMENTS = 3;
 
 	/**
 	 * Don't clean anything.
-	 *
 	 * @var int
 	 */
 	const CLEAN_NOTHING = false;
@@ -178,6 +188,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Two-way encrypt a string. Two-way encrypted strings can be de-crypted using LowCal's built-in encryption.
 	 * @param string $value
 	 * @return string
 	 */
@@ -187,6 +198,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Decrypt a two-way encrypted string.
 	 * @param string $value
 	 * @return string
 	 */
@@ -196,6 +208,8 @@ class Security extends Module
 	}
 
 	/**
+	 * One-way encrypt a string. These strings cannot be decrypted without access to your source code, and even then,
+	 * it would be very difficult.
 	 * @param string $value
 	 * @return string
 	 */
@@ -205,6 +219,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Compare an unencrypted string to a one-way encrypted string.
 	 * @param string $unhashed_value
 	 * @param string $hashed_comparison_value
 	 * @return bool
@@ -215,6 +230,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Compare an unencrypted string to a two-way encrypted string.
 	 * @param string $unhashed_value
 	 * @param string $hashed_comparison_value
 	 * @return bool
@@ -225,6 +241,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Underlying method used to compare string to encrypted strings.
 	 * @param string $input_string
 	 * @param string $comparison_hash
 	 * @param array $flags
@@ -253,6 +270,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Depoison a poisoned string.
 	 * @param string $input
 	 * @param array $constraints
 	 * @return string
@@ -271,6 +289,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Decrypt a string originally encrypted with LowCal.
 	 * @param string $input
 	 * @param array $flags
 	 * @param array $custom_rules
@@ -309,6 +328,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Encrypt a string.
 	 * @param string $input
 	 * @param array $flags
 	 * @param array $custom_rules
@@ -427,6 +447,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Poison a string.
 	 * @param string $input
 	 * @param array $constraints
 	 * @param int $type
@@ -450,11 +471,12 @@ class Security extends Module
 	}
 
 	/**
+	 * Check to see if detected domain is part of a authorized list (prevents certain types of application hijacking).
 	 * @throws \Exception
 	 */
 	public function domainCheck(): void
 	{
-		$server_name = trim($_SERVER['SERVER_NAME']);
+		$server_name = Strings::trim($_SERVER['SERVER_NAME']);
 
 		//domain protection prevents certain rare exploits, where attackers may play with the HEADER information
 		//this also helps redirect users when they type example.com instead of www.example.com
@@ -497,6 +519,8 @@ class Security extends Module
 	}
 
 	/**
+	 * This method returns a checksum you can use to make sure other installations using LowCal have the
+	 * same security settings.
 	 * @return string
 	 */
 	public function getChecksum(): string
@@ -524,6 +548,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Using a supplied checksum, this method will validate if this installation shares the same checksum.
 	 * @param string $checksum_string
 	 * @throws \Exception
 	 */
@@ -536,6 +561,8 @@ class Security extends Module
 	}
 
 	/**
+	 * Regenerate caesar "from" hash table. This will not change the current hash table, but instead provide
+	 * an array you can use in your configurations.
 	 * @return array
 	 */
 	public function regenerateHash(): array
@@ -548,6 +575,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Replace existing caesar hash table with provided array.
 	 * @param array $new_from_table_hash_array
 	 */
 	public function replaceHash(array $new_from_table_hash_array): void
@@ -556,6 +584,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Generate a new salt.
 	 * @return string
 	 */
 	public function regenerateSalt(): string
@@ -564,6 +593,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Replace existing salt.
 	 * @param string $new_salt
 	 */
 	public function replaceSalt(string $new_salt): void
@@ -572,6 +602,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Generate a new set of poison constraints. This will not replace the current poison constraints.
 	 * @return array
 	 */
 	public function regeneratePoisonConstraints(): array
@@ -596,6 +627,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Replace existing poison constraints.
 	 * @param array $new_constraints
 	 */
 	public function replacePoisonConstraints(array $new_constraints): void
@@ -604,6 +636,7 @@ class Security extends Module
 	}
 
 	/**
+	 * Replace rehash depth.
 	 * @param int $new_depth
 	 */
 	public function replaceRehashDepth(int $new_depth): void

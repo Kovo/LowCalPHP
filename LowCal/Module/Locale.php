@@ -7,7 +7,7 @@ use LowCal\Helper\Config;
 
 /**
  * Class Locale
- * The main Locale module class.
+ * The main Locale module class used for translations in views, among other places.
  * @package LowCal\Module
  */
 class Locale extends Module

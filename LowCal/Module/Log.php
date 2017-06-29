@@ -6,7 +6,7 @@ use LowCal\Helper\IO;
 
 /** 
  * Class Log
- * The main Log module.
+ * The main Log module used to register and write to different types of logs.
  * @package LowCal\Module
  */
 class Log extends Module

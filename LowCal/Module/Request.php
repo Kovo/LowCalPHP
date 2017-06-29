@@ -2,49 +2,59 @@
 declare(strict_types=1);
 namespace LowCal\Module;
 use LowCal\Base;
+use LowCal\Helper\Strings;
 
 /**
  * Class Request
+ * The Request module allows for interacting with request data.
  * @package LowCal\Module
  */
 class Request extends Module
 {
 	/**
+	 * Flag for if this request is ajax or not.
 	 * @var bool
 	 */
 	protected $_is_ajax = false;
 
 	/**
+	 * The query string for this request.
 	 * @var string
 	 */
 	protected $_query_string = '';
 
 	/**
+	 * The different media types assigned to this request.
 	 * @var array
 	 */
 	protected $_media_types = array();
 
 	/**
+	 * The different charsets assigned to this request.
 	 * @var array
 	 */
 	protected $_charsets = array();
 
 	/**
+	 * This request's encodings.
 	 * @var array
 	 */
 	protected $_encodings = array();
 
 	/**
+	 * This request's languages.
 	 * @var array
 	 */
 	protected $_languages = array();
 
 	/**
+	 * This request's referrer.
 	 * @var string
 	 */
 	protected $_referer = '';
 
 	/**
+	 * If this request is secure or not.
 	 * @var bool
 	 */
 	protected $_secure = false;
@@ -67,23 +77,29 @@ class Request extends Module
 		$this->_detectLanguages();
 	}
 
+	/**
+	 * Detects the referrer info if available.
+	 */
 	protected function _detectReferer(): void
 	{
 		$raw_data = $_SERVER['HTTP_REFERER'];
 
 		if($raw_data !== NULL)
 		{
-			$this->_referer = trim($raw_data);
+			$this->_referer = Strings::trim($raw_data);
 		}
 	}
 
+	/**
+	 * Detects if the request is using HTTPS.
+	 */
 	protected function _detectHttps(): void
 	{
 		$raw_data = $_SERVER['HTTPS'];
 
 		if($raw_data !== NULL)
 		{
-			$raw_data = strtolower(trim($raw_data));
+			$raw_data = strtolower(Strings::trim($raw_data));
 
 			if($raw_data !== '' && $raw_data !== 'off')
 			{
@@ -92,6 +108,9 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Extracts query string if available.
+	 */
 	protected function _detectQueryString(): void
 	{
 		$raw_data = $_SERVER['QUERY_STRING'];
@@ -102,13 +121,16 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Detects the media type info if available.
+	 */
 	protected function _detectMediaTypes(): void
 	{
 		$raw_data = $_SERVER['HTTP_ACCEPT'];
 
 		if($raw_data !== NULL)
 		{
-			$raw_data = trim($raw_data);
+			$raw_data = Strings::trim($raw_data);
 
 			if($raw_data !== '')
 			{
@@ -132,13 +154,16 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Detects the charset info if available.
+	 */
 	protected function _detectCharsets(): void
 	{
 		$raw_data = $_SERVER['HTTP_ACCEPT_CHARSET'];
 
 		if($raw_data !== NULL)
 		{
-			$raw_data = trim($raw_data);
+			$raw_data = Strings::trim($raw_data);
 
 			if($raw_data !== '')
 			{
@@ -162,13 +187,16 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Detects the encoding info if available.
+	 */
 	protected function _detectEncodings(): void
 	{
 		$raw_data = $_SERVER['HTTP_ACCEPT_ENCODING'];
 
 		if($raw_data !== NULL)
 		{
-			$raw_data = trim($raw_data);
+			$raw_data = Strings::trim($raw_data);
 
 			if($raw_data !== '')
 			{
@@ -192,13 +220,16 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Detects the language info if available.
+	 */
 	protected function _detectLanguages(): void
 	{
 		$raw_data = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 
 		if($raw_data !== NULL)
 		{
-			$raw_data = trim($raw_data);
+			$raw_data = Strings::trim($raw_data);
 
 			if($raw_data !== '')
 			{
@@ -222,6 +253,9 @@ class Request extends Module
 		}
 	}
 
+	/**
+	 * Detects if the request is ajax or not.
+	 */
 	protected function _detectAjax(): void
 	{
 		$serverXmlHttpVar = $_SERVER['HTTP_X_REQUESTED_WITH'];
@@ -230,13 +264,14 @@ class Request extends Module
 	}
 
 	/**
+	 * Parse the accept header for the specified header value.
 	 * @param string $header
 	 * @return array|null
 	 */
 	public function parseAcceptHeader(string $header): ?array
 	{
 		$return = NULL;
-		$header = str_replace(array("\r\n", "\r", "\n"), ' ', trim($header));
+		$header = str_replace(array("\r\n", "\r", "\n"), ' ', Strings::trim($header));
 		$types = explode(',', $header);
 		$types = array_map('trim', $types);
 
@@ -275,6 +310,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get accept options from header.
 	 * @param array $rule_set
 	 * @return array
 	 */
@@ -283,12 +319,12 @@ class Request extends Module
 		$precedence = 1;
 		$tokens = array();
 
-		$rule_set = array_map('trim', $rule_set);
+		$rule_set = array_map(array('\LowCal\Helper\Strings', 'trim'), $rule_set);
 
 		foreach($rule_set as $option)
 		{
 			$option = explode('=', $option);
-			$option = array_map('trim', $option);
+			$option = array_map(array('\LowCal\Helper\Strings', 'trim'), $option);
 
 			if($option[0] === 'q')
 			{
@@ -306,6 +342,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Return AJAX flag.
 	 * @return bool
 	 */
 	public function isAjax(): bool
@@ -314,6 +351,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected media types.
 	 * @return array
 	 */
 	public function getMediaTypes(): array
@@ -322,6 +360,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected charsets.
 	 * @return array
 	 */
 	public function getCharsets(): array
@@ -330,6 +369,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected encodings.
 	 * @return array
 	 */
 	public function getEncodings(): array
@@ -338,6 +378,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected languages.
 	 * @return array
 	 */
 	public function getLanguages(): array
@@ -346,6 +387,7 @@ class Request extends Module
 	}
 
 	/**
+	 * See if request is secure.
 	 * @return bool
 	 */
 	public function isSecure(): bool
@@ -354,6 +396,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected referrer.
 	 * @return string
 	 */
 	public function getReferer(): string
@@ -362,6 +405,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get detected ip address of requester.
 	 * @return string
 	 */
 	public function clientIpAddress(): string
@@ -391,6 +435,7 @@ class Request extends Module
 	}
 
 	/**
+	 * Get server's ip address.
 	 * @return string
 	 */
 	public function serverIpAddress(): string
@@ -415,12 +460,13 @@ class Request extends Module
 	}
 
 	/**
+	 * Cleans query string for validation purposes.
 	 * @param string $query_string
 	 * @return string
 	 */
 	public function cleanQueryString(string $query_string): string
 	{
-		$query_string = trim($query_string);
+		$query_string = Strings::trim($query_string);
 
 		if($query_string !== '')
 		{

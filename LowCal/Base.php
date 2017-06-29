@@ -15,51 +15,63 @@ use LowCal\Module\View;
 
 /**
  * Class Base
+ * The Base LowCal class. Most LowCal functionality begins here. Your application should always start with creating a new
+ * LowCal Base object. Your application should never have more than one Base object instantiated at a time, but the possibility
+ * is left open for you.
  * @package LowCal
  */
 class Base
 {
 	/**
+	 * The Security module object is stored here.
 	 * @var null|Security
 	 */
 	protected $_Security = null;
 
 	/**
+	 * The View module object is stored here.
 	 * @var null|View
 	 */
 	protected $_View = null;
 
 	/**
+	 * The Cache module object is stored here.
 	 * @var null|Cache
 	 */
 	protected $_Cache = null;
 
 	/**
+	 * The Db module object is stored here.
 	 * @var null|Db
 	 */
 	protected $_Db = null;
 
 	/**
+	 * The Locale module object is stored here.
 	 * @var null|Locale
 	 */
 	protected $_Locale = null;
 
 	/**
+	 * The Log module object is stored here.
 	 * @var null|Log
 	 */
 	protected $_Log = null;
 
 	/**
+	 * The Request module object is stored here.
 	 * @var null|Request
 	 */
 	protected $_Request = null;
 
 	/**
+	 * The Response module object is stored here.
 	 * @var null|Response
 	 */
 	protected $_Response = null;
 
 	/**
+	 * The Rotuing module object is stored here.
 	 * @var null|Routing
 	 */
 	protected $_Routing = null;
@@ -109,6 +121,8 @@ class Base
 	}
 
 	/**
+	 * This method compresses HTML output to save on bandwidth and decrease browser load times.
+	 * You can also define areas of your HTML that should not be compressed. Your HTML will require a
 	 * @param string $buffer
 	 * @return string
 	 */
@@ -150,6 +164,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Cache module object.
 	 * @return Cache
 	 */
 	public function cache(): Cache
@@ -163,6 +178,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Db module object.
 	 * @return Db
 	 */
 	public function db(): Db
@@ -176,6 +192,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Locale module object.
 	 * @return Locale
 	 */
 	public function locale(): Locale
@@ -189,6 +206,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Log module object.
 	 * @return Log
 	 */
 	public function log(): Log
@@ -202,6 +220,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Request module object.
 	 * @return Request
 	 */
 	public function request(): Request
@@ -215,6 +234,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Response module object.
 	 * @return Response
 	 */
 	public function response(): Response
@@ -228,6 +248,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Routing module object.
 	 * @return Routing
 	 */
 	public function routing(): Routing
@@ -241,6 +262,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated Security module object.
 	 * @return Security
 	 */
 	public function security(): Security
@@ -254,6 +276,7 @@ class Base
 	}
 
 	/**
+	 * Returns an instantiated View module object.
 	 * @return View
 	 */
 	public function view(): View

@@ -10,7 +10,7 @@ use LowCal\Module\Db\Server;
 
 /** 
  * Class Db
- * The main DB module.
+ * The main DB module used to connect to and interact with different db providers.
  * @package LowCal\Module
  */
 class Db extends Module
