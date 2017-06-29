@@ -6,11 +6,13 @@ use LowCal\Interfaces\View;
 
 /**
  * Class PHP
+ * This is the class for the PHP view engine.
  * @package LowCal\Module\View
  */
 class PHP extends \LowCal\Module\View\View implements View
 {
 	/**
+	 * This method will render the supplied view and expose any parameters to it.
 	 * @param string $view
 	 * @param array $parameters
 	 * @return String

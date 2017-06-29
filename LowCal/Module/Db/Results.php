@@ -6,45 +6,58 @@ use LowCal\Module\Module;
 
 /**
  * Class Results
+ * This class result holds all the information pertinent to a database query result.
  * @package LowCal\Module\Db
  */
 class Results extends Module
 {
 	/**
+	 * An array or mysqli_result object holding results.
 	 * @var array|\mysqli_result
 	 */
 	protected $_results = null;
 
 	/**
+	 * Result type used for faster result iteration.
 	 * @var null|string
 	 */
 	protected $_result_type = null;
 
 	/**
+	 * For results stored in an array, a flag used during iteration of the first value.
 	 * @var bool
 	 */
 	protected $_result_array_traversed = false;
 
 	/**
+	 * If possible, show how many rows were affected.
 	 * @var null|int
 	 */
 	protected $_affected_rows = null;
 
 	/**
+	 * If possible, show the insert id relevant to the result.
 	 * @var null|int
 	 */
 	protected $_insert_id = null;
 
 	/**
+	 * If possible, show the number of returned rows.
 	 * @var null|int
 	 */
 	protected $_returned_rows = null;
 
+	/**
+	 * Results destructor.
+	 */
 	function __destruct()
 	{
 		$this->free();
 	}
 
+	/**
+	 * Will free memory of result data.
+	 */
 	public function free(): void
 	{
 		if($this->_result_type === '\mysqli_result')
@@ -56,6 +69,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Set the number of affected rows.
 	 * @param int|null $rows
 	 * @return Results
 	 */
@@ -67,6 +81,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Set the last insert id.
 	 * @param int|null $insert_id
 	 * @return Results
 	 */
@@ -78,6 +93,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Set the number of returned rows.
 	 * @param int|null $returned_rows
 	 * @return Results
 	 */
@@ -89,6 +105,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Get the number of affected rows.
 	 * @return int|null
 	 */
 	public function getAffectedRows(): ?int
@@ -97,6 +114,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Get the last insert id.
 	 * @return int|null
 	 */
 	public function getInsertId(): ?int
@@ -105,6 +123,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Get the number of returned rows.
 	 * @return int|null
 	 */
 	public function getReturnedRows(): ?int
@@ -113,6 +132,8 @@ class Results extends Module
 	}
 
 	/**
+	 * Set the results. Should be either an array, or a mysqli_result object.
+	 * Generic objects will be converted into associative arrays.
 	 * @param $results
 	 * @return Results
 	 * @throws \Exception
@@ -147,6 +168,7 @@ class Results extends Module
 	}
 
 	/**
+	 * Return all results or the mysqli_result object.
 	 * @return array|\mysqli_result|null
 	 */
 	public function getResults()
@@ -155,6 +177,8 @@ class Results extends Module
 	}
 
 	/**
+	 * Get the next result from the result set. Results coming from arrays will always be wrapped in an array.
+	 * Null will be returned when no results are left.
 	 * @return array|null
 	 * @throws \Exception
 	 */

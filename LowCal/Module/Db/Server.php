@@ -7,81 +7,98 @@ use LowCal\Module\Module;
 
 /**
  * Class Server
+ * This server class maintains server specific information for the chosen db system.
+ * It abstracts from specific db classes to allow easy switching between different types of db systems.
  * @package LowCal\Module\Db
  */
 class Server extends Module
 {
 	/**
+	 * This server object's id.
 	 * @var null|string
 	 */
 	protected $_identifier = null;
 
 	/**
+	 * The type of db to be used.
 	 * @var null|int
 	 */
 	protected $_type = null;
 
 	/**
+	 * User to login with (if necessary).
 	 * @var string
 	 */
 	protected $_user = '';
 
 	/**
+	 * Password to login with (if necessary).
 	 * @var string
 	 */
 	protected $_password = '';
 
 	/**
+	 * Db Name/bucket to login with (if necessary).
 	 * @var string
 	 */
 	protected $_name = '';
 
 	/**
+	 * Host to login with (if necessary).
 	 * @var string
 	 */
 	protected $_host = '';
 
 	/**
+	 * Port to login with (if necessary).
 	 * @var null|int
 	 */
 	protected $_port = null;
 
 	/**
+	 * The amount of times LowCal will try to connect to the db server.
 	 * @var int
 	 */
 	protected $_connect_retry_attempts = 0;
 
 	/**
+	 * Delay in seconds between retry attempts.
 	 * @var int
 	 */
 	protected $_connect_retry_delay = 0;
 
 	/**
+	 * Delay in seconds between retrying cud operations in a deadlock state (level 1).
 	 * @var float
 	 */
 	protected $_deadlock_first_interval_delay = 0.0;
 
 	/**
+	 * Delay in seconds between retrying cud operations in a deadlock state (level 2).
 	 * @var float
 	 */
 	protected $_deadlock_second_interval_delay = 0.0;
 
 	/**
+	 * Amount of times cud operations in deadlock state should be retried before reducing delay.
 	 * @var int
 	 */
 	protected $_deadlock_first_interval_retries = 0;
 
 	/**
+	 * Amount of times cud operations in deadlock state should be retried before giving up.
 	 * @var int
 	 */
 	protected $_deadlock_second_interval_retries = 0;
 
 	/**
+	 * The interaction object is the current active database object (mysqli, etc...).
 	 * @var null|Mysqli|Couchbase
 	 */
 	protected $_interaction_object = null;
 
 	/**
+	 * Returns the state of the current database connection.
 	 * @return bool
 	 */
 	public function isConnected(): bool
@@ -90,6 +107,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get this server object's ID.
 	 * @return null|string
 	 */
 	public function getIdentifier(): ?string
@@ -98,6 +116,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db type.
 	 * @return int|null
 	 */
 	public function getType(): ?int
@@ -106,6 +125,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db user.
 	 * @return string
 	 */
 	public function getUser(): string
@@ -114,6 +134,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db password.
 	 * @return string
 	 */
 	public function getPassword(): string
@@ -122,6 +143,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db bucket/name.
 	 * @return string
 	 */
 	public function getName(): string
@@ -130,6 +152,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db host.
 	 * @return string
 	 */
 	public function getHost(): string
@@ -138,6 +161,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the db port.
 	 * @return int|null
 	 */
 	public function getPort(): ?int
@@ -146,6 +170,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current connection retry attempts setting.
 	 * @return int
 	 */
 	public function getConnectRetryAttempts(): int
@@ -154,6 +179,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current connection retry attempts delay setting.
 	 * @return int
 	 */
 	public function getConnectRetryDelay(): int
@@ -162,6 +188,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current deadlock delay (level 1) setting.
 	 * @return float
 	 */
 	public function getDeadlockFirstIntervalDelay(): float
@@ -170,6 +197,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current deadlock delay (level 2) setting.
 	 * @return float
 	 */
 	public function getDeadlockSecondIntervalDelay(): float
@@ -178,6 +206,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current deadlock retry (level 1) setting.
 	 * @return int
 	 */
 	public function getDeadlockFirstIntervalRetries(): int
@@ -186,6 +215,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get the current deadlock retry (level 2) setting.
 	 * @return int
 	 */
 	public function getDeadlockSecondIntervalRetries(): int
@@ -194,6 +224,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's ID.
 	 * @param string $identifier
 	 * @return Server
 	 */
@@ -205,6 +236,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db type.
 	 * @param int $type
 	 * @return Server
 	 */
@@ -216,6 +248,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db user.
 	 * @param string $user
 	 * @return Server
 	 */
@@ -227,6 +260,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db password.
 	 * @param string $password
 	 * @return Server
 	 */
@@ -238,6 +272,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db name/bucket.
 	 * @param string $name
 	 * @return Server
 	 */
@@ -249,6 +284,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db host.
 	 * @param string $host
 	 * @return Server
 	 */
@@ -260,6 +296,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db port.
 	 * @param int $port
 	 * @return Server
 	 */
@@ -271,6 +308,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db connect retry attempts.
 	 * @param int $connect_retry_attempts
 	 * @return Server
 	 */
@@ -282,6 +320,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db connect retry delay.
 	 * @param int $connect_retry_delay
 	 * @return Server
 	 */
@@ -293,6 +332,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db deadlock interval delay (level 1).
 	 * @param float $deadlock_first_interval_delay
 	 * @return Server
 	 */
@@ -304,6 +344,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db deadlock interval delay (level 2).
 	 * @param float $deadlock_second_interval_delay
 	 * @return Server
 	 */
@@ -315,6 +356,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db deadlock interval retries (level 1).
 	 * @param int $deadlock_first_interval_retries
 	 * @return Server
 	 */
@@ -326,6 +368,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set db deadlock interval retries (level 2).
 	 * @param int $deadlock_second_interval_retries
 	 * @return Server
 	 */
@@ -337,6 +380,8 @@ class Server extends Module
 	}
 
 	/**
+	 * Initialize db system.
+	 * This is a required step before using your chosen db provider.
 	 * @throws \Exception
 	 */
 	public function init(): void
@@ -355,6 +400,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Return the interaction object.
 	 * @return Couchbase|Mysqli|null
 	 */
 	public function getInteractionObject()
@@ -363,6 +409,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Connect to the db server.
 	 * @return bool
 	 */
 	public function connect(): bool
@@ -371,6 +418,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Disconnect from the db server.
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -379,6 +427,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Change the current database/bucket.
 	 * @param string $db_name
 	 * @return bool
 	 * @throws \Exception
@@ -423,6 +472,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Change the current user interacting with the database.
 	 * @param string $user_name
 	 * @param string $password
 	 * @param string|null $db_name

@@ -9,26 +9,31 @@ use LowCal\Interfaces\Db;
 
 /**
  * Class Couchbase
+ * This couchbase class implements rdbm-centric functionality to mimic what Mysql does.
  * @package LowCal\Module\Db
  */
 class Couchbase extends \LowCal\Module\Db\Db implements Db
 {
 	/**
+	 * The couchbase cluster object is stored here.
 	 * @var null|\Couchbase\Cluster
 	 */
 	protected $_cluster_object = null;
 
 	/**
+	 * N1QL query consistency flag.
 	 * @var int
 	 */
 	protected $_n1ql_query_consistency = N1qlQuery::NOT_BOUNDED;
 
 	/**
+	 * Whether N1QL queries should prepared or not at the SDK level.
 	 * @var bool
 	 */
 	protected $_n1ql_query_adhoc = true;
 
 	/**
+	 * The couchbase bucket object is stored here.
 	 * @var null|\Couchbase\Bucket
 	 */
 	protected $_db_object = null;
@@ -49,12 +54,16 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 		$this->_connect_retry_delay = $connect_retry_delay;
 	}
 
+	/**
+	 * Couchbase destructor.
+	 */
 	function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
+	 * Set N1QL consistency to NOT BOUND (will not look for freshest data).
 	 * @return Couchbase
 	 */
 	public function setQueryConsistencyNotBound(): Couchbase
@@ -65,6 +74,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Set N1QL consistency to REQUEST PLUS (will return fresh data).
 	 * @return Couchbase
 	 */
 	public function setQueryConsistencyRequestPlus(): Couchbase
@@ -75,6 +85,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Set N1QL consistency to STATEMENT PLUS (will return freshest data).
 	 * @return Couchbase
 	 */
 	public function setQueryConsistencyStatementPlus(): Couchbase
@@ -85,6 +96,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Get current query consistency.
 	 * @return int
 	 */
 	public function getQueryConsistency(): int
@@ -93,6 +105,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * If set to true, queries will be prepared at the SDK level to increase execution speed for subsequent calls to the same query.
 	 * @param bool $adhoc
 	 * @return Couchbase
 	 */
@@ -104,6 +117,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Get current adhoc setting.
 	 * @return bool
 	 */
 	public function getQueryAdhoc(): bool
@@ -112,6 +126,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Connects to the couchbase cluster, and then opens the desired bucket.
 	 * @param string $user
 	 * @param string $password
 	 * @param string $name
@@ -187,6 +202,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Closes the current open bucket, and disconnects from the cluster (couchbase SDK dependant).
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -200,6 +216,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Returns the current couchbase bucket object.
 	 * @return \Couchbase\Bucket|null
 	 */
 	public function getDbObject(): ?\Couchbase\Bucket
@@ -208,6 +225,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Set the current couchbase bucket object.
 	 * @param \Couchbase\Bucket $Bucket
 	 * @return Couchbase
 	 */
@@ -220,6 +238,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Get current couchbase cluster object.
 	 * @return \Couchbase\Cluster
 	 */
 	public function getClusterObject(): \Couchbase\Cluster
@@ -228,6 +247,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Send a generic N1QL query.
 	 * @param string $query
 	 * @return Results
 	 */
@@ -270,6 +290,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for emulation of other DB systems (can also be changed for specific logic for select N1QL queries).
 	 * @param string $query
 	 * @return Results
 	 */
@@ -279,6 +300,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for emulation of other DB systems (can also be changed for specific logic for insert N1QL queries).
 	 * @param string $query
 	 * @return Results
 	 */
@@ -288,6 +310,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for emulation of other DB systems (can also be changed for specific logic for update N1QL queries).
 	 * @param string $query
 	 * @return Results
 	 */
@@ -297,6 +320,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for emulation of other DB systems (can also be changed for specific logic for delete N1QL queries).
 	 * @param string $query
 	 * @return Results
 	 */

@@ -7,46 +7,55 @@ use LowCal\Module\Security;
 
 /**
  * Class Db
+ * Base DB class that db type classes extend from. Offers some basic methods and properties.
  * @package LowCal\Module\Db
  */
 class Db extends Module
 {
 	/**
+	 * Flag indicating connection status.
 	 * @var bool
 	 */
 	protected $_is_connected = false;
 
 	/**
+	 * Server ID.
 	 * @var string
 	 */
 	protected $_server_identifier = '';
 
 	/**
+	 * Value for connection retry attempts.
 	 * @var int
 	 */
 	protected $_connect_retry_attempts = 0;
 
 	/**
+	 * Value for delay between connection retry attempts.
 	 * @var int
 	 */
 	protected $_connect_retry_delay = 0;
 
 	/**
+	 * Holds the last error message returned by the database.
 	 * @var string
 	 */
 	protected $_last_error_message = '';
 
 	/**
+	 * Holds the last error code returned by the database.
 	 * @var int
 	 */
 	protected $_last_error_number = 0;
 
 	/**
+	 * Holds the DB object (mysqli, etc...)
 	 * @var null|\mysqli|\Couchbase\Bucket
 	 */
 	protected $_db_object = null;
 
 	/**
+	 * Sanitizes user input to prevent injection.
 	 * @param $value
 	 * @param bool $must_be_numeric
 	 * @param int $decimal_places
@@ -61,6 +70,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Rules to clean html to different degrees.
 	 * @param $value
 	 * @param int $clean_all
 	 * @return array|string
@@ -118,6 +128,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Rules for basic type checking, and basic sanitization of user input.
 	 * @param $value
 	 * @param bool $must_be_numeric
 	 * @param int $decimal_places
@@ -176,6 +187,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Get last error message returned by db.
 	 * @return string
 	 */
 	public function getLastErrorMessage(): string
@@ -184,6 +196,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Get last error code returned by db.
 	 * @return int
 	 */
 	public function getLastErrorNumber(): int
@@ -192,6 +205,7 @@ class Db extends Module
 	}
 
 	/**
+	 * Return the current connection state of the db server.
 	 * @return bool
 	 */
 	public function isConnected(): bool

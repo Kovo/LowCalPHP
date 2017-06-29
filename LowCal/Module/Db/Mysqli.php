@@ -8,31 +8,37 @@ use LowCal\Interfaces\Db;
 
 /**
  * Class Mysqli
+ * This mysql class implements rdbm-centric functionality.
  * @package LowCal\Module\Db
  */
 class Mysqli extends \LowCal\Module\Db\Db implements Db
 {
 	/**
+	 * Delay in seconds between retrying cud operations in a deadlock state (level 1).
 	 * @var float
 	 */
 	protected $_deadlock_first_interval_delay = 0.0;
 
 	/**
+	 * Delay in seconds between retrying cud operations in a deadlock state (level 2).
 	 * @var float
 	 */
 	protected $_deadlock_second_interval_delay = 0.0;
 
 	/**
+	 * Amount of times cud operations in deadlock state should be retried before reducing delay.
 	 * @var int
 	 */
 	protected $_deadlock_first_interval_retries = 0;
 
 	/**
+	 * Amount of times cud operations in deadlock state should be retried before giving up.
 	 * @var int
 	 */
 	protected $_deadlock_second_interval_retries = 0;
 
 	/**
+	 * Holds \mysqli object.
 	 * @var null|\mysqli
 	 */
 	protected $_db_object = null;
@@ -61,12 +67,16 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 		$this->_deadlock_second_interval_retries = $deadlock_second_interval_retries;
 	}
 
+	/**
+	 * Mysqli destructor.
+	 */
 	function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
+	 * Connect to the mysql server and then use the desired database.
 	 * @param string $user
 	 * @param string $password
 	 * @param string $name
@@ -139,6 +149,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Disconnect from the mysql server.
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -156,6 +167,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Get \mysqli object.
 	 * @return \mysqli|null
 	 */
 	public function getDbObject(): ?\mysqli
@@ -164,6 +176,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Execute a generic query.
 	 * @param string $query
 	 * @return Results
 	 */
@@ -212,6 +225,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for syntactic sugar.
 	 * @param string $query
 	 * @return Results
 	 */
@@ -221,6 +235,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Perform an insert operation, and attempt to mitigate deadlocks.
 	 * @param string $query
 	 * @return Results
 	 */
@@ -352,6 +367,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for syntactic sugar. Calls insert method.
 	 * @param string $query
 	 * @return Results
 	 */
@@ -361,6 +377,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	}
 
 	/**
+	 * Stub for syntactic sugar. Calls insert method.
 	 * @param string $query
 	 * @return Results
 	 */
