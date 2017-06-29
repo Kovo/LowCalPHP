@@ -7,12 +7,13 @@ use LowCal\Interfaces\Cache;
 
 /**
  * Class Memcached
+ * This memcached class implements cache-centric functionality.
  * @package LowCal\Module\Cache
  */
 class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 {
-
 	/**
+	 * \Memcached object instance is stored here.
 	 * @var null|\Memcached
 	 */
 	protected $_cache_object = null;
@@ -35,12 +36,16 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 		$this->_lock_timeout_seconds = $lock_timeout_seconds;
 	}
 
+	/**
+	 * Memcached destructor.
+	 */
 	function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
+	 * Enable value compression.
 	 * @return Memcached
 	 */
 	public function enableCompression(): Memcached
@@ -54,6 +59,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Disable value compression.
 	 * @return Memcached
 	 */
 	public function disableCompression(): Memcached
@@ -67,6 +73,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Connects to the Memcached server.
 	 * @param string $host
 	 * @param int $port
 	 * @param string $user
@@ -121,6 +128,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Disconnects from the Memcached server.
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -143,6 +151,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Returns \Memcached object.
 	 * @return \Memcached
 	 */
 	public function getCacheObject(): \Memcached
@@ -151,6 +160,8 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Gets the requested key, allowing you to check for active locks, and setting them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then returns the value (if it exists).
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $set_lock
@@ -201,6 +212,8 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Sets a new value, or updates and existing one.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -245,6 +258,8 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Adds a new value, or fails if its key already exists.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -289,6 +304,9 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Deletes provided key, and can also check for existing locks, and delete them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then deletes the key (if it exists).
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $delete_lock

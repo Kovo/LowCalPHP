@@ -7,22 +7,25 @@ use LowCal\Interfaces\Cache;
 
 /**
  * Class Couchbase
+ * This couchbase class implements cache-centric functionality to mimic what Memcached does.
  * @package LowCal\Module\Cache
  */
 class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 {
 	/**
+	 * Couchbase bucket object is stored here.
 	 * @var null|\Couchbase\Bucket
 	 */
 	protected $_cache_object = null;
 
 	/**
+	 * Couchbase cluster object is stored here.
 	 * @var null|\Couchbase\Cluster
 	 */
 	protected $_cluster_object = null;
 
 	/**
-	 * Memcached constructor.
+	 * Couchbase constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier
 	 * @param int $connect_retry_attempts
@@ -39,12 +42,16 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 		$this->_lock_timeout_seconds = $lock_timeout_seconds;
 	}
 
+	/**
+	 * Couchbase destructor.
+	 */
 	function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
+	 * Connects to the couchbase cluster and then opens the desired bucket.
 	 * @param string $host
 	 * @param int $port
 	 * @param string $user
@@ -120,6 +127,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Closes the current open bucket, and disconnects from the cluster (couchbase SDK dependant).
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -133,6 +141,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Returns the current couchbase bucket object.
 	 * @return \Couchbase\Bucket
 	 */
 	public function getCacheObject(): \Couchbase\Bucket
@@ -141,6 +150,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Gets the requested key, allowing you to check for active locks, and setting them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then returns the value (if it exists).
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $set_lock
@@ -197,6 +208,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Sets a new value, or updates and existing one.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -244,6 +257,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Adds a new value, or fails if its key already exists.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -291,6 +306,9 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Deletes provided key, and can also check for existing locks, and delete them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then deletes the key (if it exists).
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $delete_lock

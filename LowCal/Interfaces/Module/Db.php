@@ -8,6 +8,7 @@ use LowCal\Module\Security;
 
 /**
  * Interfaces Db
+ * Interface for all db types used in LowCal's module architecture.
  * @package LowCal\Interfaces
  */
 interface Db

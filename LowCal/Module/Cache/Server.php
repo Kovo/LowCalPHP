@@ -7,61 +7,75 @@ use LowCal\Module\Module;
 
 /**
  * Class Server
+ * This server class maintains server specific information for the chosen caching system.
+ * It abstracts from specific caching classes to allow easy switching between different types of caching systems.
  * @package LowCal\Module\Cache
  */
 class Server extends Module
 {
 	/**
+	 * Id for this server instance.
 	 * @var null|string
 	 */
 	protected $_identifier = null;
 
 	/**
+	 * Type of server (Memcached, etc...)
 	 * @var null|int
 	 */
 	protected $_type = null;
 
 	/**
+	 * User to login with (if necessary).
 	 * @var string
 	 */
 	protected $_user = '';
 
 	/**
+	 * Password to login with (if necessary).
 	 * @var string
 	 */
 	protected $_password = '';
 
 	/**
+	 * Bucket/DB name to use (if necessary).
 	 * @var string
 	 */
 	protected $_name = '';
 
 	/**
+	 * Host to login with (if necessary).
 	 * @var string
 	 */
 	protected $_host = '';
 
 	/**
+	 * Port to login with (if necessary).
 	 * @var null|int
 	 */
 	protected $_port = null;
 
 	/**
+	 * How many times will LowCal try to connect to a cache server.
 	 * @var int
 	 */
 	protected $_connect_retry_attempts = 0;
 
 	/**
+	 * Delay in seconds between connection retries.
 	 * @var int
 	 */
 	protected $_connect_retry_delay = 0;
 
 	/**
+	 * Interaction objects are simply the chosen cache type's object.
+	 * So for Memcached, this will return \Memcached, etc...
 	 * @var null|Memcached|Couchbase|Local
 	 */
 	protected $_interaction_object = null;
 
 	/**
+	 * Returns the state of the connection for the cache server.
 	 * @return bool
 	 */
 	public function isConnected(): bool
@@ -70,6 +84,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's ID.
 	 * @return null|string
 	 */
 	public function getIdentifier(): ?string
@@ -78,6 +93,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's type.
 	 * @return int|null
 	 */
 	public function getType(): ?int
@@ -86,6 +102,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's user.
 	 * @return string
 	 */
 	public function getUser(): string
@@ -94,6 +111,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's password.
 	 * @return string
 	 */
 	public function getPassword(): string
@@ -102,6 +120,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's db/bucket name.
 	 * @return string
 	 */
 	public function getName(): string
@@ -110,6 +129,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's host.
 	 * @return string
 	 */
 	public function getHost(): string
@@ -118,6 +138,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Get server's port.
 	 * @return int|null
 	 */
 	public function getPort(): ?int
@@ -126,6 +147,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Return the setting for connection retry attempts.
 	 * @return int
 	 */
 	public function getConnectRetryAttempts(): int
@@ -134,6 +156,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Return the setting for connection retry delay.
 	 * @return int
 	 */
 	public function getConnectRetryDelay(): int
@@ -142,6 +165,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's ID.
 	 * @param string $identifier
 	 * @return Server
 	 */
@@ -153,6 +177,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's type.
 	 * @param int $type
 	 * @return Server
 	 */
@@ -164,6 +189,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's user.
 	 * @param string $user
 	 * @return Server
 	 */
@@ -175,6 +201,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's password.
 	 * @param string $password
 	 * @return Server
 	 */
@@ -186,6 +213,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's db/bucket name.
 	 * @param string $name
 	 * @return Server
 	 */
@@ -197,6 +225,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's host.
 	 * @param string $host
 	 * @return Server
 	 */
@@ -208,6 +237,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's port.
 	 * @param int $port
 	 * @return Server
 	 */
@@ -219,6 +249,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's connection retry attempts.
 	 * @param int $connect_retry_attempts
 	 * @return Server
 	 */
@@ -230,6 +261,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Set this server's connection retry attempt delay.
 	 * @param int $connect_retry_delay
 	 * @return Server
 	 */
@@ -241,6 +273,8 @@ class Server extends Module
 	}
 
 	/**
+	 * Initialize cache system.
+	 * This is a required step before using your chosen cache provider.
 	 * @throws \Exception
 	 */
 	public function init(): void
@@ -262,6 +296,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Return the interaction object.
 	 * @return Couchbase|Memcached|Local|null
 	 */
 	public function getInteractionObject()
@@ -270,6 +305,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Connect to the cache server.
 	 * @return bool
 	 */
 	public function connect(): bool
@@ -278,6 +314,7 @@ class Server extends Module
 	}
 
 	/**
+	 * Disconnect from the cache server.
 	 * @return bool
 	 */
 	public function disconnect(): bool

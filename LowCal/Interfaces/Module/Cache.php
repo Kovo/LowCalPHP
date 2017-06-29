@@ -6,6 +6,7 @@ use LowCal\Module\Cache\Results;
 
 /**
  * Interfaces Cache
+ * Interface for all cache types used in LowCal's module architecture.
  * @package LowCal\Interfaces
  */
 interface Cache

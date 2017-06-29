@@ -4,6 +4,7 @@ namespace LowCal\Interfaces;
 
 /**
  * Interface View
+ * Interface for all view engines used in LowCal's module architecture.
  * @package LowCal\Interfaces
  */
 interface View

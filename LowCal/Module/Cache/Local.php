@@ -7,21 +7,26 @@ use LowCal\Interfaces\Cache;
 
 /**
  * Class Local
+ * This Local class implements cache-centric functionality to mimic what real caching systems do.
+ * Useful for testing when no test cache servers are available.
  * @package LowCal\Module\Cache
  */
 class Local extends \LowCal\Module\Cache\Cache implements Cache
 {
 	/**
+	 * The object instance is stored here (for emulation purposes).
 	 * @var null|Local
 	 */
 	protected $_cache_object = null;
 
 	/**
+	 * All caches keys/values are stored here.
 	 * @var array
 	 */
 	protected $_cache_bucket = array();
 
 	/**
+	 * Active locks are stored in this array.
 	 * @var array
 	 */
 	protected $_cache_locks = array();
@@ -38,12 +43,16 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 		$this->_server_identifier = $server_identifier;
 	}
 
+	/**
+	 * Local destructor.
+	 */
 	function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
+	 * "Connects" to Local cache.
 	 * @param string $host
 	 * @param int $port
 	 * @param string $user
@@ -63,6 +72,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * "Disconnects" the Local cache, clears everything from memory.
 	 * @return bool
 	 */
 	public function disconnect(): bool
@@ -79,6 +89,7 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Return the Local object.
 	 * @return Local
 	 */
 	public function getCacheObject(): Local
@@ -87,6 +98,8 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Gets the requested key, allowing you to check for active locks, and setting them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then returns the value (if it exists).
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $set_lock
@@ -140,6 +153,8 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Since Local implements "fake" locks to emulate locking in real caching systems, this method is required
+	 * to validate a lock exists, and it is not expired.
 	 * @param string $key
 	 * @return bool
 	 */
@@ -159,6 +174,8 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Sets a new value, or updates and existing one.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -195,6 +212,8 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Adds a new value, or fails if its key already exists.
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param $value
 	 * @param int $timeout
@@ -241,6 +260,9 @@ class Local extends \LowCal\Module\Cache\Cache implements Cache
 	}
 
 	/**
+	 * Deletes provided key, and can also check for existing locks, and delete them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then deletes the key (if it exists).
+	 * You need to delete your lock during this step if you set one during your get.
 	 * @param string $key
 	 * @param bool $check_lock
 	 * @param bool $delete_lock
