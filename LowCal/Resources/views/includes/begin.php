@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \LowCal\Base $LowCal
+ * @var $_PAGE_TITLE
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,14 +14,11 @@
 		<meta http-equiv="imagetoolbar" content="no"/>
 		<meta name="robots" content="index, follow" />
 		<meta name="googlebot" content="index, follow" />
-		<meta name="description" content="<?php echo $_PAGE_DESCRIPTION; ?>" />
-		<meta name="keywords" content="<?php echo $_PAGE_KEYWORDS; ?>" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
 
-		<link rel="shortcut icon" href="<?php echo PzPHP_Config::get('IMG_URL'); ?>/favicon.ico" type="image/x-icon">
-		<link rel="icon" href="<?php echo PzPHP_Config::get('IMG_URL'); ?>/favicon.ico" type="image/x-icon">
-
-		<?php echo $PZPHP->view()->render('includes/resources/css'); ?>
-		<?php echo $PZPHP->view()->render('includes/resources/js'); ?>
+		<?php echo $LowCal->view()->render('includes/resources/css'); ?>
+		<?php echo $LowCal->view()->render('includes/resources/js'); ?>
 	</head>
 	<body>
 		<div id="globalContainer">

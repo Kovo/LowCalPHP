@@ -156,6 +156,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	 * @param bool $set_lock
 	 * @param null $cas_token
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function get(string $key, bool $check_lock = false, bool $set_lock = false, &$cas_token = null): Results
 	{

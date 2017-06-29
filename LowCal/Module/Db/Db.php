@@ -42,6 +42,11 @@ class Db extends Module
 	protected $_last_error_number = 0;
 
 	/**
+	 * @var null|\mysqli|\Couchbase\Bucket
+	 */
+	protected $_db_object = null;
+
+	/**
 	 * @param $value
 	 * @param bool $must_be_numeric
 	 * @param int $decimal_places

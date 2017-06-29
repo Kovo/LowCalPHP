@@ -1,12 +1,14 @@
 <?php
-	echo $PZPHP->view()->render('includes/begin', array(
-			'_PAGE_TITLE' => 'PzPHP Framework',
-			'_PAGE_DESCRIPTION' => '',
-			'_PAGE_KEYWORDS' => '')
-	);
-	echo $PZPHP->view()->render('includes/header');
-?>
-Hello World!
-<?php
-	echo $PZPHP->view()->render('includes/footer');
-	echo $PZPHP->view()->render('includes/end');
+/**
+ * @var \LowCal\Base $LowCal
+ */
+echo $LowCal->view()->render('includes/begin', array(
+        '_PAGE_TITLE' => 'LowCal Framework'
+    )
+);
+echo $LowCal->view()->render('includes/header');
+    ?>
+    <p>Hello World!</p>
+    <?php
+echo $LowCal->view()->render('includes/footer');
+echo $LowCal->view()->render('includes/end');

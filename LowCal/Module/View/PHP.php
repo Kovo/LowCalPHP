@@ -3,31 +3,28 @@ declare(strict_types=1);
 namespace LowCal\Module\View;
 use LowCal\Helper\Codes;
 use LowCal\Interfaces\View;
-use LowCal\Module\Module;
 
 /**
  * Class PHP
  * @package LowCal\Module\View
  */
-class PHP extends Module implements View
+class PHP extends \LowCal\Module\View\View implements View
 {
 	/**
 	 * @param string $view
 	 * @param array $parameters
-	 * @param string $view_dir
 	 * @return String
 	 * @throws \Exception
 	 */
-	public static function render(string $view, array $parameters = array(), string $view_dir = ''): String
+	public function render(string $view, array $parameters = array()): String
 	{
-		$file = $view_dir.$view.'.php';
+		$file = $this->_view_dir.$view.'.php';
 
 		if(file_exists($file))
 		{
-			if(!empty($parameters))
-			{
-				extract($parameters);
-			}
+			$parameters['LowCal'] = $this->_Base;
+
+			extract($parameters);
 
 			try
 			{

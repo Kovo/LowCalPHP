@@ -45,6 +45,11 @@ class Cache extends Module
 	protected $_lock_timeout_seconds = 0;
 
 	/**
+	 * @var null|\Couchbase\Bucket|\Memcached|Local
+	 */
+	protected $_cache_object = null;
+
+	/**
 	 * @return string
 	 */
 	public function getLastErrorMessage(): string

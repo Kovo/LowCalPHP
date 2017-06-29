@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
-use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Module\View\PHP;
@@ -13,32 +12,20 @@ use LowCal\Module\View\PHP;
 class View extends Module
 {
 	/**
-	 * @var string
-	 */
-	protected $_view_dir = '';
-
-	/**
 	 * @var null|int
 	 */
 	protected $_engine_type = null;
 
 	/**
-	 * View constructor.
-	 * @param Base $Base
+	 * @var null|PHP
 	 */
-	function __construct(Base $Base)
-	{
-		parent::__construct($Base);
-
-		$this->_view_dir = Config::get('VIEWS_DIR');
-		$this->_engine_type = Config::get('VIEW_ACTIVE_ENGINE');
-	}
+	protected $_engine_object = null;
 
 	/**
 	 * @param int $view_engine_id
 	 * @return View
 	 */
-	public function setViewEngine(int $view_engine_id): View
+	public function setViewEngineType(int $view_engine_id): View
 	{
 		$this->_engine_type = $view_engine_id;
 
@@ -48,43 +35,47 @@ class View extends Module
 	/**
 	 * @return int
 	 */
-	public function getViewEngine(): int
+	public function getViewEngineType(): int
 	{
 		return $this->_engine_type;
 	}
 
 	/**
-	 * @param string $dir
+	 * @param PHP $ViewEngine
 	 * @return View
 	 */
-	public function setViewDir(string $dir): View
+	public function setViewEngineObject($ViewEngine): View
 	{
-		$this->_view_dir = $dir;
+		$this->_engine_object = $ViewEngine;
 
 		return $this;
 	}
 
 	/**
-	 * @return string
+	 * @return PHP|null
 	 */
-	public function getViewDir(): string
+	public function getViewEngineObject()
 	{
-		return $this->_view_dir;
+		return $this->_engine_object;
 	}
 
 	/**
 	 * @param string $view
 	 * @param array $parameters
-	 * @param string|null $override_view_dir
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function render(string $view, array $parameters = array(), string $override_view_dir = null): string
+	public function render(string $view, array $parameters = array()): string
 	{
+		if(empty($this->_engine_object))
+		{
+			throw new \Exception('No View Engine object has been set.', Codes::VIEW_ENGINE_NOT_STARTED);
+		}
+
 		switch($this->_engine_type)
 		{
 			case Config::get('VIEW_ENGINE_PHP'):
-				return PHP::render($view, $parameters, $override_view_dir);
+				return $this->_engine_object->render($view, $parameters);
 			default:
 				throw new \Exception('Invalid view engine provided ('.$this->_engine_type.').', Codes::VIEW_INVALID_ENGINE);
 		}

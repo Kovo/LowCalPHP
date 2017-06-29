@@ -45,7 +45,7 @@ try
 	Config::loadConfigForEnv('config');
 
 	###INIT LOWCAL###
-	$_LOWCAL = new Base();
+	$LowCal = new Base();
 
 	###BEGIN YOUR APP###
 	include Config::get('BASE_DIR').'init.php';
@@ -53,5 +53,6 @@ try
 catch(\Throwable $t)
 {
 	error_log('LowCal start-up error. Msg: '.$t->getMessage().' / Code: '.$t->getCode());
+
 	exit();
 }

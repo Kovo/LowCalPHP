@@ -28,7 +28,6 @@ class Strings
 	/**
 	 * @param int $length
 	 * @param int $type
-	 * @param bool $regenerateSeed
 	 * @return string
 	 */
 	public static function createCode(int $length, int $type = self::ALPHANUMERIC): string

@@ -47,18 +47,18 @@ class Db extends Module
 		$this->_servers[$identifier] = new Server($this->_Base);
 
 		$this->_servers[$identifier]->setIdentifier($identifier)
-									->setType($type)
-									->setUser($user)
-									->setPassword($password)
-									->setName($name)
-									->setHost($host)
-									->setPort($port)
-									->setConnectRetryAttempts(Config::get('SETTING_DB_CONNECT_RETRY_ATTEMPTS'))
-									->setConnectRetryDelay(Config::get('SETTING_DB_CONNECT_RETRY_DELAY_SECONDS'))
-									->setDeadlockFirstIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_DELAY_SECONDS'))
-									->setDeadlockSecondIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_DELAY_SECONDS'))
-									->setDeadlockFirstIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_RETRIES'))
-									->setDeadlockSecondIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_RETRIES'));
+			->setType($type)
+			->setUser($user)
+			->setPassword($password)
+			->setName($name)
+			->setHost($host)
+			->setPort($port)
+			->setConnectRetryAttempts(Config::get('SETTING_DB_CONNECT_RETRY_ATTEMPTS'))
+			->setConnectRetryDelay(Config::get('SETTING_DB_CONNECT_RETRY_DELAY_SECONDS'))
+			->setDeadlockFirstIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_DELAY_SECONDS'))
+			->setDeadlockSecondIntervalDelay(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_DELAY_SECONDS'))
+			->setDeadlockFirstIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_FIRST_INTERVAL_RETRIES'))
+			->setDeadlockSecondIntervalRetries(Config::get('SETTING_DB_WRITE_RETRY_SECOND_INTERVAL_RETRIES'));
 
 		$this->_servers[$identifier]->init();
 

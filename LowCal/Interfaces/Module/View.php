@@ -11,8 +11,18 @@ interface View
 	/**
 	 * @param string $view
 	 * @param array $parameters
-	 * @param string $view_dir
 	 * @return String
 	 */
-	public static function render(string $view, array $parameters = array(), string $view_dir = ''): String;
+	public function render(string $view, array $parameters = array()): String;
+
+	/**
+	 * @param string $dir
+	 * @return View
+	 */
+	public function setViewDir(string $dir): View;
+
+	/**
+	 * @return string
+	 */
+	public function getViewDir(): string;
 }
