@@ -4,36 +4,44 @@ namespace LowCal\Helper;
 
 /**
  * Class IO
+ * A static class that exposes PHP's common IO functions in a more understandable way, as well as introducing
+ * new functionality that does not currently exist with built-in functions.
  * @package LowCal\Helper
  */
 class IO
 {
 	/**
+	 * Path detection flag for absolute paths.
 	 * @var int
 	 */
 	const ABSOLUTE = 1;
 
 	/**
+	 * Path detection flag for relative paths.
 	 * @var int
 	 */
 	const RELATIVE = 2;
 
 	/**
+	 * Path detection flag for urls.
 	 * @var int
 	 */
 	const URL = 3;
 
 	/**
+	 * Default CHMOD flags for files.
 	 * @var int
 	 */
 	public static $default_chmod_level_file = 0775;
 
 	/**
+	 * Default CHMOD flags for directories.
 	 * @var int
 	 */
 	public static $default_chmod_level_dir = 0775;
 
 	/**
+	 * Verifies if provided variable represents a valid and accessible directory.
 	 * @param string $dir
 	 * @return bool
 	 */
@@ -43,6 +51,7 @@ class IO
 	}
 
 	/**
+	 * Verifies if provided variable represents a valid and accessible file.
 	 * @param string $file
 	 * @return bool
 	 */
@@ -52,6 +61,7 @@ class IO
 	}
 
 	/**
+	 * Verifies if provided variable represents a valid and accessible directory, file, or directory of files and directories.
 	 * @param string $source
 	 * @return bool
 	 * @throws \Exception
@@ -98,6 +108,7 @@ class IO
 	}
 
 	/**
+	 * Creates a directory.
 	 * @param string $dir
 	 * @param int|null $permissions
 	 * @param bool $recursive
@@ -120,6 +131,7 @@ class IO
 	}
 
 	/**
+	 * Removes a file or folder if permissions allow it.
 	 * @param string $filename
 	 * @return bool
 	 */
@@ -143,6 +155,7 @@ class IO
 	}
 
 	/**
+	 * Removes a file or folder, and if it does not have permission, will try to get it.
 	 * @param string $filename
 	 * @return bool
 	 */
@@ -161,6 +174,7 @@ class IO
 	}
 
 	/**
+	 * Moves a file or folder if permissions allow it.
 	 * @param string $source_folder_name
 	 * @param string $target_folder_name
 	 * @param string $filename
@@ -181,6 +195,7 @@ class IO
 	}
 
 	/**
+	 * Moves a file or folder, and if it does not have permission, will try to get it.
 	 * @param $source_folder_name
 	 * @param $target_folder_name
 	 * @param $filename
@@ -203,6 +218,7 @@ class IO
 	}
 
 	/**
+	 * Copy a file, or copy a folder recursively.
 	 * @param string $source_folder_name
 	 * @param string $target_folder_name
 	 * @param string $filename
@@ -214,6 +230,7 @@ class IO
 	}
 
 	/**
+	 * Renames (or moves) a file or directory.
 	 * @param string $filename
 	 * @param string $foldername
 	 * @param string $newfilename
@@ -225,6 +242,7 @@ class IO
 	}
 
 	/**
+	 * Recursively removes a file or directory.
 	 * @param string $dir
 	 * @return bool
 	 */
@@ -254,6 +272,7 @@ class IO
 	}
 
 	/**
+	 * Recursively copies a file or folder.
 	 * @param string $src
 	 * @param string $dst
 	 * @return bool
@@ -289,26 +308,32 @@ class IO
 	}
 
 	/**
+	 * Detects the type of path passed to it.
 	 * @param string $path
 	 * @return int
 	 */
 	public static function pathType(string $path): int
 	{
-		if(substr($path,0,7)==='http://' || substr($path,0,8)==='https://' || substr($path,0,6)==='ftp://')
+		if(strpos($path,'://') !== false)
 		{
 			return self::URL;
 		}
-		else
+		elseif(substr($path,0,1) !== DIRECTORY_SEPARATOR)
 		{
 			return self::RELATIVE;
+		}
+		else
+		{
+			return self::ABSOLUTE;
 		}
 	}
 
 	/**
+	 * Add a trailing slash to provided path if necessary.
 	 * @param string $path
 	 * @return string
 	 */
-	public static function addTrailingSlash(string $path)
+	public static function addTrailingSlash(string $path): string
 	{
 		if(substr($path, -1) !== DIRECTORY_SEPARATOR)
 		{
@@ -319,6 +344,7 @@ class IO
 	}
 
 	/**
+	 * Extracts path from provided variable (omits files at the end), or simply returns the variable if no file is found.
 	 * @param string $full_path
 	 * @return string
 	 */
@@ -338,6 +364,7 @@ class IO
 	}
 
 	/**
+	 * Extract file from provided variable (omits directory at the beginning), or simply returns variable if no directory is found.
 	 * @param string $full_path
 	 * @return string
 	 */

@@ -4,16 +4,19 @@ namespace LowCal\Helper;
 
 /**
  * Class Config
+ * A static class used to set and get global application configurations.
  * @package LowCal\Helper
  */
 class Config
 {
 	/**
+	 * All configuration variables will be saved into this array.
 	 * @var array
 	 */
 	protected static $_configs = array();
 
 	/**
+	 * Load an array of configuration variables. Existing configurations will be overwritten if keys match.
 	 * @param array $array_of_configs
 	 */
 	public static function loadArray(array $array_of_configs): void
@@ -22,6 +25,8 @@ class Config
 	}
 
 	/**
+	 * Load a PHP file that contains configuration variables stored in a global LOWCAL_CONFIG_ARRAY variable.
+	 * Existing configurations will be overwritten if keys match.
 	 * @param string $file_path
 	 * @throws \Exception
 	 */
@@ -43,6 +48,8 @@ class Config
 	}
 
 	/**
+	 * Load a configuration file based on the current environment status (local, dev, preprod, prod).
+	 * Existing configurations will be overwritten if keys match.
 	 * @param string $lowcal_config_file
 	 */
 	public static function loadConfigForEnv(string $lowcal_config_file): void
@@ -53,6 +60,7 @@ class Config
 	}
 
 	/**
+	 * Gets a configuration variable.
 	 * @param string $config_key_name
 	 * @return mixed
 	 * @throws \Exception

@@ -6,11 +6,13 @@ use LowCal\Helper\Codes;
 
 /**
  * Class Controller
+ * This is the "master" controller that you can choose to extend your application controllers from.
  * @package LowCal\Controller
  */
 class Controller
 {
 	/**
+	 * Base LowCal object is stored in the master controller.
 	 * @var null|Base
 	 */
 	protected $_Base = null;
@@ -25,6 +27,7 @@ class Controller
 	}
 
 	/**
+	 * A method that is executed (when available) before desired action is executed.
 	 * @param string $lang
 	 * @param string $action
 	 * @throws \Exception
@@ -46,5 +49,15 @@ class Controller
 		{
 			throw new \Exception('No language id given in the url! Id was: '.$lang, Codes::LOCALE_NO_LOCALE);
 		}
+	}
+
+	/**
+	 * A method that is executed (when available) after the desired action is executed.
+	 * @param string $lang
+	 * @param string $action
+	 */
+	public function after(string $lang, string $action): void
+	{
+
 	}
 }

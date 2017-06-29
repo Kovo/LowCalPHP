@@ -4,11 +4,13 @@ namespace LowCal\Module;
 
 /**
  * Class Arrays
+ * A static class that offers some useful array functions not built-in to PHP.
  * @package LowCal\Module
  */
 class Arrays
 {
 	/**
+	 * This method will sort an associative array by a specified key.
 	 * @param array $source_array
 	 * @param string $key_to_sort_by
 	 * @param int $sort_type
@@ -44,6 +46,7 @@ class Arrays
 	}
 
 	/**
+	 * This method will insert a value into a particular position of an array.
 	 * @param array $array
 	 * @param int $pos
 	 * @param $value

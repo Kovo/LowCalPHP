@@ -4,15 +4,32 @@ namespace LowCal\Helper;
 
 /**
  * Class Strings
+ * Static class that provides useful string manipulations or string related methods.
  * @package LowCal\Helper
  */
 class Strings
 {
+	/**
+	 * Flag for generating alphanumeric strings.
+	 * @var int
+	 */
 	const ALPHANUMERIC = 0;
+
+	/**
+	 * Flag for generating alphanumeric plus strings.
+	 * @var int
+	 */
 	const ALPHANUMERIC_PLUS = 1;
+
+	/**
+	 * Flag for generating hex compatible strings.
+	 * @var int
+	 */
 	const HEX = 2;
 
 	/**
+	 * Advanced trim function that detects various hidden characters that show-up in certain strings from different languages.
+	 * When possible, use this method over PHP's standard trim.
 	 * @param string $string
 	 * @param string $charlist
 	 * @return string
@@ -26,6 +43,7 @@ class Strings
 	}
 
 	/**
+	 * Generate a cryptographically secure random string of characters.
 	 * @param int $length
 	 * @param int $type
 	 * @return string
@@ -60,17 +78,14 @@ class Strings
 	}
 
 	/**
-	 * @param $string
+	 * Tests string to see if it is unserializable.
+	 * @param string $string
+	 * @param array $options
 	 * @return bool
 	 */
-	public static function unserializable(string $string): bool
+	public static function unserializable(string $string, array $options = array()): bool
 	{
-		if(!is_string($string))
-		{
-			return false;
-		}
-
-		$string = trim($string);
+		$string = self::trim($string);
 
 		if($string === '')
 		{
@@ -133,7 +148,7 @@ class Strings
 				return false;
 		}
 
-		if(@unserialize($string) === false)
+		if(@unserialize($string, $options) === false)
 		{
 			return false;
 		}
