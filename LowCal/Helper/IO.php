@@ -47,7 +47,7 @@ class IO
 	 */
 	public static function isValidDir(string $dir): bool
 	{
-		return (is_dir($dir) && is_readable($dir) && is_writable($dir));
+		return self::isAccessibleDirectory($dir, 'rw');
 	}
 
 	/**
@@ -57,7 +57,97 @@ class IO
 	 */
 	public static function isValidFile(string $file): bool
 	{
-		return (file_exists($file) && is_readable($file) && is_writable($file));
+		return self::isAccessibleFile($file, 'rw');
+	}
+
+	/**
+	 * Check permission of directory or file based on specified requirements.
+	 * @param string $dirOrFile
+	 * @param string $accessLevels
+	 * @return bool
+	 */
+	public static function checkPermissionLevels(string $dirOrFile, string $accessLevels): bool
+	{
+		foreach(str_split($accessLevels) as $need)
+		{
+			switch($need)
+			{
+				case 'r':
+					if(!is_readable($dirOrFile))
+					{
+						return false;
+					}
+
+					break;
+				case 'w':
+					if(!is_writable($dirOrFile))
+					{
+						return false;
+					}
+
+					break;
+				case 'e':
+					if(!is_executable($dirOrFile))
+					{
+						return false;
+					}
+
+					break;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check permission of directory based on specified requirements.
+	 * @param string $dir
+	 * @param string $accessLevels
+	 * @return bool
+	 */
+	public static function isAccessibleDirectory(string $dir, string $accessLevels): bool
+	{
+		if(!is_dir($dir))
+		{
+			if(!mkdir($dir, self::$default_chmod_level_dir, true))
+			{
+				return false;
+			}
+		}
+
+		if(!self::checkPermissionLevels($dir, $accessLevels))
+		{
+			if(!chmod($dir, self::$default_chmod_level_dir) || !self::checkPermissionLevels($dir, $accessLevels))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check permission of file based on specified requirements.
+	 * @param string $file
+	 * @param string $accessLevels
+	 * @return bool
+	 */
+	public static function isAccessibleFile(string $file, string $accessLevels): bool
+	{
+		if(!is_file($file))
+		{
+			return false;
+		}
+
+		if(!self::checkPermissionLevels($file, $accessLevels))
+		{
+			if(!chmod($file, self::$default_chmod_level_file) || !self::checkPermissionLevels($file, $accessLevels))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
