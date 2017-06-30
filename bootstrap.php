@@ -30,7 +30,7 @@ try
 	Config::loadConfigForEnv('config');
 
 	###INIT LOWCAL###
-	$LowCal = new Base();
+	$LowCal = new Base($loader);
 
 	###BEGIN YOUR APP###
 	include Config::get('BASE_DIR').'init.php';

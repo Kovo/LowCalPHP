@@ -77,11 +77,20 @@ class Base
 	protected $_Routing = null;
 
 	/**
+	 * The autoloader object.
+	 * @var null|\Psr4Autoloader
+	 */
+	protected $_Psr4Autoloader = null;
+
+	/**
 	 * Base constructor.
+	 * @param \Psr4Autoloader $Psr4Autoloader
 	 * @throws \Exception
 	 */
-	function __construct()
+	function __construct(\Psr4Autoloader $Psr4Autoloader)
 	{
+		$this->_Psr4Autoloader = $Psr4Autoloader;
+
 		if(Config::get('DOMAIN_PROTECTION'))
 		{
 			try
@@ -118,6 +127,14 @@ class Base
 		{
 			ob_start();
 		}
+	}
+
+	/**
+	 * @return \Psr4Autoloader
+	 */
+	public function getAutoloader(): \Psr4Autoloader
+	{
+		return $this->_Psr4Autoloader;
 	}
 
 	/**
