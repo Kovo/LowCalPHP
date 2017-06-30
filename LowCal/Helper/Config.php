@@ -51,12 +51,22 @@ class Config
 	 * Load a configuration file based on the current environment status (local, dev, preprod, prod).
 	 * Existing configurations will be overwritten if keys match.
 	 * @param string $lowcal_config_file
+	 * @return bool
 	 */
-	public static function loadConfigForEnv(string $lowcal_config_file): void
+	public static function loadConfigForEnv(string $lowcal_config_file): bool
 	{
 		$lowcal_config_file = self::get('BASE_DIR').$lowcal_config_file.'_'.self::get('LOWCAL_ENV').'.php';
 
-		self::loadFile($lowcal_config_file);
+		try
+		{
+			self::loadFile($lowcal_config_file);
+		}
+		catch(\Exception $e)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
