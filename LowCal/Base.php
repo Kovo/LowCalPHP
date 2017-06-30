@@ -84,12 +84,15 @@ class Base
 
 	/**
 	 * Base constructor.
-	 * @param \Psr4Autoloader $Psr4Autoloader
+	 * @param null|\Psr4Autoloader $Psr4Autoloader
 	 * @throws \Exception
 	 */
-	function __construct(\Psr4Autoloader $Psr4Autoloader)
+	function __construct(?\Psr4Autoloader $Psr4Autoloader = null)
 	{
-		$this->_Psr4Autoloader = $Psr4Autoloader;
+		if(!empty($Psr4Autoloader))
+		{
+			$this->_Psr4Autoloader = $Psr4Autoloader;
+		}
 
 		if(Config::get('DOMAIN_PROTECTION'))
 		{
@@ -130,9 +133,9 @@ class Base
 	}
 
 	/**
-	 * @return \Psr4Autoloader
+	 * @return null|\Psr4Autoloader
 	 */
-	public function getAutoloader(): \Psr4Autoloader
+	public function getAutoloader(): ?\Psr4Autoloader
 	{
 		return $this->_Psr4Autoloader;
 	}
