@@ -15,25 +15,4 @@ class View extends Module
 	 * @var string
 	 */
 	protected $_view_dir = '';
-
-	/**
-	 * Set the base view directory.
-	 * @param string $dir
-	 * @return View
-	 */
-	public function setViewDir(string $dir): View
-	{
-		$this->_view_dir = $dir;
-
-		return $this;
-	}
-
-	/**
-	 * Get the base view directory.
-	 * @return string
-	 */
-	public function getViewDir(): string
-	{
-		return $this->_view_dir;
-	}
 }

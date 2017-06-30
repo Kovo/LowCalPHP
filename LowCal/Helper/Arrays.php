@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
-namespace LowCal\Module;
+namespace LowCal\Helper;
 
 /**
  * Class Arrays
  * A static class that offers some useful array functions not built-in to PHP.
- * @package LowCal\Module
+ * @package LowCal\Helper
  */
 class Arrays
 {

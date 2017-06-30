@@ -73,7 +73,7 @@ class Config
 		}
 		else
 		{
-			throw new \Exception('Config "'.$config_key_name.'" does not exist!');
+			throw new \Exception('Config "'.$config_key_name.'" does not exist!', Codes::INTERNAL_CONFIG_MISSING_KEY);
 		}
 	}
 }

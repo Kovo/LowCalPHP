@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace LowCal\Module\Cache;
 use LowCal\Base;
 use LowCal\Helper\Codes;
-use LowCal\Interfaces\Cache;
+use LowCal\Interfaces\Module\Cache;
 
 /**
  * Class Memcached

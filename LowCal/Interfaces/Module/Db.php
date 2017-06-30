@@ -1,15 +1,13 @@
 <?php
 declare(strict_types=1);
-namespace LowCal\Interfaces;
-use LowCal\Module\Db\Couchbase;
-use LowCal\Module\Db\Mysqli;
+namespace LowCal\Interfaces\Module;
 use LowCal\Module\Db\Results;
 use LowCal\Module\Security;
 
 /**
  * Interfaces Db
  * Interface for all db types used in LowCal's module architecture.
- * @package LowCal\Interfaces
+ * @package LowCal\Interfaces\Module
  */
 interface Db
 {

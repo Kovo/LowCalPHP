@@ -18,10 +18,7 @@ try
 
 	$loader = new Psr4Autoloader();
 	$loader->register();
-	$loader->addNamespace('LowCal\Controller', 'LowCal/Controller');
-	$loader->addNamespace('LowCal\Helper', 'LowCal/Helper');
-	$loader->addNamespace('LowCal\Interfaces', 'LowCal/Interfaces');
-
+	$loader->addNamespace('LowCal\\', 'LowCal/');
 
 	###BASE CONFIG###
 	$LOWCAL_CONFIG_ARRAY['BASE_DIR'] = __DIR__.DIRECTORY_SEPARATOR;
@@ -31,7 +28,7 @@ try
 	Config::loadArray($LOWCAL_CONFIG_ARRAY);
 	Config::loadFile('config.php');
 	Config::loadConfigForEnv('config');
-echo 1;
+
 	###INIT LOWCAL###
 	$LowCal = new Base();
 

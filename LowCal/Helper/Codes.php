@@ -13,6 +13,7 @@ class Codes
 	 * LowCal startup errors.
 	 */
 	const INTERNAL_EXCEPTION_MISSING_CLASS = 10;
+	const INTERNAL_CONFIG_MISSING_KEY = 11;
 
 	/*
 	 * Security module related errors.

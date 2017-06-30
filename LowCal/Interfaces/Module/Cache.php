@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
-namespace LowCal\Interfaces;
+namespace LowCal\Interfaces\Module;
 use LowCal\Module\Cache\Local;
 use LowCal\Module\Cache\Results;
 
 /**
  * Interfaces Cache
  * Interface for all cache types used in LowCal's module architecture.
- * @package LowCal\Interfaces
+ * @package LowCal\Interfaces\Module
  */
 interface Cache
 {

@@ -1,5 +1,6 @@
 <?php
 global $LOWCAL_CONFIG_ARRAY;
 
-$LOWCAL_CONFIG_ARRAY['ROOT_URL'] = 'http://lowcal.loc/';
-$LOWCAL_CONFIG_ARRAY['ROOT_URI'] = '';
+$LOWCAL_CONFIG_ARRAY['APP_ROOT_URL'] = 'http://lowcal.loc/';
+$LOWCAL_CONFIG_ARRAY['APP_ROOT_URI'] = '';
+$LOWCAL_CONFIG_ARRAY['APP_COOKIE_URL'] = 'lowcal.loc';

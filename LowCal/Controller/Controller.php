@@ -30,9 +30,10 @@ class Controller
 	 * A method that is executed (when available) before desired action is executed.
 	 * @param string $lang
 	 * @param string $action
+	 * @param string $controller
 	 * @throws \Exception
 	 */
-	public function before(string $lang, string $action): void
+	public function before(string $lang, string $action, string $controller): void
 	{
 		if(!empty($lang))
 		{
@@ -45,18 +46,14 @@ class Controller
 				throw new \Exception('Invalid language id given in the url! Id was: '.$lang, Codes::LOCALE_INVALID_LOCALE);
 			}
 		}
-		elseif($this->_Base->locale()->languagesExist())
-		{
-			throw new \Exception('No language id given in the url! Id was: '.$lang, Codes::LOCALE_NO_LOCALE);
-		}
 	}
 
 	/**
 	 * A method that is executed (when available) after the desired action is executed.
-	 * @param string $lang
 	 * @param string $action
+	 * @param string $controller
 	 */
-	public function after(string $lang, string $action): void
+	public function after(string $action, string $controller): void
 	{
 
 	}

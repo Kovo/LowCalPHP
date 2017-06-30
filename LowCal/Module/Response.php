@@ -124,9 +124,16 @@ class Response extends Module
 	 * @param int|null $response_code
 	 * @return Response
 	 */
-	public function setHeader(string $name, string $value = '', bool $replace = false, int $response_code = null): Response
+	public function setHeader(string $name, string $value = '', bool $replace = false, ?int $response_code = null): Response
 	{
-		header($name.($value !== ''?': '.$value:''), $replace, $response_code);
+		if($response_code)
+		{
+			header($name.($value !== ''?': '.$value:''), $replace, $response_code);
+		}
+		else
+		{
+			header($name.($value !== ''?': '.$value:''), $replace);
+		}
 
 		$this->_headers[$name] = ($value !== ''?$value:$name);
 

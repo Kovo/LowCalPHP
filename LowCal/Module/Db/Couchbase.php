@@ -5,7 +5,7 @@ use Couchbase\N1qlQuery;
 use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Strings;
-use LowCal\Interfaces\Db;
+use LowCal\Interfaces\Module\Db;
 
 /**
  * Class Couchbase

@@ -6,11 +6,12 @@ declare(strict_types=1);
  */
 use LowCal\Helper\Config;
 
+global $LowCal;
 /*
  * Configuration for routing
  */
-$LowCal->routing()->setSiteUrl(Config::get('ROOT_URL'));
-$LowCal->routing()->setBaseUri(Config::get('ROOT_URI'));
+$LowCal->routing()->setSiteUrl(Config::get('APP_ROOT_URL'));
+$LowCal->routing()->setBaseUri(Config::get('APP_ROOT_URI'));
 
 /*
  * Sample constants for routing patterns commonly used in web apps
@@ -22,13 +23,16 @@ define('ROUTING_NAME_REG_EX', '[a-zA-Z0-9\-]+');
 /*
  * Define routing rules here
  */
-$LowCal->routing()->add('home', '/', '\LowCal\Controller\Home', 'indexAction');
+$LowCal->routing()->add('home', '/<lang>/', '\LowCal\Controller\Home', 'indexAction');
 
 /*
  * Begin db configs, logs, session, and start listening for routes
  */
 try
 {
+	$LowCal->locale()->addLanguage('en', 'en-us');
+	$LowCal->locale()->setCurrentLocale('en');
+
 	/*
 	* Register logs here
 	* You should register logs depending on what databases you will be using,
@@ -41,7 +45,9 @@ try
 	* Set view engine
 	*/
 	$LowCal->view()->setViewEngineType(Config::get('VIEW_ENGINE_PHP'))
-		->setViewEngineObject(new \LowCal\Module\View\PHP($LowCal));
+		->setViewEngineObject(new \LowCal\Module\View\PHP($LowCal))
+		->getViewEngineObject()
+		->setViewDir(Config::get('VIEWS_DIR'));
 
 	if(strlen(session_id()) != 64 || session_id() === '')
 	{
@@ -52,12 +58,12 @@ try
 		'read_and_close' => true,
 		'cookie_lifetime' => 0,
 		'cookie_path' => '/',
-		'cookie_domain' => Config::get('COOKIE_URL'),
+		'cookie_domain' => Config::get('APP_COOKIE_URL'),
 		'cookie_secure' => false,
 		'cookie_httponly' => true,
 	]);
 
-	$LowCal->db()->addServer('', Config::get('DATABASE_TYPE_MYSQLI'), Config::get('DB_USER'), Config::get('DB_PASSWORD'), Config::get('DB_NAME'), Config::get('DB_HOST'), Config::get('DB_PORT'));
+	$LowCal->db()->addServer('firstmysqliserver', Config::get('DATABASE_TYPE_MYSQLI'), Config::get('APP_DB_USER'), Config::get('APP_DB_PASSWORD'), Config::get('APP_DB_NAME'), Config::get('APP_DB_HOST'), Config::get('APP_DB_PORT'));
 
 	echo $LowCal->routing()->listen();
 }
@@ -67,14 +73,12 @@ catch(Exception $e)
 	{
 		$LowCal->response()->setHeader('Status', '404 Not Found');
 		$LowCal->response()->setHeader('HTTP/1.0 404 Not Found');
-		$LowCal->locale()->addLanguage('en', 'en-us');
-		echo $LowCal->view()->render('404', array('exceptionMsg' => $e->getMessage(), 'exceptionCode' => $e->getCode()));
+		echo $LowCal->view()->render('404', array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
 	}
 	else
 	{
 		$LowCal->response()->setHeader('Status', '500 Internal Server Error');
 		$LowCal->response()->setHeader('HTTP/1.0 500 Internal Server Error');
-		$LowCal->locale()->addLanguage('en', 'en-us');
-		echo $LowCal->view()->render('500', array('exceptionMsg' => $e->getMessage(), 'exceptionCode' => $e->getCode()));
+		echo $LowCal->view()->render('500', array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
 	}
 }

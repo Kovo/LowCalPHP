@@ -4,7 +4,7 @@ namespace LowCal\Module\Db;
 use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Strings;
-use LowCal\Interfaces\Db;
+use LowCal\Interfaces\Module\Db;
 
 /**
  * Class Mysqli

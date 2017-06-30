@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
-namespace LowCal\Interfaces;
+namespace LowCal\Interfaces\Module;
 
 /**
  * Interface View
  * Interface for all view engines used in LowCal's module architecture.
- * @package LowCal\Interfaces
+ * @package LowCal\Interfaces\Module
  */
 interface View
 {
@@ -18,9 +18,9 @@ interface View
 
 	/**
 	 * @param string $dir
-	 * @return View
+	 * @return mixed
 	 */
-	public function setViewDir(string $dir): View;
+	public function setViewDir(string $dir);
 
 	/**
 	 * @return string

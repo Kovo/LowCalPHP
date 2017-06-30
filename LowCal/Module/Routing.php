@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Helper\Arrays;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Strings;
 
@@ -163,6 +164,7 @@ class Routing extends Module
 
 				$classObj = new $class($this->_Base);
 
+				$arguments = Arrays::insertValueAtPos($arguments, 1, array('controllerCalled'=> $class));
 				$arguments = Arrays::insertValueAtPos($arguments, 1, array('actionCalled'=> $method));
 
 				if(method_exists($classObj, 'before'))
@@ -425,7 +427,12 @@ class Routing extends Module
 				$result_from_parse['terms']
 			);
 
-			$result_from_parse['terms']['returnFromAction'] = $return;
+			//$result_from_parse['terms']['returnFromAction'] = $return;
+
+			$result_from_parse['terms'] = Arrays::insertValueAtPos($result_from_parse['terms'], 1, array('actionCalled'=> $result_from_parse['finalRouteValues'][self::ACTION]));
+
+			$result_from_parse['terms'] = Arrays::insertValueAtPos($result_from_parse['terms'], 1, array('controllerCalled'=> $result_from_parse['finalRouteValues'][self::CONTROLLER]));
+
 			if(method_exists($classObj, 'after'))
 			{
 				call_user_func_array(
