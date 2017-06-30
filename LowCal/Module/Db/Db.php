@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Db;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Module\Module;
 use LowCal\Module\Security;
@@ -53,6 +54,15 @@ class Db extends Module
 	 * @var null|\mysqli|\Couchbase\Bucket
 	 */
 	protected $_db_object = null;
+
+	/**
+	 * Db constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Sanitizes user input to prevent injection.

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Controller;
+use LowCal\Base;
 
 /**
  * Class Home
@@ -9,6 +10,15 @@ namespace LowCal\Controller;
  */
 class Home extends Controller
 {
+	/**
+	 * Home constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
+
 	/**
 	 * Sample index action.
 	 * @return null|String

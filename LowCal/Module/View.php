@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Module\View\PHP;
@@ -23,6 +24,15 @@ class View extends Module
 	 * @var null|PHP
 	 */
 	protected $_engine_object = null;
+
+	/**
+	 * View constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Set the view engine type.

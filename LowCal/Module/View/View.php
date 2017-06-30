@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\View;
+use LowCal\Base;
 use LowCal\Module\Module;
 
 /**
@@ -15,4 +16,13 @@ class View extends Module
 	 * @var string
 	 */
 	protected $_view_dir = '';
+
+	/**
+	 * View constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 }

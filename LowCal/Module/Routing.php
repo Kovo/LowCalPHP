@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 use LowCal\Helper\Arrays;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Strings;
@@ -101,6 +102,15 @@ class Routing extends Module
 	 * @var bool
 	 */
 	protected $_secure = false;
+
+	/**
+	 * Routing constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Enforce secure routes.

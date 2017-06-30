@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Module\Db\Couchbase;
@@ -26,6 +27,15 @@ class Db extends Module
 	 * @var null|string
 	 */
 	protected $_active_server_id = null;
+
+	/**
+	 * Db constructor.
+	 * @param Base $Base
+	 */
+	protected function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Register a server with the db module.

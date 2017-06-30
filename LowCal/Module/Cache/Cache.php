@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Cache;
+use LowCal\Base;
 use LowCal\Module\Module;
 
 /**
@@ -57,6 +58,15 @@ class Cache extends Module
 	 * @var null|\Couchbase\Bucket|\Memcached|Local
 	 */
 	protected $_cache_object = null;
+
+	/**
+	 * Cache constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Method returns last error message from the cache server.

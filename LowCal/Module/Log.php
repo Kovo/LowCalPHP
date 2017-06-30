@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\IO;
 
@@ -28,6 +29,15 @@ class Log extends Module
 	 * @var array
 	 */
 	protected $_log_files = array();
+
+	/**
+	 * Log constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Registers a log and will rotate if necessary/possible.

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Db;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Module\Module;
 
@@ -46,6 +47,15 @@ class Results extends Module
 	 * @var null|int
 	 */
 	protected $_returned_rows = null;
+
+	/**
+	 * Results constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Results destructor.

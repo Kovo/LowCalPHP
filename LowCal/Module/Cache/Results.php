@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Cache;
+use LowCal\Base;
 use LowCal\Module\Module;
 
 /**
@@ -15,6 +16,15 @@ class Results extends Module
 	 * @var null|mixed
 	 */
 	public $value = null;
+
+	/**
+	 * Results constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Results destructor.

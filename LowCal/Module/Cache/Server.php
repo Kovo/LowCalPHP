@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace LowCal\Module\Cache;
+use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Module\Module;
@@ -73,6 +74,15 @@ class Server extends Module
 	 * @var null|Memcached|Couchbase|Local
 	 */
 	protected $_interaction_object = null;
+
+	/**
+	 * Server constructor.
+	 * @param Base $Base
+	 */
+	function __construct(Base $Base)
+	{
+		parent::__construct($Base);
+	}
 
 	/**
 	 * Returns the state of the connection for the cache server.

@@ -21,7 +21,7 @@ class Controller
 	 * Controller constructor.
 	 * @param Base $Base
 	 */
-	function __construct(Base $Base)
+	protected function __construct(Base $Base)
 	{
 		$this->_Base = $Base;
 	}
