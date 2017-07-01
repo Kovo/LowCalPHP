@@ -63,7 +63,7 @@ try
 		'cookie_httponly' => true,
 	]);
 
-	$LowCal->db()->addServer('firstmysqliserver', Config::get('DATABASE_TYPE_MYSQLI'), Config::get('APP_DB_USER'), Config::get('APP_DB_PASSWORD'), Config::get('APP_DB_NAME'), Config::get('APP_DB_HOST'), Config::get('APP_DB_PORT'));
+	$LowCal->db()->addServer('firstmysqliserver', Config::get('DATABASE_SELECTED_TYPE'), Config::get('APP_DB_USER'), Config::get('APP_DB_PASSWORD'), Config::get('APP_DB_NAME'), Config::get('APP_DB_HOST'), Config::get('APP_DB_PORT'));
 
 	echo $LowCal->routing()->listen();
 }
