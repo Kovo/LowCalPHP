@@ -32,7 +32,7 @@ class Db extends Module
 	 * Db constructor.
 	 * @param Base $Base
 	 */
-	protected function __construct(Base $Base)
+	function __construct(Base $Base)
 	{
 		parent::__construct($Base);
 	}

@@ -33,7 +33,7 @@ class Cache extends Module
 	 * Cache constructor.
 	 * @param Base $Base
 	 */
-	protected function __construct(Base $Base)
+	function __construct(Base $Base)
 	{
 		parent::__construct($Base);
 	}
