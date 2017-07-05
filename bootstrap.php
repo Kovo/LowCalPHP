@@ -31,9 +31,6 @@ try
 
 	###INIT LOWCAL###
 	$LowCal = new Base($loader);
-
-	###BEGIN YOUR APP###
-	include Config::get('BASE_DIR').'init.php';
 }
 catch(\Throwable $t)
 {
@@ -41,3 +38,6 @@ catch(\Throwable $t)
 
 	exit();
 }
+
+###BEGIN YOUR APP###
+include Config::get('BASE_DIR').'init.php';
