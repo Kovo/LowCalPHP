@@ -195,6 +195,7 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 
 			if(defined('\Memcached::GET_EXTENDED'))
 			{
+				//your IDE might flag the next line as an error. It is not.
 				$returned_array = $this->_cache_object->get($key, null, \Memcached::GET_EXTENDED);
 				$Results->value = $returned_array['value'];
 				$cas_token = $returned_array['cas'];
