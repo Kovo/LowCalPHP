@@ -193,7 +193,16 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = '';
 			$this->_last_error_number = '';
 
-			$Results->value = $this->_cache_object->get($key, null, $cas_token);
+			if(defined('\Memcached::GET_EXTENDED'))
+			{
+				$returned_array = $this->_cache_object->get($key, null, \Memcached::GET_EXTENDED);
+				$Results->value = $returned_array['value'];
+				$cas_token = $returned_array['cas'];
+			}
+			else
+			{
+				$Results->value = $this->_cache_object->get($key, null, $cas_token);
+			}
 		}
 		catch(\Exception $e)
 		{

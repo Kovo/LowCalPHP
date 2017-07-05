@@ -267,6 +267,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			$result = $this->_db_object->query($QueryObject, true);
 
+			if(!is_array($result) && is_object($result))
+			{
+				$result = json_decode(json_encode($result), true);
+			}
+
 			$this->_last_error_message = '';
 			$this->_last_error_number = '';
 
