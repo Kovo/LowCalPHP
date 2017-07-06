@@ -5,7 +5,7 @@ use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Helper\IO;
 
-/** 
+/**
  * Class Log
  * The main Log module used to register and write to different types of logs.
  * @package LowCal\Module
@@ -110,9 +110,16 @@ class Log extends Module
 			}
 		}
 
+		$filename .= '.log';
+
+		if(!file_exists($directory.$filename))
+		{
+			file_put_contents($directory.$filename, '');
+		}
+
 		$this->_log_files[$identifier] = array(
 			'directory' => $directory,
-			'filename' => $filename.'.log',
+			'filename' => $filename,
 			'type' => self::TYPE_FILE
 		);
 

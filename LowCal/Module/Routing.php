@@ -4,6 +4,8 @@ namespace LowCal\Module;
 use LowCal\Base;
 use LowCal\Helper\Arrays;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
+use LowCal\Helper\IO;
 use LowCal\Helper\Strings;
 
 /**
@@ -38,16 +40,34 @@ class Routing extends Module
 	const CONSTRAINTS = 3;
 
 	/**
+	 * Key value for routing rule pattern.
+	 * @var int
+	 */
+	const RULES = 4;
+
+	/**
 	 * Regex pattern used for detecting terms in route rules.
 	 * @var string
 	 */
-	const REGEX_TERM_PATTERN = "#(\\()?<[^>]++>(\\))?#";
+	const REGEX_TERM_PATTERN = "#<([^>]++)>#";
 
 	/**
-	 * Rehex pattern used for detecting optional terms in route rules.
+	 * Regex pattern used for detecting optional terms in route rules.
 	 * @var string
 	 */
-	const REGEX_TERM_OPT_PATTERN = "#\\(<[^>]++>\\)#";
+	const REGEX_TERM_OPT_PATTERN = "#\\(([^()]++)\\)#";
+
+	/**
+	 * Regex pattern used for generating rule patterns.
+	 * @var string
+	 */
+	const REGEX_RULE_ESCAPE = '#[.\\+*?[^\\]${}=!|]#';
+
+	/**
+	 * Regex pattern used for generating rule patterns.
+	 * @var string
+	 */
+	const REGEX_RULE_SEGMENT = '[^/.,;?\n]++';
 
 	/**
 	 * Array of registered routing rules.
@@ -174,8 +194,7 @@ class Routing extends Module
 
 				$classObj = new $class($this->_Base);
 
-				$arguments = Arrays::insertValueAtPos($arguments, 1, array('controllerCalled'=> $class));
-				$arguments = Arrays::insertValueAtPos($arguments, 1, array('actionCalled'=> $method));
+				$arguments = Arrays::insertValueAtPos($arguments, 1, array('controllerCalled'=> $class, 'actionCalled'=> $method));
 
 				if(method_exists($classObj, 'before'))
 				{
@@ -216,86 +235,44 @@ class Routing extends Module
 	 */
 	protected function _listenParseURI(): array
 	{
-		$result_from_parse = array();
-		$uri_parts = explode('/', $this->stripBaseUri($this->getUri()));
-		$uri_parts_count = count($uri_parts);
-		$result_from_parse['foundKey'] = null;
-		$result_from_parse['terms'] = array();
+		$result_from_parse = array(
+			'foundKey' => null,
+			'terms'	=> array()
+		);
 
-		foreach($this->_routes as $route_key => $route_values)
+		foreach($this->_routes as $routeKey => $routeValues)
 		{
-			$pattern_parts = explode('/', $route_values[self::PATTERN]);
-			$broken = false;
-			$uri_hits = 0;
-
-			foreach($pattern_parts as $order => $part_string)
+			if(preg_match($routeValues[self::RULES], $this->stripBaseUri($this->getUri()), $terms))
 			{
-				if(!$this->_isPartATerm($part_string))
-				{
-					if(!isset($uri_parts[$order]) || $uri_parts[$order] !== $part_string || ($uri_parts_count > 1 && $uri_parts[$order] == ''))
-					{
-						$broken = true;
-						break;
-					}
-
-					$uri_hits++;
-				}
-				else
-				{
-					if(!$this->_isPartAnOptionalTerm($part_string))
-					{
-						if(!isset($uri_parts[$order]))
-						{
-							$broken = true;
-							break;
-						}
-						else
-						{
-							if(!$this->_constraintCheck($route_values[self::CONSTRAINTS],$part_string,$uri_parts[$order]) || $uri_parts[$order] == '')
-							{
-								$broken = true;
-								break;
-							}
-							else
-							{
-								$result_from_parse['terms'][str_replace(array('(',')','<','>'), '', $part_string)] = $uri_parts[$order];
-							}
-
-							$uri_hits++;
-						}
-					}
-					else
-					{
-						if(isset($uri_parts[$order]))
-						{
-							if(!empty($uri_parts[$order]) && !$this->_constraintCheck($route_values[self::CONSTRAINTS],$part_string,$uri_parts[$order]))
-							{
-								$broken = true;
-								break;
-							}
-							else
-							{
-								$result_from_parse['terms'][str_replace(array('(',')','<','>'), '', $part_string)] = $uri_parts[$order];
-							}
-
-							$uri_hits++;
-						}
-					}
-				}
-			}
-
-			if(!$broken && $uri_hits == $uri_parts_count)
-			{
-				$result_from_parse['foundKey'] = $route_key;
-				$result_from_parse['finalRouteValues'] = $route_values;
-				$this->_current_route = $route_key;
-
-				break;
+				$result_from_parse['foundKey'] = $routeKey;
+				$result_from_parse['finalRouteValues'] = $routeValues;
 			}
 			else
 			{
-				$result_from_parse['terms'] = array();
+				continue;
 			}
+
+			## Clean up the terms
+			if(is_array($terms) && !empty($terms))
+			{
+				foreach($terms as $offset => $term)
+				{
+					if(is_int($offset))
+					{
+						unset($terms[$offset]);
+					}
+					else
+					{
+						$result_from_parse['terms'][$offset] = $term;
+					}
+				}
+			}
+
+			## Save current values
+			$this->_current_route = $routeKey;
+			$this->_current_terms = $result_from_parse['terms'] ?? [];
+
+			break;
 		}
 
 		return $result_from_parse;
@@ -308,6 +285,15 @@ class Routing extends Module
 	public function getCurrentRoute(): string
 	{
 		return $this->_current_route;
+	}
+
+	/**
+	 * Get current terms being considered.
+	 * @return array
+	 */
+	public function getCurrentTerms(): array
+	{
+		return $this->_current_terms;
 	}
 
 	/**
@@ -377,7 +363,7 @@ class Routing extends Module
 				}
 
 				$this->_current_route = $identifier;
-				$this->_current_terms = (isset($final_route_values['terms'])?$final_route_values['terms']:array());
+				$this->_current_terms = $final_route_values['terms'] ?? [];
 
 				return $this->_listenFinalExecutions($final_route_values);
 			}
@@ -391,6 +377,38 @@ class Routing extends Module
 		{
 			throw new \Exception('No routes to match this request to.', Codes::ROUTING_ERROR_NO_ROUTE);
 		}
+	}
+
+	/**
+	 * Generates regex rules for given pattern.
+	 * @param string $pattern
+	 * @param array|null $constraints
+	 * @return string
+	 */
+	protected function _generateRules(string $pattern, ?array $constraints = null): string
+	{
+		## Strip both slashes
+		$pattern = $this->stripBothSlashes($pattern);
+
+		## Treat the pattern literal, except for keys and optional parts.
+		$pattern = preg_replace(self::REGEX_RULE_ESCAPE, '\\\\$0', $pattern);
+
+		## Make optional parts of the URI non-capturing and optional
+		$pattern = str_replace(array('(', ')'), array('(?:', ')?'), $pattern);
+
+		## Default regex for keys
+		$pattern = str_replace(array('<', '>'), array('(?P<', '>'.self::REGEX_RULE_SEGMENT.')'), $pattern);
+
+		## Constraints
+		if(!empty($constraints))
+		{
+			foreach($constraints as $term => $constraint)
+			{
+				$pattern = str_replace('<'.$term.'>'.self::REGEX_RULE_SEGMENT, '<'.$term.'>'.$constraint,$pattern);
+			}
+		}
+
+		return '#^'.$pattern.'$#uD';
 	}
 
 	/**
@@ -506,6 +524,7 @@ class Routing extends Module
 			self::CONTROLLER => $controller,
 			self::ACTION => $action,
 			self::CONSTRAINTS => $constraints,
+			self::RULES => $this->_generateRules($pattern, $constraints),
 		);
 
 		if($expose)
@@ -517,12 +536,11 @@ class Routing extends Module
 	}
 
 	/**
-	 * Get site url.
 	 * @return string
 	 */
 	public function getSiteUrl(): string
 	{
-		return $this->_site_url;
+		return ($this->_secure)?str_replace('http://','https://', $this->_site_url):$this->_site_url;
 	}
 
 	/**
@@ -789,41 +807,6 @@ class Routing extends Module
 	}
 
 	/**
-	 * Checks to see if detected part is a term or not.
-	 * @param string $part_string
-	 * @return bool
-	 */
-	protected function _isPartATerm(string $part_string): bool
-	{
-		if(preg_match(self::REGEX_TERM_PATTERN, $part_string) !== 1)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
-	/**
-	 * Checks to see if detected part is an optional term or not.
-	 * @param string $part_string
-	 * @return bool
-	 */
-	protected function _isPartAnOptionalTerm(string $part_string): bool
-	{
-		if(preg_match(self::REGEX_TERM_OPT_PATTERN, $part_string) !== 1)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
-	/**
-	 * Merges terms into route pattern if they are valid.
 	 * @param array $terms
 	 * @param string $pattern
 	 * @param array $constraints
@@ -832,80 +815,72 @@ class Routing extends Module
 	 */
 	protected function _mergeTermsWithPattern(array $terms, string $pattern, array $constraints = array()): string
 	{
-		if(count($terms) === 0)
-		{
-			return $pattern;
-		}
-		else
-		{
-			$pattern_parts = explode('/', $pattern);
-			$final_uri = '';
+		$final_uri = $pattern;
 
-			foreach($pattern_parts as $part_string)
+		## Optional terms
+		while(preg_match(self::REGEX_TERM_OPT_PATTERN, $final_uri, $match))
+		{
+			$patternPart = $match[0] ?? null;
+			$patternTerm = $match[1] ?? null;
+
+			if(preg_match(self::REGEX_TERM_PATTERN, $patternTerm, $match) !== false)
 			{
-				if(!$this->_isPartATerm($part_string))
+				$term = $match[0] ?? null;
+				$term_name = $match[1] ?? null;
+
+				if(isset($terms[$term_name]))
 				{
-					$final_uri .= $part_string.'/';
+					$merged_term = htmlentities(str_replace($term, $terms[$term_name], $patternTerm));
 				}
 				else
 				{
-					$found = false;
+					$merged_term = null;
+				}
 
-					foreach($terms as $term => $value)
-					{
-						if($this->_termMatchesPart($part_string, $term))
-						{
-							if(!$this->_constraintCheck($constraints, $term, $value))
-							{
-								if($this->_throw_exception_for_constraint_term_miss)
-								{
-									throw new \Exception('Term constraint rule failed for "'.$term.'". Value was "'.$value.'".', Codes::ROUTING_ERROR_REGEX_MATCH_ERROR);
-								}
-								else
-								{
-									$final_uri .= htmlentities($part_string).'/';
+				$final_uri = str_replace($patternPart, $merged_term, $final_uri);
+			}
+		}
 
-									$found = true;
+		## Mandatory terms
+		while(preg_match(self::REGEX_TERM_PATTERN, $final_uri, $match))
+		{
+			$term = $match[0] ?? '';
+			$term_name = $match[1] ?? '';
 
-									break;
-								}
-							}
+			## Required term
+			if(!isset($terms[$term_name]))
+			{
+				if($this->_throw_exception_for_req_terms_miss)
+				{
+					throw new \Exception('Term requirement failed for "'.$term_name.'".', Codes::ROUTING_ERROR_MISSING_REQ_TERMS);
+				}
+				else
+				{
+					$final_uri	= str_replace($term, htmlentities($term), $final_uri);
 
-							$final_uri .= $value.'/';
-
-							$found = true;
-
-							break;
-						}
-					}
-
-					if(!$found && !$this->_isPartAnOptionalTerm($part_string))
-					{
-						if($this->_throw_exception_for_req_terms_miss)
-						{
-							throw new \Exception('Could not fulfill required terms.', Codes::ROUTING_ERROR_MISSING_REQ_TERMS);
-						}
-						else
-						{
-							$final_uri .= htmlentities($part_string).'/';
-						}
-					}
+					continue;
 				}
 			}
 
-			return $final_uri;
-		}
-	}
+			## Constraint
+			if(!$this->_constraintCheck($constraints, $term, $terms[$term_name]))
+			{
+				if($this->_throw_exception_for_constraint_term_miss)
+				{
+					throw new \Exception('Term constraint rule failed for "'.$term_name.'". Value was "'.$terms[$term_name].'".', Codes::ROUTING_ERROR_REGEX_MATCH_ERROR);
+				}
+				else
+				{
+					$final_uri = str_replace($term, htmlentities($term), $final_uri);
 
-	/**
-	 * Checks to see if provided term matches part of url/uri.
-	 * @param string $part_string
-	 * @param string $term
-	 * @return bool
-	 */
-	protected function _termMatchesPart(string $part_string, string $term): bool
-	{
-		return (strpos($part_string, '<'.$term.'>') !== false || strpos($part_string, '(<'.$term.'>)') !== false);
+					continue;
+				}
+			}
+
+			$final_uri = str_replace($term, htmlentities($terms[$term_name]), $final_uri);
+		}
+
+		return $final_uri;
 	}
 
 	/**
@@ -948,5 +923,77 @@ class Routing extends Module
 		{
 			throw new \Exception('Cannot get URI.', Codes::ROUTING_ERROR_NO_URI);
 		}
+	}
+
+	/**
+	 * @param string $file_file_path
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public function bulkAddFromFile(string $file_file_path): bool
+	{
+		if(IO::isValidFile($file_file_path))
+		{
+			require $file_file_path;
+
+			if(isset($ROUTES_CONFIG_ARRAY) && is_array($ROUTES_CONFIG_ARRAY) && !empty($ROUTES_CONFIG_ARRAY))
+			{
+				foreach($ROUTES_CONFIG_ARRAY as $identifier => $route)
+				{
+					if(is_array($route) && !empty($route))
+					{
+						if(isset($route['pattern']) && isset($route['controller']) && isset($route['action']) && isset($route['constraints']) && is_array($route['constraints']) && isset($route['expose']))
+						{
+							$this->add($identifier, $route['pattern'], $route['controller'], $route['action'], $route['constraints'], $route['expose']);
+						}
+						else
+						{
+							throw new \Exception('Invalid route "'.$identifier.'"!');
+						}
+					}
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			throw new \Exception('Routes file "'.$file_file_path.'" does not exist!');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get a fully qualified route and swap a term with a new value
+	 * @param string $term
+	 * @param string $value
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function getChange(string $term, string $value): string
+	{
+		try
+		{
+			return $this->get($this->_current_route, array_replace($this->_current_terms, array($term => $value)));
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception($e->getMessage(), $e->getCode());
+		}
+	}
+	/**
+	 * @return string
+	 */
+	public function getCurrentUrl()
+	{
+		$siteUrl = $this->stripTrailingSlash($this->_site_url).$this->_base_uri;
+		if($this->secured())
+		{
+			$siteUrl = str_replace('http://','https://', $siteUrl);
+		}
+		return $siteUrl;
 	}
 }

@@ -58,4 +58,43 @@ class Arrays
 			+$value
 			+array_slice($array, $pos, count($array)-$pos, true);
 	}
+
+	/**
+	 * A recursive method to change values deep inside mutli-dimensional arrays (or create them if non-existent).
+	 * @param array $target_array
+	 * @param array $target_keys
+	 * @param $target_value
+	 * @return bool
+	 */
+	public static function setValueMulti(array &$target_array, array $target_keys, $target_value): bool
+	{
+		$next_key = array_shift($target_keys);
+		$count = count($target_keys);
+
+		foreach($target_array as $key => $value)
+		{
+			if($key == $next_key && $count === 0)
+			{
+				$target_array[$key] = $target_value;
+
+				return true;
+			}
+			elseif($key == $next_key && $count > 0 && is_array($value))
+			{
+				return self::setValueMulti($target_array[$key], $target_keys, $target_value);
+			}
+			elseif($key == $next_key && $count > 0)
+			{
+				return false;
+			}
+			else
+			{
+				continue;
+			}
+		}
+
+		$target_array[$next_key] = $target_value;
+
+		return true;
+	}
 }

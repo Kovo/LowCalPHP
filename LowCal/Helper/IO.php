@@ -109,7 +109,7 @@ class IO
 	{
 		if(!is_dir($dir))
 		{
-			if(!mkdir($dir, self::$default_chmod_level_dir, true))
+			if(!file_exists($dir) && !mkdir($dir, self::$default_chmod_level_dir, true))
 			{
 				return false;
 			}

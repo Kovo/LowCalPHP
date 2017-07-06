@@ -25,7 +25,7 @@ class Config
 	}
 
 	/**
-	 * Load a PHP file that contains configuration variables stored in a global LOWCAL_CONFIG_ARRAY variable.
+	 * Load a PHP or INI file that contains configuration variables stored in a global LOWCAL_CONFIG_ARRAY variable (for PHP files).
 	 * Existing configurations will be overwritten if keys match.
 	 * @param string $file_path
 	 * @throws \Exception
@@ -34,11 +34,27 @@ class Config
 	{
 		if(file_exists($file_path))
 		{
-			require $file_path;
-
-			if(isset($LOWCAL_CONFIG_ARRAY) && is_array($LOWCAL_CONFIG_ARRAY) && !empty($LOWCAL_CONFIG_ARRAY))
+			if(substr($file_path, -4) === '.php')
 			{
-				self::loadArray($LOWCAL_CONFIG_ARRAY);
+				require $file_path;
+
+				if(isset($LOWCAL_CONFIG_ARRAY) && is_array($LOWCAL_CONFIG_ARRAY) && !empty($LOWCAL_CONFIG_ARRAY))
+				{
+					self::loadArray($LOWCAL_CONFIG_ARRAY);
+				}
+			}
+			elseif(substr($file_path, -4) === '.ini')
+			{
+				$ini = parse_ini_file($file_path, true, INI_SCANNER_TYPED);
+
+				if(!empty($ini))
+				{
+					self::loadArray($ini);
+				}
+			}
+			else
+			{
+				throw new \Exception('Unsupported config file "'.$file_path.'" provided!');
 			}
 		}
 		else
@@ -70,20 +86,93 @@ class Config
 	}
 
 	/**
-	 * Gets a configuration variable.
+	 * Gets a configuration variable. The key name can be a composite to define a multi-dimensional array.
+	 * Like the Locale module, you can also replace values in the config value using the '%%' syntax.
 	 * @param string $config_key_name
+	 * @param array $replacements
 	 * @return mixed
 	 * @throws \Exception
 	 */
-	public static function get(string $config_key_name)
+	public static function get(string $config_key_name, array $replacements = array())
 	{
-		if(array_key_exists($config_key_name, self::$_configs))
+		$explode = explode('.', $config_key_name);
+
+		$value_to_return = self::$_configs;
+		foreach($explode as $key_name)
 		{
-			return self::$_configs[$config_key_name];
+			if(is_array($value_to_return) && array_key_exists($key_name, $value_to_return))
+			{
+				$value_to_return = $value_to_return[$key_name];
+			}
+			else
+			{
+				throw new \Exception('Config "'.$key_name.'" does not exist!', Codes::INTERNAL_CONFIG_MISSING_KEY);
+			}
+		}
+
+		if(!empty($replacements) && is_string($value_to_return))
+		{
+			foreach($replacements as $key => $value)
+			{
+				$value_to_return = str_replace('%'.$key.'%', $value, $value_to_return);
+			}
+		}
+
+		return $value_to_return;
+	}
+
+	/**
+	 * Sets a configuration variable. The key name can be a composite to define a multi-dimensional array.
+	 * @param string $config_key_name
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function set(string $config_key_name, $config_key_value): bool
+	{
+		return Arrays::setValueMulti(self::$_configs, explode('.', $config_key_name), $config_key_value);
+	}
+
+	/**
+	 * Simple wrapper method to easily change php ini config values.
+	 * @param string $config_name
+	 * @param $config_value
+	 * @return bool
+	 */
+	public static function changePHPConfig(string $config_name, $config_value): bool
+	{
+		return (ini_set($config_name, $config_value)?true:false);
+	}
+
+	/**
+	 * @param string $config_file_path
+	 * @param string $config_key
+	 * @param $value
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function setInFile(string $config_file_path, string $config_key, $value): bool
+	{
+		if(substr($config_file_path, -4) === '.php')
+		{
+			return self::_setConfigInPHPFile($config_file_path, $config_key, $value);
+		}
+		elseif(substr($config_file_path, -4) === '.ini')
+		{
+			return self::_setConfigInINIFile($config_file_path, $config_key, $value);
 		}
 		else
 		{
-			throw new \Exception('Config "'.$config_key_name.'" does not exist!', Codes::INTERNAL_CONFIG_MISSING_KEY);
+			throw new \Exception('Unsupported config file "'.$config_file_path.'" provided!');
 		}
+	}
+
+	public static function _setConfigInPHPFile(string $config_file_path, string $config_key, $value): bool
+	{
+
+	}
+
+	public static function _setConfigInINIFile(string $config_file_path, string $config_key, $value): bool
+	{
+
 	}
 }
