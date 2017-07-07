@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace LowCal\Module;
 use LowCal\Base;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
 use LowCal\Helper\IO;
 
 /**
@@ -127,7 +128,7 @@ class Log extends Module
 	}
 
 	/**
-	 * Write to a registered log.
+	 * Write to a registered log. This method should be used instead of any embedded add methods.
 	 * @param string $identifier
 	 * @param string $message
 	 * @return Log
@@ -135,16 +136,18 @@ class Log extends Module
 	 */
 	public function add(string $identifier, string $message): Log
 	{
-		if(isset($this->_log_files[$identifier]))
+		if(!isset($this->_log_files[$identifier]))
 		{
-			switch($this->_log_files[$identifier]['type'])
-			{
-				case self::TYPE_FILE:
-					$this->addFile($message, $this->_log_files[$identifier]['directory'], $this->_log_files[$identifier]['filename']);
-					break;
-				default:
-					throw new \Exception('Invalid log type provided ('.$this->_log_files[$identifier]['type'].').', Codes::LOG_INVALID_LOG_TYPE);
-			}
+			$this->registerFile($identifier, Config::get('LOGS_DIR'));
+		}
+
+		switch($this->_log_files[$identifier]['type'])
+		{
+			case self::TYPE_FILE:
+				$this->addFile($message, $this->_log_files[$identifier]['directory'], $this->_log_files[$identifier]['filename']);
+				break;
+			default:
+				throw new \Exception('Invalid log type provided ('.$this->_log_files[$identifier]['type'].').', Codes::LOG_INVALID_LOG_TYPE);
 		}
 
 		return $this;

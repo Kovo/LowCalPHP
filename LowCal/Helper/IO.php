@@ -270,7 +270,7 @@ class IO
 	 * @param string $filename
 	 * @return bool
 	 */
-	public static function moveFile(string $source_folder_name, string $target_folder_name, string $filename): bool
+	public static function moveFile(string $source_folder_name, string $target_folder_name, string $filename = ''): bool
 	{
 		if(self::recursiveCopy($source_folder_name.$filename, $target_folder_name.$filename))
 		{
@@ -291,7 +291,7 @@ class IO
 	 * @param $filename
 	 * @return bool
 	 */
-	public static function moveFileEnforce(string $source_folder_name, string $target_folder_name, string $filename): bool
+	public static function moveFileEnforce(string $source_folder_name, string $target_folder_name, string $filename = ''): bool
 	{
 		if(!self::moveFile($source_folder_name, $target_folder_name, $filename))
 		{
@@ -314,7 +314,7 @@ class IO
 	 * @param string $filename
 	 * @return bool
 	 */
-	public static function copyFile(string $source_folder_name, string $target_folder_name, string $filename): bool
+	public static function copyFile(string $source_folder_name, string $target_folder_name, string $filename = ''): bool
 	{
 		return self::recursiveCopy($source_folder_name.$filename, $target_folder_name.$filename);
 	}

@@ -148,10 +148,11 @@ class Config
 	 * @param string $config_file_path
 	 * @param string $config_key
 	 * @param $value
+	 * @param string $variable_name
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public static function setInFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
+	public static function setInFile(string $config_file_path, string $config_key, $value, string $variable_name = ''): bool
 	{
 		if(substr($config_file_path, -4) === '.php')
 		{
@@ -159,7 +160,7 @@ class Config
 		}
 		elseif(substr($config_file_path, -4) === '.ini')
 		{
-			return self::_setConfigInINIFile($config_file_path, $config_key, $variable_name, $value);
+			return self::_setConfigInINIFile($config_file_path, $config_key, $value);
 		}
 		else
 		{
@@ -167,6 +168,15 @@ class Config
 		}
 	}
 
+	/**
+	 * A thread-safe method to set or change a config value in a PHP config file.
+	 * @param string $config_file_path
+	 * @param string $config_key
+	 * @param string $variable_name
+	 * @param $value
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public static function _setConfigInPHPFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
 	{
 		if(IO::isValidFile($config_file_path))
@@ -181,15 +191,15 @@ class Config
 			switch(gettype($value))
 			{
 				case 'string':
-					$final_value = "'".str_replace("'", "\\'", $value)."'";
+					$final_value = "'".str_replace("'", "\\'", Strings::trim($value))."';";
 					break;
 				case 'integer':
 				case 'double':
 				case 'boolean':
-					$final_value = $value;
+					$final_value = $value.";";
 					break;
 				case 'array':
-					$final_value = var_export($value, true);
+					$final_value = Strings::trim(var_export($value, true)).";";
 					break;
 				default:
 					IO::removeFileFolderEnforce($lock_file);
@@ -201,12 +211,51 @@ class Config
 
 			if(!empty($lines))
 			{
-				file_put_contents($config_file_path, '');
+				$temp_file_path = $config_file_path.'.tmp.php';
+
+				file_put_contents($temp_file_path, '');
+
+				$multiline = false;
 
 				foreach($lines as $line_number => $line_value)
 				{
+					$line_value = Strings::trim($line_value);
 
+					if($multiline)
+					{
+						if(substr($line_value, -1) === ';')
+						{
+							$line_value = "$".$variable_name."['".$config_key."'] = ".$final_value;
+
+							$multiline = false;
+						}
+						else
+						{
+							continue;
+						}
+					}
+					elseif(strpos($line_value, "$".$variable_name."['".$config_key."']") !== false)
+					{
+						if(substr($line_value, -1) === ';')
+						{
+							$line_value = "$".$variable_name."['".$config_key."'] = ".$final_value;
+						}
+						else
+						{
+							$multiline = true;
+
+							continue;
+						}
+					}
+
+					if(!empty($line_value))
+					{
+						file_put_contents($temp_file_path, $line_value."\r\n", FILE_APPEND);
+					}
 				}
+
+				IO::copyFile($temp_file_path, $config_file_path);
+				IO::removeFileFolderEnforce($temp_file_path);
 			}
 			else
 			{
@@ -226,8 +275,129 @@ class Config
 		}
 	}
 
-	public static function _setConfigInINIFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
+	/**
+	 * A thread-safe method to set or change a config value in an INI config file.
+	 * @param string $config_file_path
+	 * @param string $config_key
+	 * @param $value
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function _setConfigInINIFile(string $config_file_path, string $config_key, $value): bool
 	{
+		if(IO::isValidFile($config_file_path))
+		{
+			$lock_file = __DIR__.DIRECTORY_SEPARATOR.md5($config_file_path).'lock';
 
+			if(IO::isValidFile($lock_file) || file_put_contents($lock_file, '') === false)
+			{
+				throw new \Exception('Cannot set lock for config file "'.$config_file_path.'". Another program may already be modifying it.', Codes::INTERNAL_CONFIG_FILE_CANNOT_LOCK);
+			}
+
+			$lines = parse_ini_file($config_file_path, true, INI_SCANNER_TYPED);
+
+			if(!empty($lines))
+			{
+				$temp_file_path = $config_file_path.'.tmp.php';
+
+				file_put_contents($temp_file_path, '');
+
+				foreach($lines as $line_number => $line_value)
+				{
+					$line_value = Strings::trim($line_value);
+
+					if(substr($line_value,0,strlen($config_key)) === $config_key)
+					{
+						$line_value = self::_getINIFinalValue($line_value, $value, $config_key, $lock_file);
+					}
+
+					if(!empty($line_value))
+					{
+						file_put_contents($temp_file_path, $line_value."\r\n", FILE_APPEND);
+					}
+				}
+
+				IO::copyFile($temp_file_path, $config_file_path);
+				IO::removeFileFolderEnforce($temp_file_path);
+			}
+			else
+			{
+				$line_value = self::_getINIFinalValue('', $value, $config_key, $lock_file);
+
+				if(!empty($line_value))
+				{
+					file_put_contents($config_file_path,$line_value."\r\n");
+				}
+			}
+
+			IO::removeFileFolderEnforce($lock_file);
+
+			return true;
+		}
+		else
+		{
+			throw new \Exception('Cannot find config file "'.$config_file_path.'".', Codes::INTERNAL_CONFIG_FILE_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Prepares the value to be inserted into the INI file.
+	 * @param string $line_value
+	 * @param $value
+	 * @param string $config_key
+	 * @param string $lock_file
+	 * @return string
+	 * @throws \Exception
+	 */
+	protected static function _getINIFinalValue(string $line_value, $value, string $config_key, string $lock_file): string
+	{
+		switch(gettype($value))
+		{
+			case 'string':
+				$line_value = $config_key.' = "'.str_replace('"', '\\"', Strings::trim($value)).'"';
+				break;
+			case 'integer':
+			case 'double':
+			case 'boolean':
+				$line_value = $config_key.' = '.Strings::trim($value);
+				break;
+			case 'array':
+				if(!empty($value))
+				{
+					$line_value = '';
+					foreach($value as $inner_key => $inner_value)
+					{
+						switch(gettype($inner_value))
+						{
+							case 'string':
+								$inner_value = '"'.str_replace('"', '\\"', Strings::trim($value)).'"';
+								break;
+							case 'integer':
+							case 'double':
+							case 'boolean':
+								$inner_value = Strings::trim($inner_value);
+								break;
+							default:
+								throw new \Exception('Unsupported configuration value "'.gettype($inner_value).'" provided.', Codes::INTERNAL_CONFIG_UNSUPPORTED_VALUE_TYPE);
+						}
+
+						if(is_numeric($inner_key))
+						{
+							$line_value .= $config_key.'[] = '.$inner_value;
+						}
+						else
+						{
+							$line_value .= $config_key.'['.$inner_key.'] = '.$inner_value;
+						}
+					}
+				}
+				break;
+			default:
+				IO::removeFileFolderEnforce($lock_file);
+
+				throw new \Exception('Unsupported configuration value "'.gettype($value).'" provided.', Codes::INTERNAL_CONFIG_UNSUPPORTED_VALUE_TYPE);
+		}
+
+		return $line_value;
 	}
 }
