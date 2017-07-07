@@ -134,7 +134,7 @@ class IO
 	 */
 	public static function isAccessibleFile(string $file, string $accessLevels): bool
 	{
-		if(!is_file($file))
+		if(!file_exists($file) || !is_file($file))
 		{
 			return false;
 		}

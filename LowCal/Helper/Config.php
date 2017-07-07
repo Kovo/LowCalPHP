@@ -54,12 +54,12 @@ class Config
 			}
 			else
 			{
-				throw new \Exception('Unsupported config file "'.$file_path.'" provided!');
+				throw new \Exception('Unsupported config file "'.$file_path.'" provided!', Codes::INTERNAL_CONFIG_UNSUPPORTED_FILE);
 			}
 		}
 		else
 		{
-			throw new \Exception('Config file "'.$file_path.'" does not exist!');
+			throw new \Exception('Config file "'.$file_path.'" does not exist!', Codes::INTERNAL_CONFIG_FILE_NOT_FOUND);
 		}
 	}
 
@@ -144,34 +144,89 @@ class Config
 	}
 
 	/**
+	 * A thread-safe method of changing or adding configuration values to existing confio files.
 	 * @param string $config_file_path
 	 * @param string $config_key
 	 * @param $value
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public static function setInFile(string $config_file_path, string $config_key, $value): bool
+	public static function setInFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
 	{
 		if(substr($config_file_path, -4) === '.php')
 		{
-			return self::_setConfigInPHPFile($config_file_path, $config_key, $value);
+			return self::_setConfigInPHPFile($config_file_path, $config_key, $variable_name, $value);
 		}
 		elseif(substr($config_file_path, -4) === '.ini')
 		{
-			return self::_setConfigInINIFile($config_file_path, $config_key, $value);
+			return self::_setConfigInINIFile($config_file_path, $config_key, $variable_name, $value);
 		}
 		else
 		{
-			throw new \Exception('Unsupported config file "'.$config_file_path.'" provided!');
+			throw new \Exception('Unsupported config file "'.$config_file_path.'" provided!', Codes::INTERNAL_CONFIG_UNSUPPORTED_FILE);
 		}
 	}
 
-	public static function _setConfigInPHPFile(string $config_file_path, string $config_key, $value): bool
+	public static function _setConfigInPHPFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
 	{
+		if(IO::isValidFile($config_file_path))
+		{
+			$lock_file = __DIR__.DIRECTORY_SEPARATOR.md5($config_file_path).'lock';
 
+			if(IO::isValidFile($lock_file) || file_put_contents($lock_file, '') === false)
+			{
+				throw new \Exception('Cannot set lock for config file "'.$config_file_path.'". Another program may already be modifying it.', Codes::INTERNAL_CONFIG_FILE_CANNOT_LOCK);
+			}
+
+			switch(gettype($value))
+			{
+				case 'string':
+					$final_value = "'".str_replace("'", "\\'", $value)."'";
+					break;
+				case 'integer':
+				case 'double':
+				case 'boolean':
+					$final_value = $value;
+					break;
+				case 'array':
+					$final_value = var_export($value, true);
+					break;
+				default:
+					IO::removeFileFolderEnforce($lock_file);
+
+					throw new \Exception('Unsupported configuration value "'.gettype($value).'" provided.', Codes::INTERNAL_CONFIG_UNSUPPORTED_VALUE_TYPE);
+			}
+
+			$lines = file($config_file_path);
+
+			if(!empty($lines))
+			{
+				file_put_contents($config_file_path, '');
+
+				foreach($lines as $line_number => $line_value)
+				{
+
+				}
+			}
+			else
+			{
+				file_put_contents($config_file_path,
+					"<?php\r\n".
+					"$".$variable_name."['".$config_key."'] = ".$final_value.";\r\n"
+				);
+			}
+
+			IO::removeFileFolderEnforce($lock_file);
+
+			return true;
+		}
+		else
+		{
+			throw new \Exception('Cannot find config file "'.$config_file_path.'".', Codes::INTERNAL_CONFIG_FILE_NOT_FOUND);
+		}
 	}
 
-	public static function _setConfigInINIFile(string $config_file_path, string $config_key, $value): bool
+	public static function _setConfigInINIFile(string $config_file_path, string $config_key, string $variable_name, $value): bool
 	{
 
 	}

@@ -948,7 +948,7 @@ class Routing extends Module
 						}
 						else
 						{
-							throw new \Exception('Invalid route "'.$identifier.'"!');
+							throw new \Exception('Invalid route "'.$identifier.'"!', Codes::ROUTING_ERROR_INVALID_ROUTE);
 						}
 					}
 				}
@@ -960,7 +960,7 @@ class Routing extends Module
 		}
 		else
 		{
-			throw new \Exception('Routes file "'.$file_file_path.'" does not exist!');
+			throw new \Exception('Routes file "'.$file_file_path.'" does not exist!', Codes::ROUTING_ERROR_FILE_NOT_FOUND);
 		}
 
 		return true;
