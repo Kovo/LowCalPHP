@@ -21,7 +21,7 @@ $loader->addNamespace('LowCal\\', 'LowCal/');
 **Load necessary configuration files:**
 ```php
 Config::loadFile('config.php');
-Config::loadConfigForEnv('config');
+Config::loadConfigForEnv('config.php');
 ```
 
 **Init LowCal Base class:**
