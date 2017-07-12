@@ -225,11 +225,15 @@ class Results extends Module
 				{
 					$this->_result_array_traversed = true;
 
-					return array(current($this->_results));
+					$result = current($this->_results);
+
+					return (is_array($result)?$result:array($result));
 				}
 				else
 				{
-					return array(next($this->_results));
+					$result = next($this->_results);
+
+					return (is_array($result)?$result:array($result));
 				}
 			}
 		}
