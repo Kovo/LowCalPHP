@@ -220,6 +220,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
+			$Results->setErrorDetected();
+
 			$this->_Base->log()->add('mysqli', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
 
@@ -361,6 +363,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 		{
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
+
+			$Results->setErrorDetected();
 
 			$this->_Base->log()->add('mysqli', 'Exception during query: "'.$query.' | Exception: "#'.$this->_last_error_number.' / '.$this->_last_error_message.'"');
 		}

@@ -49,6 +49,11 @@ class Results extends Module
 	protected $_returned_rows = null;
 
 	/**
+	 * @var bool
+	 */
+	protected $_error_detected = false;
+
+	/**
 	 * Results constructor.
 	 * @param Base $Base
 	 */
@@ -112,6 +117,24 @@ class Results extends Module
 		$this->_returned_rows = $returned_rows;
 
 		return $this;
+	}
+
+	/**
+	 * @return Results
+	 */
+	public function setErrorDetected(): Results
+	{
+		$this->_error_detected = true;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getErrorDetected(): bool
+	{
+		return $this->_error_detected;
 	}
 
 	/**

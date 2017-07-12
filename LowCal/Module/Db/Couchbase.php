@@ -277,7 +277,12 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = '';
 			$this->_last_error_number = '';
 
-			$Results->setAffectedRows($result['metrics']['resultCount'])
+			if(isset($result['metrics']['errorCount']) && $result['metrics']['errorCount'] > 0)
+			{
+				$Results->setErrorDetected();
+			}
+
+			$Results->setAffectedRows($result['metrics']['mutationCount'] ?? 0)
 				->setReturnedRows($result['metrics']['resultCount'])
 				->setResults($result['rows']);
 
@@ -290,7 +295,9 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$this->_Base->log()->add('couchbase_db', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
+			$Results->setErrorDetected();
+
+			$this->_Base->log()->add('couchbase_db', 'Exception during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
 
 		return $Results;
