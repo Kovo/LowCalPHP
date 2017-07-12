@@ -221,6 +221,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	 */
 	public function getDbObject(): ?\Couchbase\Bucket
 	{
+		$this->_Base->db()->server($this->_server_identifier)->connect();
+
 		return $this->_db_object;
 	}
 

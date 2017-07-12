@@ -172,6 +172,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	 */
 	public function getDbObject(): ?\mysqli
 	{
+		$this->_Base->db()->server($this->_server_identifier)->connect();
+
 		return $this->_db_object;
 	}
 

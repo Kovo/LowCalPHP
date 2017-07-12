@@ -156,6 +156,8 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 	 */
 	public function getCacheObject(): \Memcached
 	{
+		$this->_Base->cache()->server($this->_server_identifier)->connect();
+
 		return $this->_cache_object;
 	}
 

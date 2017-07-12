@@ -146,6 +146,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	 */
 	public function getCacheObject(): \Couchbase\Bucket
 	{
+		$this->_Base->cache()->server($this->_server_identifier)->connect();
+
 		return $this->_cache_object;
 	}
 
