@@ -206,9 +206,9 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 				$this->_last_error_number = '';
 
 				$Results->setAffectedRows($this->_db_object->affected_rows)
-						->setInsertId($this->_db_object->insert_id)
-						->setReturnedRows($result->num_rows)
-						->setResults($result);
+					->setInsertId($this->_db_object->insert_id)
+					->setReturnedRows($result->num_rows)
+					->setResults($result);
 
 				$result->free();
 				$result = null;
@@ -350,9 +350,9 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 				$this->_last_error_number = '';
 
 				$Results->setAffectedRows($this->_db_object->affected_rows)
-						->setInsertId($this->_db_object->insert_id)
-						->setReturnedRows($result->num_rows)
-						->setResults($result);
+					->setInsertId($this->_db_object->insert_id)
+					->setReturnedRows($result->num_rows)
+					->setResults($result);
 
 				$result->free();
 				$result = null;
@@ -390,5 +390,66 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	public function delete(string $query): Results
 	{
 		return $this->insert($query);
+	}
+
+	/**
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $set_lock
+	 * @return Results
+	 */
+	public function getKV(string $key, bool $check_lock = false, bool $set_lock = false): Results
+	{
+		$Results = new Results($this->_Base);
+
+		//mysql doe snot have key/value support
+
+		$Results->setErrorDetected();
+
+		return $Results;
+	}
+
+	/**
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function setKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
+	{
+		//mysql doe snot have key/value support
+
+		return false;
+	}
+
+	/**
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function addKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
+	{
+		//mysql doe snot have key/value support
+
+		return false;
+	}
+
+	/**
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = null): bool
+	{
+		//mysql doe snot have key/value support
+
+		return false;
 	}
 }

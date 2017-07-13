@@ -33,6 +33,12 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	protected $_n1ql_query_adhoc = true;
 
 	/**
+	 * Timeout for locks on key/value lookups.
+	 * @var int
+	 */
+	protected $_lock_timeout_seconds = 0;
+
+	/**
 	 * The couchbase bucket object is stored here.
 	 * @var null|\Couchbase\Bucket
 	 */
@@ -123,6 +129,18 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	public function getQueryAdhoc(): bool
 	{
 		return $this->_n1ql_query_adhoc;
+	}
+
+	/**
+	 * Set the lock timeout/expiry for key/value lookups.
+	 * @param int $seconds
+	 * @return Couchbase
+	 */
+	public function setLocktimeout(int $seconds): Couchbase
+	{
+		$this->_lock_timeout_seconds = $seconds;
+
+		return $this;
 	}
 
 	/**
@@ -295,7 +313,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-			$Results->setErrorDetected();
+
 
 			$this->_Base->log()->add('couchbase_db', 'Exception during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
@@ -341,5 +359,227 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	public function delete(string $query): Results
 	{
 		return $this->insert($query);
+	}
+
+	/**
+	 * Gets the requested key, allowing you to check for active locks, and setting them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then returns the value (if it exists).
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $set_lock
+	 * @return Results
+	 * @throws \Exception
+	 */
+	public function getKV(string $key, bool $check_lock = false, bool $set_lock = false): Results
+	{
+		$Results = new Results($this->_Base);
+
+		try
+		{
+			$this->_Base->db()->server($this->_server_identifier)->connect();
+
+			if($check_lock)
+			{
+				while($this->_db_object->get($key.'_LOCK')->value)
+				{
+					usleep(random_int(1000,500000));
+				}
+			}
+
+			try
+			{
+				if($set_lock && !$this->_db_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
+				{
+					throw new \Exception('Cannot set lock key for '.$key.'.', Codes::DB_CANNOT_SET_LOCK);
+				}
+			}
+			catch(\Exception $e)
+			{
+				throw new \Exception($e->getMessage(), $e->getCode());
+			}
+
+			$this->_last_error_message = '';
+			$this->_last_error_number = '';
+
+			$result = $this->_db_object->get($key);
+
+			if(empty($result->error))
+			{
+				$Results->setResults($result->value);
+			}
+			else
+			{
+				throw new \Exception($result->error->getMessage(), $result->error->getCode());
+			}
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() === Codes::DB_CANNOT_SET_LOCK)
+			{
+				throw new \Exception($e->getMessage(), $e->getCode());
+			}
+
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+		}
+
+		return $Results;
+	}
+
+	/**
+	 * Sets a new value, or updates and existing one.
+	 * You need to delete your lock during this step if you set one during your get.
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function setKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
+	{
+		try
+		{
+			$this->_Base->db()->server($this->_server_identifier)->connect();
+
+			try
+			{
+				$this->_db_object->upsert($key, $value, array('expiry'=>$timeout, 'cas' => $cas));
+
+				if($delete_lock)
+				{
+					$this->_db_object->remove($key.'_LOCK');
+				}
+
+				$this->_last_error_message = '';
+				$this->_last_error_number = '';
+
+				return true;
+			}
+			catch(\Exception $e)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
+
+				return false;
+			}
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('couchbase_db', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Adds a new value, or fails if its key already exists.
+	 * You need to delete your lock during this step if you set one during your get.
+	 * @param string $key
+	 * @param $value
+	 * @param int $timeout
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function addKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
+	{
+		try
+		{
+			$this->_Base->db()->server($this->_server_identifier)->connect();
+
+			try
+			{
+				$this->_db_object->insert($key, $value, array('expiry'=>$timeout, 'cas' => $cas));
+
+				if($delete_lock)
+				{
+					$this->_db_object->remove($key.'_LOCK');
+				}
+
+				$this->_last_error_message = '';
+				$this->_last_error_number = '';
+
+				return true;
+			}
+			catch(\Exception $e)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
+
+				return false;
+			}
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('couchbase_db', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Deletes provided key, and can also check for existing locks, and delete them as well.
+	 * If an active lock is detected, the method will wait until the lock expires, and then deletes the key (if it exists).
+	 * You need to delete your lock during this step if you set one during your get.
+	 * @param string $key
+	 * @param bool $check_lock
+	 * @param bool $delete_lock
+	 * @param string|null $cas
+	 * @return bool
+	 */
+	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = null): bool
+	{
+		try
+		{
+			$this->_Base->db()->server($this->_server_identifier)->connect();
+
+			try
+			{
+				if($check_lock)
+				{
+					while($this->_db_object->get($key.'_LOCK')->value)
+					{
+						usleep(random_int(1000,500000));
+					}
+				}
+
+				$this->_db_object->remove($key, array('cas' => $cas));
+
+				if($delete_lock)
+				{
+					$this->_db_object->remove($key.'_LOCK');
+				}
+
+				$this->_last_error_message = '';
+				$this->_last_error_number = '';
+
+				return true;
+			}
+			catch(\Exception $e)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
+
+				return false;
+			}
+		}
+		catch(\Exception $e)
+		{
+			$this->_last_error_message = $e->getMessage();
+			$this->_last_error_number = $e->getCode();
+
+			$this->_Base->log()->add('couchbase_db', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			return false;
+		}
 	}
 }

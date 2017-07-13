@@ -60,6 +60,7 @@ class Codes
 	const DB_INCORRECT_SANITIZE_DIRECTIVE = 64;
 	const DB_CANNOT_OPEN_DATABASE = 65;
 	const DB_AUTH_CONNECT_ERROR = 66;
+	const DB_CANNOT_SET_LOCK = 67;
 
 	/*
 	 * Log module related errors.

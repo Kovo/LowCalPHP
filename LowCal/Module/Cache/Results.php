@@ -18,6 +18,12 @@ class Results extends Module
 	public $value = null;
 
 	/**
+	 * The returned cas value.
+	 * @var null|string
+	 */
+	public $cas = null;
+
+	/**
 	 * Results constructor.
 	 * @param Base $Base
 	 */

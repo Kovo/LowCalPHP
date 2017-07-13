@@ -191,7 +191,17 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_message = '';
 			$this->_last_error_number = '';
 
-			$Results->value = $this->_cache_object->get($key);
+			$result = $this->_cache_object->get($key);
+
+			if(empty($result->error))
+			{
+				$Results->value = $result->value;
+				$Results->cas = $result->cas;
+			}
+			else
+			{
+				throw new \Exception($result->error->getMessage(), $result->error->getCode());
+			}
 		}
 		catch(\Exception $e)
 		{

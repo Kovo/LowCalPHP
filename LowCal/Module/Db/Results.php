@@ -188,7 +188,7 @@ class Results extends Module
 		}
 		elseif(is_object($results))
 		{
-			$this->_results = json_decode(json_encode($results), true);
+			$this->_results = array(json_decode(json_encode($results), true));
 
 			$this->_result_type = 'array';
 		}
