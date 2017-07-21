@@ -406,6 +406,9 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			if(empty($result->error))
 			{
 				$Results->setResults($result->value);
+				$Results->setReturnedRows((
+				is_array($result)?count($result):1
+				));
 			}
 			else
 			{
