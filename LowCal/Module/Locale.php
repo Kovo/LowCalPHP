@@ -231,6 +231,7 @@ class Locale extends Module
 	 * Get short-hand id for provided language identifier (if it is registered).
 	 * @param string $locale
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function getShortLocaleId(string $locale): string
 	{
@@ -244,7 +245,7 @@ class Locale extends Module
 		}
 		else
 		{
-			return '';
+			throw new \Exception('Invalid locale id provided "'.$locale.'".', Codes::LOCALE_INVALID_LOCALE);
 		}
 	}
 
@@ -253,6 +254,7 @@ class Locale extends Module
 	 * Get long-hand id for provided language identifier (if it is registered).
 	 * @param string $locale
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function getLongLocaleId(string $locale): string
 	{
@@ -266,7 +268,7 @@ class Locale extends Module
 		}
 		else
 		{
-			return '';
+			throw new \Exception('Invalid locale id provided "'.$locale.'".', Codes::LOCALE_INVALID_LOCALE);
 		}
 	}
 
