@@ -160,12 +160,12 @@ class Db extends Module
 					if((string)(float)$value == $value)
 					{
 						//32bit safe method to get floating point numbers or numbers beyond 32bit limit
-						return bcmul($value, 1, $decimal_places);
+						return bcmul((string)$value, '1', $decimal_places);
 					}
 					else
 					{
 						//32bit safe method to get floating point numbers or numbers beyond 32bit limit
-						return bcmul($value, 1, 0);
+						return bcmul((string)$value, '1', 0);
 					}
 				}
 
