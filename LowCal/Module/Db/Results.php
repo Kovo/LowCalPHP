@@ -233,6 +233,11 @@ class Results extends Module
 				{
 					$result = next($this->_results);
 
+					if($result === false)
+					{
+						return null;
+					}
+
 					return (is_array($result)?$result:array($result));
 				}
 			}
