@@ -4,6 +4,7 @@ namespace LowCal\Module\Db;
 use Couchbase\N1qlQuery;
 use LowCal\Base;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
 use LowCal\Helper\Strings;
 use LowCal\Interfaces\Module\Db;
 
@@ -165,7 +166,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			try
 			{
-				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
+				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
@@ -180,7 +181,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						try
 						{
-							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
+							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 							$this->_is_connected = true;
 
 							break;

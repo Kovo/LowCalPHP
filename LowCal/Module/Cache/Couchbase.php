@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace LowCal\Module\Cache;
 use LowCal\Base;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
 use LowCal\Interfaces\Module\Cache;
 
 /**
@@ -72,7 +73,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 			try
 			{
-				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
+				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
@@ -87,7 +88,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 						try
 						{
-							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port);
+							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 							$this->_is_connected = true;
 
 							break;
