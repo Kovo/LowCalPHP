@@ -187,9 +187,9 @@ class Memcached extends \LowCal\Module\Cache\Cache implements Cache
 				}
 			}
 
-			if($set_lock && !$this->_cache_object->add($key.'_LOCK', true, $this->_lock_timeout_seconds))
+			while($set_lock && !$this->_cache_object->add($key.'_LOCK', true, $this->_lock_timeout_seconds))
 			{
-				throw new \Exception('Cannot set lock key for '.$key.'.', Codes::CACHE_CANNOT_SET_LOCK);
+				usleep(random_int(1000,500000));
 			}
 
 			$this->_last_error_message = '';

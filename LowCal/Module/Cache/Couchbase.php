@@ -179,9 +179,9 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 			try
 			{
-				if($set_lock && !$this->_cache_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
+				while($set_lock && !$this->_cache_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
 				{
-					throw new \Exception('Cannot set lock key for '.$key.'.', Codes::CACHE_CANNOT_SET_LOCK);
+					usleep(random_int(1000,500000));
 				}
 			}
 			catch(\Exception $e)

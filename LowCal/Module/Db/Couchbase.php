@@ -389,9 +389,9 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			try
 			{
-				if($set_lock && !$this->_db_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
+				while($set_lock && !$this->_db_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
 				{
-					throw new \Exception('Cannot set lock key for '.$key.'.', Codes::DB_CANNOT_SET_LOCK);
+					usleep(random_int(1000,500000));
 				}
 			}
 			catch(\Exception $e)
@@ -408,7 +408,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$Results->setResults($result->value);
 				$Results->setReturnedRows((
-				is_array($result)?count($result):1
+					is_array($result)?count($result):1
 				));
 			}
 			else
