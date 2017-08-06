@@ -188,7 +188,7 @@ class Db extends Module
 			{
 				foreach($value as $key => $val)
 				{
-					$sanitized_array[$key] = $this->_cleanQuery($val, $must_be_numeric, $decimal_places, $clean_all);
+					$sanitized_array[$key] = $this->_cleanQuery($val, (is_numeric($val)), $decimal_places, $clean_all);
 				}
 			}
 
