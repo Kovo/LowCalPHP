@@ -166,7 +166,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			try
 			{
-				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
@@ -181,7 +181,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						try
 						{
-							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+							$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 							$this->_is_connected = true;
 
 							break;
@@ -391,7 +391,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				while($set_lock && !$this->_db_object->insert($key.'_LOCK', true, array('expiry'=>$this->_lock_timeout_seconds)))
 				{
-					usleep(random_int(1000,500000));
+					throw new \Exception('Cannot set lock key for '.$key.'.', Codes::DB_CANNOT_SET_LOCK);
 				}
 			}
 			catch(\Exception $e)

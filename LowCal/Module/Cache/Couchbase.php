@@ -73,7 +73,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 			try
 			{
-				$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
@@ -88,7 +88,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 						try
 						{
-							$this->_cluster_object = new \Couchbase\Cluster($host.':'.$port.Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+							$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
 							$this->_is_connected = true;
 
 							break;
