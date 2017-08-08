@@ -238,7 +238,7 @@ class Db extends Module
 	}
 
 	/**
-	 * Abstracted sanitization method targeted for numeric values.
+	 * Abstracted sanitation method targeted for numeric values.
 	 * @param $value
 	 * @param int $decimal_places
 	 * @param string $server_identifier
@@ -250,7 +250,7 @@ class Db extends Module
 	}
 
 	/**
-	 * Abstracted sanitization method targeted for non-numeric values.
+	 * Abstracted sanitation method targeted for non-numeric values.
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
@@ -258,5 +258,40 @@ class Db extends Module
 	public function sanitizeQueryValueNonNumeric($value, string $server_identifier = '')
 	{
 		return $this->interact($server_identifier)->sanitize($value, false);
+	}
+
+	/**
+	 * Abstracted sanitation method targeted for all value types and will respect the input type.
+	 * @param $value
+	 * @param string $server_identifier
+	 * @return array|mixed|string
+	 */
+	public function sanitizeQueryValueTypeSafe($value, int $decimal_places = 2, string $server_identifier = '')
+	{
+		if(!is_array($value))
+		{
+			if(is_string($value))
+			{
+				return $this->sanitizeQueryValueNonNumeric($value, $server_identifier);
+			}
+			else
+			{
+				return $this->sanitizeQueryValueNumeric($value, $decimal_places, $server_identifier);
+			}
+		}
+		else
+		{
+			$sanitized_array = array();
+
+			if(!empty($value))
+			{
+				foreach($value  as $key => $val)
+				{
+					$sanitized_array[$key] = $this->sanitizeQueryValueTypeSafe($val, $decimal_places, $server_identifier);
+				}
+			}
+
+			return $sanitized_array;
+		}
 	}
 }
