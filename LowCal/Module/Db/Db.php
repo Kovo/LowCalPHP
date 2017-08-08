@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace LowCal\Module\Db;
 use LowCal\Base;
 use LowCal\Helper\Codes;
+use LowCal\Helper\Config;
 use LowCal\Module\Module;
 use LowCal\Module\Security;
 
@@ -157,15 +158,29 @@ class Db extends Module
 			{
 				if($must_be_numeric === true)
 				{
-					if((string)(float)$value == $value)
+					if(Config::get('SETTING_DB_32BIT'))
 					{
-						//32bit safe method to get floating point numbers or numbers beyond 32bit limit
-						return bcmul((string)$value, '1', $decimal_places);
+						if((string)(float)$value == $value)
+						{
+							//32bit safe method to get floating point numbers or numbers beyond 32bit limit
+							return bcmul((string)$value, '1', $decimal_places);
+						}
+						else
+						{
+							//32bit safe method to get floating point numbers or numbers beyond 32bit limit
+							return bcmul((string)$value, '1', 0);
+						}
 					}
 					else
 					{
-						//32bit safe method to get floating point numbers or numbers beyond 32bit limit
-						return bcmul((string)$value, '1', 0);
+						if((string)(float)$value == $value)
+						{
+							return (float)bcmul((string)$value, '1', $decimal_places);
+						}
+						else
+						{
+							return (int)bcmul((string)$value, '1', 0);
+						}
 					}
 				}
 
