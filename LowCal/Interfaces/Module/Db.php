@@ -101,7 +101,7 @@ interface Db
 	 * @param string|null $cas
 	 * @return bool
 	 */
-	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = null): bool;
+	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = ''): bool;
 
 	/**
 	 * @return string
