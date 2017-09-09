@@ -248,7 +248,7 @@ class Results extends Module
 		}
 		else
 		{
-			throw new \Exception('Invalid result type provided. Expected array, object, or mysqli_result.', Codes::DB_INVALID_RESULT_TYPE);
+			return null;
 		}
 
 		return null;
