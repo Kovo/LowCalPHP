@@ -116,9 +116,8 @@ interface Db
 	/**
 	 * @param $value
 	 * @param bool $must_be_numeric
-	 * @param int $decimal_places
 	 * @param int $clean_flag
 	 * @return mixed
 	 */
-	public function sanitize($value, bool $must_be_numeric = true, int $decimal_places = 2, int $clean_flag = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES);
+	public function sanitize($value, bool $must_be_numeric = true, int $clean_flag = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES);
 }

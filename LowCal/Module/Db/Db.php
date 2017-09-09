@@ -69,15 +69,14 @@ class Db extends Module
 	 * Sanitizes user input to prevent injection.
 	 * @param $value
 	 * @param bool $must_be_numeric
-	 * @param int $decimal_places
 	 * @param int $clean_flag
 	 * @return array|string
 	 */
-	public function sanitize($value, bool $must_be_numeric = true, int $decimal_places = 2, int $clean_flag = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES)
+	public function sanitize($value, bool $must_be_numeric = true, int $clean_flag = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES)
 	{
 		$this->_Base->db()->server($this->_server_identifier)->connect();
 
-		return $this->_cleanQuery($value, $must_be_numeric, $decimal_places, $clean_flag);
+		return $this->_cleanQuery($value, $must_be_numeric, $clean_flag);
 	}
 
 	/**
@@ -142,11 +141,10 @@ class Db extends Module
 	 * Rules for basic type checking, and basic sanitization of user input.
 	 * @param $value
 	 * @param bool $must_be_numeric
-	 * @param int $decimal_places
 	 * @param int $clean_all
 	 * @return array|string
 	 */
-	protected function _cleanQuery($value, bool $must_be_numeric = true, int $decimal_places = 2, int $clean_all = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES)
+	protected function _cleanQuery($value, bool $must_be_numeric = true, int $clean_all = Security::CLEAN_HTML_JS_STYLE_COMMENTS_HTMLENTITIES)
 	{
 		if(is_array($value) === false)
 		{
@@ -162,6 +160,9 @@ class Db extends Module
 					{
 						if((string)(float)$value == $value)
 						{
+							$decimal_places_ex = explode('.', (string)$value);
+							$decimal_places = isset($decimal_places_ex[1])?strlen($decimal_places_ex[1]):2;
+
 							//32bit safe method to get floating point numbers or numbers beyond 32bit limit
 							return bcmul((string)$value, '1', $decimal_places);
 						}
@@ -175,6 +176,9 @@ class Db extends Module
 					{
 						if((string)(float)$value == $value)
 						{
+							$decimal_places_ex = explode('.', (string)$value);
+							$decimal_places = isset($decimal_places_ex[1])?strlen($decimal_places_ex[1]):2;
+
 							return (float)bcmul((string)$value, '1', $decimal_places);
 						}
 						else
@@ -203,7 +207,7 @@ class Db extends Module
 			{
 				foreach($value as $key => $val)
 				{
-					$sanitized_array[$key] = $this->_cleanQuery($val, (is_numeric($val)), $decimal_places, $clean_all);
+					$sanitized_array[$key] = $this->_cleanQuery($val, (is_numeric($val)), $clean_all);
 				}
 			}
 

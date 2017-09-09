@@ -240,13 +240,12 @@ class Db extends Module
 	/**
 	 * Abstracted sanitation method targeted for numeric values.
 	 * @param $value
-	 * @param int $decimal_places
 	 * @param string $server_identifier
 	 * @return array|mixed|string
 	 */
-	public function sanitizeQueryValueNumeric($value, int $decimal_places = 2, string $server_identifier = '')
+	public function sanitizeQueryValueNumeric($value, string $server_identifier = '')
 	{
-		return $this->interact($server_identifier)->sanitize($value, true, $decimal_places);
+		return $this->interact($server_identifier)->sanitize($value, true);
 	}
 
 	/**
@@ -266,7 +265,7 @@ class Db extends Module
 	 * @param string $server_identifier
 	 * @return array|mixed|string
 	 */
-	public function sanitizeQueryValueTypeSafe($value, int $decimal_places = 2, string $server_identifier = '')
+	public function sanitizeQueryValueTypeSafe($value, string $server_identifier = '')
 	{
 		if(!is_array($value))
 		{
@@ -276,7 +275,7 @@ class Db extends Module
 			}
 			else
 			{
-				return $this->sanitizeQueryValueNumeric($value, $decimal_places, $server_identifier);
+				return $this->sanitizeQueryValueNumeric($value, $server_identifier);
 			}
 		}
 		else
@@ -287,7 +286,7 @@ class Db extends Module
 			{
 				foreach($value  as $key => $val)
 				{
-					$sanitized_array[$key] = $this->sanitizeQueryValueTypeSafe($val, $decimal_places, $server_identifier);
+					$sanitized_array[$key] = $this->sanitizeQueryValueTypeSafe($val, $server_identifier);
 				}
 			}
 
