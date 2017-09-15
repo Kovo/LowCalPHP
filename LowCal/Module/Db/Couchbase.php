@@ -314,7 +314,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
 
-
+			$Results->setErrorDetected();
 
 			$this->_Base->log()->add('couchbase_db', 'Exception during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
@@ -425,6 +425,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			$this->_last_error_message = $e->getMessage();
 			$this->_last_error_number = $e->getCode();
+
+			$Results->setErrorDetected();
 
 			$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
 		}
