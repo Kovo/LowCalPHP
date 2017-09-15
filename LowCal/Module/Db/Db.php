@@ -154,7 +154,11 @@ class Db extends Module
 			}
 			else
 			{
-				if($must_be_numeric === true)
+				if($value === true || $value === false)
+				{
+					return $value;
+				}
+				elseif($must_be_numeric === true)
 				{
 					if(Config::get('SETTING_DB_32BIT'))
 					{
