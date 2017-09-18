@@ -97,4 +97,22 @@ class Arrays
 
 		return true;
 	}
+
+	/**
+	 * @param array $array
+	 * @param array $allowed_keys
+	 */
+	public static function enforceKeys(array &$array, array $allowed_keys): void
+	{
+		if(!empty($array))
+		{
+			foreach($array as $key => $value)
+			{
+				if(!in_array($key, $allowed_keys))
+				{
+					unset($array[$key]);
+				}
+			}
+		}
+	}
 }
