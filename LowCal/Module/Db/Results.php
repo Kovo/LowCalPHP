@@ -54,6 +54,11 @@ class Results extends Module
 	protected $_error_detected = false;
 
 	/**
+	 * @var string
+	 */
+	protected $_error_message = '';
+
+	/**
 	 * Results constructor.
 	 * @param Base $Base
 	 */
@@ -135,6 +140,25 @@ class Results extends Module
 	public function getErrorDetected(): bool
 	{
 		return $this->_error_detected;
+	}
+
+	/**
+	 * @param string $error_message
+	 * @return Results
+	 */
+	public function setErrorMessage(string $error_message): Results
+	{
+		$this->_error_message = $error_message;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getErrorMessage(): string
+	{
+		return $this->_error_message;
 	}
 
 	/**
