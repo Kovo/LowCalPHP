@@ -234,6 +234,15 @@ class Results extends Module
 	}
 
 	/**
+	 * Return specific result by key if it exists.
+	 * @return mixed
+	 */
+	public function getResult(int $key)
+	{
+		return $this->_results[$key] ?? null;
+	}
+
+	/**
 	 * Get the next result from the result set. Results coming from arrays will always be wrapped in an array.
 	 * Null will be returned when no results are left.
 	 * @return array|null
