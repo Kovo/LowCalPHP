@@ -406,14 +406,21 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 			if(empty($result->error))
 			{
-				$Results->setResults($result->value);
+				$Results->setResults(!is_array($result->value)?array((array)$result->value):$result->value);
 				$Results->setReturnedRows((
 					is_array($result)?count($result):1
 				));
 			}
 			else
 			{
-				throw new \Exception($result->error->getMessage(), $result->error->getCode());
+				if(!empty($result->error))
+				{
+					throw new \Exception($result->error->getMessage(), $result->error->getCode());
+				}
+				else
+				{
+					throw new \Exception('Error occurred when fetching K/V, but no exception was provided by SDK.', \AzzimovData\Helper\System\Codes::DB_ERROR_UNKNOWN);
+				}
 			}
 		}
 		catch(\Exception $e)
