@@ -61,6 +61,7 @@ class Codes
 	const DB_CANNOT_OPEN_DATABASE = 65;
 	const DB_AUTH_CONNECT_ERROR = 66;
 	const DB_CANNOT_SET_LOCK = 67;
+	const DB_SDK_UNKNOWN = 68;
 
 	/*
 	 * Log module related errors.

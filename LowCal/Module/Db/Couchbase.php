@@ -408,7 +408,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$Results->setResults(!is_array($result->value)?array((array)$result->value):$result->value);
 				$Results->setReturnedRows((
-					is_array($result)?count($result):1
+				is_array($result)?count($result):1
 				));
 			}
 			else
@@ -419,7 +419,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 				}
 				else
 				{
-					throw new \Exception('Error occurred when fetching K/V, but no exception was provided by SDK.', \AzzimovData\Helper\System\Codes::DB_ERROR_UNKNOWN);
+					throw new \Exception('Error occurred when fetching K/V, but no exception was provided by SDK.', Codes::DB_SDK_UNKNOWN);
 				}
 			}
 		}
@@ -429,13 +429,15 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				throw new \Exception($e->getMessage(), $e->getCode());
 			}
+			elseif($e->getCode() !== 13/*LCB_KEY_ENOENT*/)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
 
-			$this->_last_error_message = $e->getMessage();
-			$this->_last_error_number = $e->getCode();
+				$Results->setErrorDetected();
 
-			$Results->setErrorDetected();
-
-			$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+				$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+			}
 		}
 
 		return $Results;
