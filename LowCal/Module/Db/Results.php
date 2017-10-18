@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
+
 namespace LowCal\Module\Db;
+
 use LowCal\Base;
 use LowCal\Helper\Codes;
 use LowCal\Module\Module;

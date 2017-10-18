@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
+
 namespace LowCal;
+
 use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Module\Cache;

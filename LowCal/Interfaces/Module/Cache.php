@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
+
 namespace LowCal\Interfaces\Module;
+
 use LowCal\Module\Cache\Local;
 use LowCal\Module\Cache\Results;
 

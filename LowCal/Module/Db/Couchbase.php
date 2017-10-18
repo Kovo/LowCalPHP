@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
+
 namespace LowCal\Module\Db;
+
 use Couchbase\N1qlQuery;
 use LowCal\Base;
 use LowCal\Helper\Codes;
@@ -38,6 +40,12 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 	 * @var int
 	 */
 	protected $_lock_timeout_seconds = 0;
+
+	/**
+	 * Timeout retry counter.
+	 * @var int
+	 */
+	protected $_timeout_retry_count = 0;
 
 	/**
 	 * The couchbase bucket object is stored here.
@@ -410,6 +418,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 				$Results->setReturnedRows((
 				is_array($result)?count($result):1
 				));
+
+				$this->_timeout_retry_count = 0;
 			}
 			else
 			{
@@ -429,6 +439,30 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				throw new \Exception($e->getMessage(), $e->getCode());
 			}
+			elseif($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
+
+				if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+				{
+					$this->_timeout_retry_count++;
+
+					$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+					sleep(1);
+
+					return $this->getKV($key, $check_lock, $set_lock);
+				}
+				else
+				{
+					$Results->setErrorDetected();
+
+					$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'".');
+
+					$this->_timeout_retry_count = 0;
+				}
+			}
 			elseif($e->getCode() !== 13/*LCB_KEY_ENOENT*/)
 			{
 				$this->_last_error_message = $e->getMessage();
@@ -437,6 +471,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 				$Results->setErrorDetected();
 
 				$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+				$this->_timeout_retry_count = 0;
 			}
 		}
 
@@ -475,10 +511,40 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_db', 'Exception during set of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->setKV($key, $value, $timeout, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)
@@ -487,6 +553,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_number = $e->getCode();
 
 			$this->_Base->log()->add('couchbase_db', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			$this->_timeout_retry_count = 0;
 
 			return false;
 		}
@@ -524,10 +592,40 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_db', 'Exception during add of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->addKV($key, $value, $timeout, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)
@@ -536,6 +634,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_number = $e->getCode();
 
 			$this->_Base->log()->add('couchbase_db', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			$this->_timeout_retry_count = 0;
 
 			return false;
 		}
@@ -581,10 +681,40 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_db', 'Exception during delete of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->deleteKV($key, $check_lock, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)

@@ -9,6 +9,7 @@ declare(strict_types=1);
 /*
  * NOTE: Try not to modify bootstrap.php to make your application compatible with future updates.
  */
+
 use LowCal\Helper\Config;
 use LowCal\Base;
 

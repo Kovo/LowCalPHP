@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
+
 namespace LowCal\Interfaces\Module;
+
 use LowCal\Module\Db\Results;
 use LowCal\Module\Security;
 
