@@ -28,6 +28,12 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	protected $_cluster_object = null;
 
 	/**
+	 * Timeout retry counter.
+	 * @var int
+	 */
+	protected $_timeout_retry_count = 0;
+
+	/**
 	 * Couchbase constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier
@@ -200,6 +206,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			{
 				$Results->value = $result->value;
 				$Results->cas = $result->cas;
+
+				$this->_timeout_retry_count = 0;
 			}
 			else
 			{
@@ -212,11 +220,37 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			{
 				throw new \Exception($e->getMessage(), $e->getCode());
 			}
+			elseif($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
 
-			$this->_last_error_message = $e->getMessage();
-			$this->_last_error_number = $e->getCode();
+				if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+				{
+					$this->_timeout_retry_count++;
 
-			$this->_Base->log()->add('couchbase_cache', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+					$this->_Base->log()->add('couchbase_cache', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+					sleep(1);
+
+					return $this->get($key, $check_lock, $set_lock);
+				}
+				else
+				{
+					$this->_Base->log()->add('couchbase_cache', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'".');
+
+					$this->_timeout_retry_count = 0;
+				}
+			}
+			elseif($e->getCode() !== 13/*LCB_KEY_ENOENT*/)
+			{
+				$this->_last_error_message = $e->getMessage();
+				$this->_last_error_number = $e->getCode();
+
+				$this->_Base->log()->add('couchbase_cache', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+				$this->_timeout_retry_count = 0;
+			}
 		}
 
 		return $Results;
@@ -250,14 +284,46 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 				$this->_last_error_message = '';
 				$this->_last_error_number = '';
 
+				$this->_timeout_retry_count = 0;
+
 				return true;
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_cache', 'Exception during set of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->set($key, $value, $timeout, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)
@@ -266,6 +332,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_number = $e->getCode();
 
 			$this->_Base->log()->add('couchbase_cache', 'Exception during set of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			$this->_timeout_retry_count = 0;
 
 			return false;
 		}
@@ -299,14 +367,46 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 				$this->_last_error_message = '';
 				$this->_last_error_number = '';
 
+				$this->_timeout_retry_count = 0;
+
 				return true;
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_cache', 'Exception during add of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->add($key, $value, $timeout, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)
@@ -315,6 +415,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_number = $e->getCode();
 
 			$this->_Base->log()->add('couchbase_cache', 'Exception during add of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			$this->_timeout_retry_count = 0;
 
 			return false;
 		}
@@ -356,14 +458,46 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 				$this->_last_error_message = '';
 				$this->_last_error_number = '';
 
+				$this->_timeout_retry_count = 0;
+
 				return true;
 			}
 			catch(\Exception $e)
 			{
-				$this->_last_error_message = $e->getMessage();
-				$this->_last_error_number = $e->getCode();
+				if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
 
-				return false;
+					if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+					{
+						$this->_timeout_retry_count++;
+
+						$this->_Base->log()->add('couchbase_cache', 'Exception during delete of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+						sleep(1);
+
+						return $this->delete($key, $check_lock, $delete_lock, $cas);
+					}
+					else
+					{
+						$this->_last_error_message = $e->getMessage();
+						$this->_last_error_number = $e->getCode();
+
+						$this->_timeout_retry_count = 0;
+
+						return false;
+					}
+				}
+				else
+				{
+					$this->_last_error_message = $e->getMessage();
+					$this->_last_error_number = $e->getCode();
+
+					$this->_timeout_retry_count = 0;
+
+					return false;
+				}
 			}
 		}
 		catch(\Exception $e)
@@ -372,6 +506,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			$this->_last_error_number = $e->getCode();
 
 			$this->_Base->log()->add('couchbase_cache', 'Exception during delete of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'"');
+
+			$this->_timeout_retry_count = 0;
 
 			return false;
 		}

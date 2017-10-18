@@ -416,7 +416,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$Results->setResults(!is_array($result->value)?array((array)$result->value):$result->value);
 				$Results->setReturnedRows((
-				is_array($result)?count($result):1
+					is_array($result)?count($result):1
 				));
 
 				$this->_timeout_retry_count = 0;
@@ -506,6 +506,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 				$this->_last_error_message = '';
 				$this->_last_error_number = '';
+
+				$this->_timeout_retry_count = 0;
 
 				return true;
 			}
