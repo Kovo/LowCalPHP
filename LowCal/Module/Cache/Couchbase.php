@@ -231,7 +231,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 					$this->_Base->log()->add('couchbase_cache', 'Exception during get of: "'.$key.' | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-					sleep(1);
+					sleep($this->_timeout_retry_count);
 
 					return $this->get($key, $check_lock, $set_lock);
 				}
@@ -301,7 +301,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 						$this->_Base->log()->add('couchbase_cache', 'Exception during set of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->set($key, $value, $timeout, $delete_lock, $cas);
 					}
@@ -384,7 +384,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 						$this->_Base->log()->add('couchbase_cache', 'Exception during add of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->add($key, $value, $timeout, $delete_lock, $cas);
 					}
@@ -475,7 +475,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 						$this->_Base->log()->add('couchbase_cache', 'Exception during delete of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->delete($key, $check_lock, $delete_lock, $cas);
 					}

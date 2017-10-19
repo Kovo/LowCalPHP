@@ -416,7 +416,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 			{
 				$Results->setResults(!is_array($result->value)?array((array)$result->value):$result->value);
 				$Results->setReturnedRows((
-					is_array($result)?count($result):1
+				is_array($result)?count($result):1
 				));
 
 				$this->_timeout_retry_count = 0;
@@ -450,7 +450,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 					$this->_Base->log()->add('couchbase_db', 'Exception during get of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-					sleep(1);
+					sleep($this->_timeout_retry_count);
 
 					return $this->getKV($key, $check_lock, $set_lock);
 				}
@@ -524,7 +524,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						$this->_Base->log()->add('couchbase_db', 'Exception during set of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->setKV($key, $value, $timeout, $delete_lock, $cas);
 					}
@@ -605,7 +605,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						$this->_Base->log()->add('couchbase_db', 'Exception during add of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->addKV($key, $value, $timeout, $delete_lock, $cas);
 					}
@@ -694,7 +694,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db
 
 						$this->_Base->log()->add('couchbase_db', 'Exception during delete of: "'.$key.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
 
-						sleep(1);
+						sleep($this->_timeout_retry_count);
 
 						return $this->deleteKV($key, $check_lock, $delete_lock, $cas);
 					}
