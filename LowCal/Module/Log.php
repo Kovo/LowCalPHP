@@ -165,16 +165,27 @@ class Log extends Module
 	 */
 	public function addFile(string $message, string $directory, string $filename): bool
 	{
-		if(IO::isValidFile($directory.$filename))
+		if(!IO::isValidFile($directory.$filename))
 		{
-			if(file_put_contents($directory.$filename, date('Y-m-d H:i:s')." | ".$message."\r\n", FILE_APPEND))
+			if(!IO::isValidDir($directory))
 			{
-				return true;
+				if(!IO::createDir($directory))
+				{
+					throw new \Exception('Cannot create directory ('.$directory.') for log file ('.$filename.').', Codes::LOG_INVALID_FILE);
+				}
 			}
 
-			throw new \Exception('Cannot write to log file ('.$filename.').', Codes::LOG_CANNOT_WRITE_TO_FILE);
+			if(!IO::touch($directory.$filename))
+			{
+				throw new \Exception('Cannot create log file ('.$filename.').', Codes::LOG_INVALID_FILE);
+			}
 		}
 
-		throw new \Exception('Cannot find log file ('.$filename.').', Codes::LOG_INVALID_FILE);
+		if(file_put_contents($directory.$filename, date('Y-m-d H:i:s')." | ".$message."\r\n", FILE_APPEND))
+		{
+			return true;
+		}
+
+		throw new \Exception('Cannot write to log file ('.$filename.').', Codes::LOG_CANNOT_WRITE_TO_FILE);
 	}
 }
