@@ -222,6 +222,23 @@ class IO
 	}
 
 	/**
+	 * Create an empty file.
+	 * @param string $file_path
+	 * @return bool
+	 */
+	public static function touch(string $file_path): bool
+	{
+		if(file_put_contents($file_path, '') !== false)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
 	 * Removes a file or folder if permissions allow it.
 	 * @param string $filename
 	 * @return bool
