@@ -73,12 +73,6 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 	{
 		if($this->_is_connected === false)
 		{
-			if(!empty($password))
-			{
-				$Authenticator = new \Couchbase\ClassicAuthenticator();
-				$Authenticator->bucket($name, $password);
-			}
-
 			try
 			{
 				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
@@ -120,7 +114,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 			try
 			{
-				$this->_db_object = $this->_cluster_object->openBucket($name);
+				$this->_cache_object = $this->_cluster_object->openBucket($name, (!empty($password)?$password:""));
 			}
 			catch(\Exception $e)
 			{
@@ -129,6 +123,15 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 				$this->_Base->log()->add('couchbase_cache', $error_string);
 
 				throw new \Exception($error_string, Codes::CACHE_CANNOT_OPEN_DATABASE);
+			}
+
+			if(empty($this->_cache_object))
+			{
+				$error_string = 'Issue opening bucket!';
+
+				$this->_Base->log()->add('couchbase_cache', $error_string);
+
+				throw new \Exception($error_string, Codes::DB_CANNOT_OPEN_DATABASE);
 			}
 		}
 
