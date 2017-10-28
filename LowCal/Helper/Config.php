@@ -78,7 +78,7 @@ class Config
 	{
 		$explode = explode('.', $lowcal_config_file);
 		$ext = array_pop($explode);
-		$lowcal_config_file = implode('.', $explode).'_'.self::get('LOWCAL_ENV').$ext;
+		$lowcal_config_file = implode('.', $explode).'_'.self::get('LOWCAL_ENV').'.'.$ext;
 
 		try
 		{
