@@ -61,8 +61,11 @@ class Codes
 	const DB_INCORRECT_SANITIZE_DIRECTIVE = 164;
 	const DB_CANNOT_OPEN_DATABASE = 165;
 	const DB_AUTH_CONNECT_ERROR = 166;
-	const  DB_CANNOT_SET_LOCK = 167;
+	const DB_CANNOT_SET_LOCK = 167;
 	const DB_SDK_UNKNOWN = 168;
+	const DB_FORMAT_ERROR_JSON = 169;
+	const DB_DATA_NOT_FOUND = 1160;
+	const DB_FAILED_TO_GET = 1161;
 
 	/*
 	 * Log module related errors.

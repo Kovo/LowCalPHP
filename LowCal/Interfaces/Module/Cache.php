@@ -71,4 +71,13 @@ interface Cache
 	 * @return bool
 	 */
 	public function delete(string $key, bool $check_lock = false, bool $delete_lock = false): bool;
+
+	/**
+	 * @param int $atomic_id_classifier
+	 * @param int|null $atomic_id_secondary_classifier
+	 * @param int $initial
+	 * @param int $expiry
+	 * @return int
+	 */
+	public function getNextId(int $atomic_id_classifier, ?int $atomic_id_secondary_classifier = null, int $initial = 100000, int $expiry = 0): int;
 }

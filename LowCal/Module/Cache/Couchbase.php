@@ -515,4 +515,63 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			return false;
 		}
 	}
+
+	/**
+	 * This method returns a unique ID, atomically.
+	 * @param int $atomic_id_classifier
+	 * @param int|null $atomic_id_secondary_classifier
+	 * @param int $initial
+	 * @param int $expiry
+	 * @return int
+	 * @throws \Exception
+	 */
+	public function getNextId(int $atomic_id_classifier, ?int $atomic_id_secondary_classifier = null, int $initial = 100000, int $expiry = 0): int
+	{
+		try
+		{
+			$new_id = $this->_db_object->counter(
+				'atomic_counter_incremental:'.$atomic_id_classifier.(!empty($atomic_id_secondary_classifier)?':'.$atomic_id_secondary_classifier:''),
+				1,
+				array(
+					'initial'=> $initial,
+					'expiry' => $expiry
+				)
+			)->value;
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+			{
+				if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+				{
+					$this->_timeout_retry_count++;
+
+					$this->_Base->log()->add('couchbase_db', 'Exception during new atomic id get of: "'.$atomic_id_classifier.'"/"'.$atomic_id_secondary_classifier.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+					sleep($this->_timeout_retry_count);
+
+					$new_id = $this->getNextId($atomic_id_classifier, $atomic_id_secondary_classifier, $initial, $expiry);
+				}
+				else
+				{
+					$this->_timeout_retry_count = 0;
+				}
+			}
+			else
+			{
+				$this->_timeout_retry_count = 0;
+			}
+		}
+
+		if(isset($new_id) && !empty($new_id) && is_numeric($new_id))
+		{
+			$this->_timeout_retry_count = 0;
+
+			return $new_id;
+		}
+		else
+		{
+			throw new \Exception('Unable to get new incremental atomic id for "'.$atomic_id_classifier.'"/"'.$atomic_id_secondary_classifier.'".', Codes::DB_FAILED_TO_GET);
+		}
+	}
 }

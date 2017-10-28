@@ -69,43 +69,6 @@ interface Db
 	public function insert(string $query): Results;
 
 	/**
-	 * @param string $key
-	 * @param bool $check_lock
-	 * @param bool $set_lock
-	 * @return Results
-	 */
-	public function getKV(string $key, bool $check_lock = false, bool $set_lock = false): Results;
-
-	/**
-	 * @param string $key
-	 * @param $value
-	 * @param int $timeout
-	 * @param bool $delete_lock
-	 * @param string|null $cas
-	 * @return bool
-	 */
-	public function setKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool;
-
-	/**
-	 * @param string $key
-	 * @param $value
-	 * @param int $timeout
-	 * @param bool $delete_lock
-	 * @param string|null $cas
-	 * @return bool
-	 */
-	public function addKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool;
-
-	/**
-	 * @param string $key
-	 * @param bool $check_lock
-	 * @param bool $delete_lock
-	 * @param string|null $cas
-	 * @return bool
-	 */
-	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = ''): bool;
-
-	/**
 	 * @return string
 	 */
 	public function getLastErrorMessage(): string;
