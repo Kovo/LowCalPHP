@@ -5,11 +5,13 @@ namespace LowCal\Helper;
 
 /**
  * Class Format
+ * A helper class used for JSON document content for NoSQL databases.
  * @package LowCal\Helper
  */
 class Format
 {
 	/**
+	 * Get a properly formatted timestamp.
 	 * @param int|null $starting_point
 	 * @return string
 	 */
@@ -28,6 +30,8 @@ class Format
 	}
 
 	/**
+	 * A type-safe implode method that prepares data in an array for a comma separated
+	 * list in a query.
 	 * @param array $value
 	 * @param string $delimiter
 	 * @return string
@@ -64,6 +68,7 @@ class Format
 	}
 
 	/**
+	 * A type-safe method that prepares a value for concatenation in a query.
 	 * @param $value
 	 * @param null|string $array_key
 	 * @param bool $json_encode_arrays
@@ -102,6 +107,7 @@ class Format
 	}
 
 	/**
+	 * Return a prefixed id used as a document key in a NoSQL database.
 	 * @param int $type
 	 * @param array $additional_values
 	 * @return string

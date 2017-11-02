@@ -13,41 +13,51 @@ use LowCal\Module\Db\Results;
 
 /**
  * Class Data
+ * A skeleton data model for NoSQL environments.
  * @package LowCal\Model\NoSQL
  */
 class Data extends Model
 {
 	/**
+	 * The atomic id of the document.
 	 * @var null|int
 	 */
 	protected $_id = 0;
 
 	/**
+	 * A creation timestamp controlled by the class, only.
 	 * @var string
 	 */
 	protected $_date_created = '';
 
 	/**
+	 * A modification timestamp controlled by the class, only.
 	 * @var string
 	 */
 	protected $_date_modified = '';
 
 	/**
+	 * Documents can have subtypes as well as super types. Subtypes are dynamic, while
+	 * super types are hard-coded into the entities themselves.
 	 * @var int
 	 */
 	protected $_subtype = 0;
 
 	/**
+	 * A document status flag.
 	 * @var int
 	 */
 	protected $_status = 0;
 
 	/**
+	 * All changes done to this object are stored here. Once the update/delete methods are called,
+	 * they read all the changes, construct the correct queries, and execute them.
 	 * @var array
 	 */
 	protected $_changes = array();
 
 	/**
+	 * A flag to ignore incoming changes (or not).
 	 * @var bool
 	 */
 	protected $_ignore_changes = false;
@@ -62,6 +72,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Sert the document id.
 	 * @param int $id
 	 * @return Data
 	 */
@@ -73,6 +84,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the document id.
 	 * @return int
 	 */
 	public function getId(): ?int
@@ -81,6 +93,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Set the date created (only useful when populating the object from the database).
 	 * @param string $date_created
 	 * @return Data
 	 */
@@ -92,6 +105,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the date created.
 	 * @return string
 	 */
 	public function getDateCreated(): string
@@ -100,6 +114,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Set the date modified (only useful when populating the object from the database).
 	 * @param string $date_modified
 	 * @return Data
 	 */
@@ -111,6 +126,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the date modified.
 	 * @return string
 	 */
 	public function getDateModified(): string
@@ -119,6 +135,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Set the document's subtype.
 	 * @param int $subtype
 	 * @return Data
 	 */
@@ -138,6 +155,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Unset the document's subtype.
 	 * @return Data
 	 */
 	public function unsetSubType(): self
@@ -153,6 +171,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the document's subtype.
 	 * @return int
 	 */
 	public function getSubType(): int
@@ -161,6 +180,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Set the document's status.
 	 * @param int $status
 	 * @return Data
 	 */
@@ -180,6 +200,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Unset the document's status.
 	 * @return Data
 	 */
 	public function unsetStatus(): self
@@ -195,6 +216,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the document's status.
 	 * @return int
 	 */
 	public function getStatus(): int
@@ -203,6 +225,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the document's prefixed id used as the document key in the NoSQL database.
 	 * @return string
 	 */
 	public function getPrefixedId(): string
@@ -216,6 +239,7 @@ class Data extends Model
 	}
 
 	/**
+	 * This method ingests a json array taken directly from the NoSQL database.
 	 * @param array $full_json
 	 */
 	public function ingestJsonFromDatabase(array $full_json): void
@@ -232,6 +256,8 @@ class Data extends Model
 	}
 
 	/**
+	 * This method expects a json represented as an array, from a request
+	 * (used to populate the object for an update, delete or insert).
 	 * @param array $full_json
 	 * @param bool $for_delete
 	 */
@@ -254,6 +280,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -267,6 +294,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -280,6 +308,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -293,6 +322,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -306,6 +336,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -322,6 +353,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 * @param string $query_string_2
@@ -348,6 +380,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 * @param string $query_string_2
@@ -377,6 +410,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 * @param string $query_string_2
@@ -403,6 +437,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $data_type
 	 * @param string $query_string
@@ -467,6 +502,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Returns final document represented as a JSON string.
 	 * @param bool $for_insert
 	 * @return string
 	 * @throws \Exception
@@ -484,6 +520,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $unset_query_string
 	 */
@@ -496,6 +533,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $set_query_string
 	 */
@@ -512,6 +550,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -531,6 +570,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $set_query_string
 	 */
@@ -559,6 +599,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $set_query_string
 	 */
@@ -578,6 +619,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param string $data_type
 	 * @param array $changes
 	 * @param string $set_query_string
@@ -609,6 +651,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -622,6 +665,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -635,6 +679,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -648,6 +693,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -661,6 +707,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -678,6 +725,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -700,6 +748,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -737,6 +786,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
 	 */
@@ -756,6 +806,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $data_type
 	 * @param string $query_string
@@ -791,6 +842,7 @@ class Data extends Model
 	}
 
 	/**
+	 * This is the base update method that brings all the fragments together.
 	 * @param string $data_type
 	 * @param array $changes
 	 * @param string $query_string
@@ -838,6 +890,7 @@ class Data extends Model
 	}
 
 	/**
+	 * This is the base delete method that brings all the fragments together.
 	 * @param string $data_type
 	 * @param array $changes
 	 * @param string $unset_query_string
@@ -878,6 +931,7 @@ class Data extends Model
 	}
 
 	/**
+	 * This is the base search method that brings all the fragments together.
 	 * @param string $data_type
 	 * @param array $changes
 	 * @param string $search_query_string
@@ -920,6 +974,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Base insert method.
 	 * @return Results
 	 */
 	protected function _baseInsert(): Results
@@ -935,6 +990,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Base update method.
 	 * @param string $query_beginning
 	 * @param string $query_string
 	 * @param string $query_end
@@ -985,6 +1041,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Base full delete method.
 	 * @param 
 	 * @return bool
 	 */
@@ -996,6 +1053,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Base partial delete method.
 	 * @param string $query_beginning
 	 * @param string $set_query_string
 	 * @param string $query_end
@@ -1029,6 +1087,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Base search method.
 	 * @param string $query_beginning
 	 * @param string $search_query_string
 	 * @param array $search_order
@@ -1080,6 +1139,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Start to ignore changes.
 	 * @return Data
 	 */
 	public function ignoreChanges(): self
@@ -1090,6 +1150,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Stop ignoring changes.
 	 * @return Data
 	 */
 	public function dontIgnoreChanges(): self
@@ -1100,6 +1161,7 @@ class Data extends Model
 	}
 
 	/**
+	 *  Clear any changes currently logged (will not remove values from the object itself).
 	 * @return Data
 	 */
 	public function clearChanges(): self
@@ -1110,6 +1172,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get document represented as an array.
 	 * @param bool $for_insert
 	 * @return array
 	 */
@@ -1151,6 +1214,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Set the changes array (override it).
 	 * @param array $changes
 	 * @return Data
 	 */
@@ -1162,6 +1226,7 @@ class Data extends Model
 	}
 
 	/**
+	 * Get the changes array.
 	 * @return array
 	 */
 	public function getChanges(): array
