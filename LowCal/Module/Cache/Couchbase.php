@@ -75,7 +75,12 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 		{
 			try
 			{
-				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+				$Authenticator = new \Couchbase\PasswordAuthenticator();
+				$Authenticator->username($name)->password($password);
+
+				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+				$this->_cluster_object->authenticate($Authenticator);
+
 				$this->_is_connected = true;
 			}
 			catch(\Exception $e)
@@ -91,6 +96,8 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 						try
 						{
 							$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_CACHE_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+							$this->_cluster_object->authenticate($Authenticator);
+
 							$this->_is_connected = true;
 
 							break;
@@ -118,7 +125,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			}
 			catch(\Exception $e)
 			{
-				$error_string = 'Failed to open to bucket.';
+				$error_string = 'Failed to open to bucket. '.$e->getMessage().'/'.$e->getCode();
 
 				$this->_Base->log()->add('couchbase_cache', $error_string);
 

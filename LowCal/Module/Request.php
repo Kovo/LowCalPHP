@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LowCal\Module;
 
 use LowCal\Base;
+use LowCal\Helper\Arrays;
 use LowCal\Helper\Strings;
 
 /**
@@ -84,9 +85,9 @@ class Request extends Module
 	 */
 	protected function _detectReferer(): void
 	{
-		$raw_data = $_SERVER['HTTP_REFERER'];
+		$raw_data = $_SERVER['HTTP_REFERER'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$this->_referer = Strings::trim($raw_data);
 		}
@@ -97,9 +98,9 @@ class Request extends Module
 	 */
 	protected function _detectHttps(): void
 	{
-		$raw_data = $_SERVER['HTTPS'];
+		$raw_data = $_SERVER['HTTPS'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$raw_data = strtolower(Strings::trim($raw_data));
 
@@ -115,9 +116,9 @@ class Request extends Module
 	 */
 	protected function _detectQueryString(): void
 	{
-		$raw_data = $_SERVER['QUERY_STRING'];
+		$raw_data = $_SERVER['QUERY_STRING'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$this->_query_string = $this->cleanQueryString($raw_data);
 		}
@@ -128,9 +129,9 @@ class Request extends Module
 	 */
 	protected function _detectMediaTypes(): void
 	{
-		$raw_data = $_SERVER['HTTP_ACCEPT'];
+		$raw_data = $_SERVER['HTTP_ACCEPT'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$raw_data = Strings::trim($raw_data);
 
@@ -161,9 +162,9 @@ class Request extends Module
 	 */
 	protected function _detectCharsets(): void
 	{
-		$raw_data = $_SERVER['HTTP_ACCEPT_CHARSET'];
+		$raw_data = $_SERVER['HTTP_ACCEPT_CHARSET'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$raw_data = Strings::trim($raw_data);
 
@@ -194,9 +195,9 @@ class Request extends Module
 	 */
 	protected function _detectEncodings(): void
 	{
-		$raw_data = $_SERVER['HTTP_ACCEPT_ENCODING'];
+		$raw_data = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$raw_data = Strings::trim($raw_data);
 
@@ -227,9 +228,9 @@ class Request extends Module
 	 */
 	protected function _detectLanguages(): void
 	{
-		$raw_data = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		$raw_data = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
 
-		if($raw_data !== NULL)
+		if(!empty($raw_data))
 		{
 			$raw_data = Strings::trim($raw_data);
 
@@ -260,7 +261,7 @@ class Request extends Module
 	 */
 	protected function _detectAjax(): void
 	{
-		$serverXmlHttpVar = $_SERVER['HTTP_X_REQUESTED_WITH'];
+		$serverXmlHttpVar = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
 
 		$this->_is_ajax = (!empty($serverXmlHttpVar) && strtolower($serverXmlHttpVar) === 'xmlhttprequest');
 	}
@@ -272,7 +273,7 @@ class Request extends Module
 	 */
 	public function parseAcceptHeader(string $header): ?array
 	{
-		$return = NULL;
+		$return = null;
 		$header = str_replace(array("\r\n", "\r", "\n"), ' ', Strings::trim($header));
 		$types = explode(',', $header);
 		$types = array_map('trim', $types);
@@ -412,9 +413,9 @@ class Request extends Module
 	 */
 	public function clientIpAddress(): string
 	{
-		$http_client_ip = $_SERVER['HTTP_CLIENT_IP'];
-		$http_x_forwarded_for = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		$remote_addr = $_SERVER['REMOTE_ADDR'];
+		$http_client_ip = $_SERVER['HTTP_CLIENT_IP'] ?? null;
+		$http_x_forwarded_for = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+		$remote_addr = $_SERVER['REMOTE_ADDR'] ?? null;
 
 		if(!empty($http_client_ip))
 		{
