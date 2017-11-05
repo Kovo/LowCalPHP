@@ -183,9 +183,9 @@ class Locale extends Module
 				$this->_translations[$short_locale] = array();
 			}
 
-			if(isset($TRANSLATIONS) && is_array($TRANSLATIONS) && !empty($TRANSLATIONS))
+			if(isset($translations) && is_array($translations) && !empty($translations))
 			{
-				$this->_translations[$short_locale] = array_merge($this->_translations[$short_locale], $TRANSLATIONS);
+				$this->_translations[$short_locale] = array_merge($this->_translations[$short_locale], $translations);
 			}
 		}
 		else
@@ -216,9 +216,9 @@ class Locale extends Module
 				$this->_translations[$short_locale] = array();
 			}
 
-			if(isset($TRANSLATIONS) && is_array($TRANSLATIONS) && !empty($TRANSLATIONS))
+			if(isset($translations) && is_array($translations) && !empty($translations))
 			{
-				$this->_translations[$short_locale] = array_merge($this->_translations[$short_locale], $TRANSLATIONS);
+				$this->_translations[$short_locale] = array_merge($this->_translations[$short_locale], $translations);
 			}
 		}
 		else
