@@ -43,10 +43,6 @@ class Controller
 			{
 				$this->_Base->locale()->setCurrentLocale($lang);
 			}
-			else
-			{
-				throw new \Exception('Invalid language id given in the url! Id was: '.$lang, Codes::LOCALE_INVALID_LOCALE);
-			}
 		}
 	}
 
