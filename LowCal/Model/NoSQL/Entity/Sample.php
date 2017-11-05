@@ -153,7 +153,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\Data
 		}
 		else
 		{
-			throw new \Exception('Cannot delete product if no Id or Code/Merchant Id provided.', Codes::DB_IDENTIFIER_MISSING);
+			throw new \Exception('Cannot delete product if no Id provided.', Codes::DB_IDENTIFIER_MISSING);
 		}
 
 		return $Result;
