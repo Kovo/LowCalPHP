@@ -49,7 +49,7 @@ try
 		->getViewEngineObject()
 		->setViewDir(Config::get('VIEWS_DIR'));
 
-	if(strlen(session_id()) != 64 || session_id() === '')
+	if((isset($_COOKIE['PHPSESSID']) && strlen($_COOKIE['PHPSESSID']) != 64) || !isset($_COOKIE['PHPSESSID']))
 	{
 		session_id(\LowCal\Helper\Strings::createCode(64));
 	}
