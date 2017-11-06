@@ -55,7 +55,6 @@ try
 	}
 
 	session_start([
-		'read_and_close' => true,
 		'cookie_lifetime' => 0,
 		'cookie_path' => '/',
 		'cookie_domain' => Config::get('APP_COOKIE_URL'),
