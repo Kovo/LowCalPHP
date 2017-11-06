@@ -46,7 +46,6 @@ class PHP extends \LowCal\Module\View\View implements \LowCal\Interfaces\Module\
 		if(file_exists($file))
 		{
 			$parameters['LowCal'] = $this->_Base;
-			$parameters['view'] = $view;
 
 			extract($parameters);
 
