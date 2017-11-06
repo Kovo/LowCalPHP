@@ -11,7 +11,7 @@ use LowCal\Module\Db\Mysqli;
 use LowCal\Module\Db\Results;
 use LowCal\Module\Db\Server;
 
-/** 
+/**
  * Class Db
  * The main DB module used to connect to and interact with different db providers.
  * @package LowCal\Module
@@ -31,12 +31,20 @@ class Db extends Module
 	protected $_active_server_id = null;
 
 	/**
+	 * Whether query logging should take place.
+	 * @var bool
+	 */
+	protected $_log_queries = false;
+
+	/**
 	 * Db constructor.
 	 * @param Base $Base
 	 */
 	function __construct(Base $Base)
 	{
 		parent::__construct($Base);
+
+		$this->_log_queries = Config::get('SETTING_DB_LOG_QUERIES');
 	}
 
 	/**
@@ -192,6 +200,11 @@ class Db extends Module
 	 */
 	public function query(string $query, string $server_identifier = ''): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', $query);
+		}
+
 		return $this->interact($server_identifier)->query($query);
 	}
 
@@ -203,6 +216,11 @@ class Db extends Module
 	 */
 	public function select(string $query, string $server_identifier = ''): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', $query);
+		}
+
 		return $this->interact($server_identifier)->select($query);
 	}
 
@@ -214,6 +232,11 @@ class Db extends Module
 	 */
 	public function insert(string $query, string $server_identifier = ''): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', $query);
+		}
+
 		return $this->interact($server_identifier)->insert($query);
 	}
 
@@ -225,6 +248,11 @@ class Db extends Module
 	 */
 	public function update(string $query, string $server_identifier = ''): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', $query);
+		}
+
 		return $this->interact($server_identifier)->update($query);
 	}
 
@@ -236,6 +264,11 @@ class Db extends Module
 	 */
 	public function delete(string $query, string $server_identifier = ''): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', $query);
+		}
+
 		return $this->interact($server_identifier)->delete($query);
 	}
 
