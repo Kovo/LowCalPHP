@@ -8,7 +8,7 @@ use LowCal\Helper\Codes;
 use LowCal\Helper\Config;
 use LowCal\Helper\Format;
 use LowCal\Helper\Strings;
-use LowCal\Model;
+use LowCal\Model\Model;
 use LowCal\Module\Db\Results;
 
 /**

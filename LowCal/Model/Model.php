@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace LowCal;
+namespace LowCal\Model;
+
+use LowCal\Base;
 
 /**
  * Class Model
- * @package LowCal
+ * @package LowCal\Model
  */
 class Model
 {
