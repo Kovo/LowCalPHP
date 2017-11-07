@@ -879,7 +879,7 @@ class Routing extends Module
 				}
 			}
 
-			$final_uri = str_replace($term, htmlentities($terms[$term_name]), $final_uri);
+			$final_uri = str_replace($term, htmlentities((string)$terms[$term_name]), $final_uri);
 		}
 
 		return $final_uri;
@@ -889,14 +889,14 @@ class Routing extends Module
 	 * Validates part/term with its intended constraint (if any).
 	 * @param array $constraints
 	 * @param string $term
-	 * @param string $value
+	 * @param mixed $value
 	 * @return bool
 	 */
-	protected function _constraintCheck(array $constraints, string $term, string $value): bool
+	protected function _constraintCheck(array $constraints, string $term, $value): bool
 	{
 		$term = str_replace(array('<','>','(',')'),'',$term);
 
-		if(isset($constraints[$term]) && preg_match("#^".$constraints[$term]."$#", $value) !== 1)
+		if(isset($constraints[$term]) && preg_match("#^".$constraints[$term]."$#", (string)$value) !== 1)
 		{
 			return false;
 		}
@@ -986,6 +986,7 @@ class Routing extends Module
 			throw new \Exception($e->getMessage(), $e->getCode());
 		}
 	}
+
 	/**
 	 * @return string
 	 */
