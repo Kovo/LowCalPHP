@@ -54,6 +54,12 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 	protected $_db_object = null;
 
 	/**
+	 * Whether query logging should take place.
+	 * @var bool
+	 */
+	protected $_log_queries = false;
+
+	/**
 	 * Couchbase constructor.
 	 * @param Base $Base
 	 * @param string $server_identifier
@@ -67,6 +73,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 		$this->_server_identifier = $server_identifier;
 		$this->_connect_retry_attempts = $connect_retry_attempts;
 		$this->_connect_retry_delay = $connect_retry_delay;
+		$this->_log_queries = Config::get('SETTING_DB_LOG_QUERIES');
 	}
 
 	/**
@@ -168,11 +175,7 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 		{
 			try
 			{
-				$Authenticator = new \Couchbase\PasswordAuthenticator();
-				$Authenticator->username($name)->password($password);
-
 				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
-				$this->_cluster_object->authenticate($Authenticator);
 
 				$this->_is_connected = true;
 			}
@@ -189,8 +192,6 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 						try
 						{
 							$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
-							$this->_cluster_object->authenticate($Authenticator);
-
 							$this->_is_connected = true;
 
 							break;
@@ -214,11 +215,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 
 			try
 			{
-				$this->_db_object = $this->_cluster_object->openBucket($name);
+				$this->_db_object = $this->_cluster_object->openBucket($name, (!empty($password)?$password:""));
 			}
 			catch(\Exception $e)
 			{
-				$error_string = 'Failed to open to bucket. '.$e->getMessage().'/'.$e->getCode();
+				$error_string = 'Failed to open to bucket.';
 
 				$this->_Base->log()->add('couchbase_db', $error_string);
 
@@ -391,6 +392,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 	 */
 	public function getKV(string $key, bool $check_lock = false, bool $set_lock = false): Results
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', 'Get Key: '.$key);
+		}
+
 		$Results = new Results($this->_Base);
 
 		try
@@ -501,6 +507,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 	 */
 	public function setKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', 'Set Key: '.$key.' / '.json_encode($value));
+		}
+
 		try
 		{
 			$this->_Base->db()->server($this->_server_identifier)->connect();
@@ -584,6 +595,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 	 */
 	public function addKV(string $key, $value, int $timeout = 0, bool $delete_lock = false, string $cas = null): bool
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', 'Add Key: '.$key.' / '.json_encode($value));
+		}
+
 		try
 		{
 			$this->_Base->db()->server($this->_server_identifier)->connect();
@@ -665,6 +681,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 	 */
 	public function deleteKV(string $key, bool $check_lock = false, bool $delete_lock = false, string $cas = ''): bool
 	{
+		if($this->_log_queries)
+		{
+			$this->_Base->log()->add('db_queries', 'Delete Key: '.$key);
+		}
+
 		try
 		{
 			$this->_Base->db()->server($this->_server_identifier)->connect();
@@ -796,6 +817,65 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 		else
 		{
 			throw new \Exception('Unable to get new incremental atomic id for "'.$atomic_id_classifier.'"/"'.$atomic_id_secondary_classifier.'".', Codes::DB_FAILED_TO_GET);
+		}
+	}
+
+	/**
+	 * This method returns a unique ID, atomically.
+	 * @param int $atomic_id_classifier
+	 * @param int|null $atomic_id_secondary_classifier
+	 * @param int $initial
+	 * @param int $expiry
+	 * @return int
+	 * @throws \Exception
+	 */
+	public function setCounter(int $atomic_id_classifier, ?int $atomic_id_secondary_classifier = null, int $delta, int $initial = 100000, int $expiry = 0): int
+	{
+		try
+		{
+			$new_id = $this->_db_object->counter(
+				'atomic_counter_bidirectional:'.$atomic_id_classifier.(!empty($atomic_id_secondary_classifier)?':'.$atomic_id_secondary_classifier:''),
+				$delta,
+				array(
+					'initial'=> $initial,
+					'expiry' => $expiry
+				)
+			)->value;
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() === 23/*LCB_ETIMEDOUT*/)
+			{
+				if($this->_timeout_retry_count < Config::get('SETTING_DB_TIMEOUT_RETRIES'))
+				{
+					$this->_timeout_retry_count++;
+
+					$this->_Base->log()->add('couchbase_db', 'Exception during atomic counter get of: "'.$atomic_id_classifier.'"/"'.$atomic_id_secondary_classifier.'" | Exception: "#'.$e->getCode().' / '.$e->getMessage().'". Retrying...');
+
+					sleep($this->_timeout_retry_count);
+
+					$new_id = $this->getNextId($atomic_id_classifier, $atomic_id_secondary_classifier, $initial, $expiry);
+				}
+				else
+				{
+					$this->_timeout_retry_count = 0;
+				}
+			}
+			else
+			{
+				$this->_timeout_retry_count = 0;
+			}
+		}
+
+		if(isset($new_id) && !empty($new_id) && is_numeric($new_id))
+		{
+			$this->_timeout_retry_count = 0;
+
+			return $new_id;
+		}
+		else
+		{
+			throw new \Exception('Unable to get new bidirectional atomic counter for "'.$atomic_id_classifier.'"/"'.$atomic_id_secondary_classifier.'".', Codes::DB_FAILED_TO_GET);
 		}
 	}
 }
