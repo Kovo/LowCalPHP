@@ -121,7 +121,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 
 			try
 			{
-				$this->_cache_object = $this->_cluster_object->openBucket($name, (!empty($password)?$password:""));
+				$this->_cache_object = $this->_cluster_object->openBucket($name);
 			}
 			catch(\Exception $e)
 			{

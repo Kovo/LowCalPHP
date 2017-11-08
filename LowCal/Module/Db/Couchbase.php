@@ -175,7 +175,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 		{
 			try
 			{
+				$Authenticator = new \Couchbase\PasswordAuthenticator();
+				$Authenticator->username($name)->password($password);
+
 				$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+				$this->_cluster_object->authenticate($Authenticator);
 
 				$this->_is_connected = true;
 			}
@@ -192,6 +196,8 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 						try
 						{
 							$this->_cluster_object = new \Couchbase\Cluster($host.($port!==0?':'.$port:'').Config::get('SETTING_DB_COUCHBASE_CONNECTION_CONFIGURATION_STRING'));
+							$this->_cluster_object->authenticate($Authenticator);
+
 							$this->_is_connected = true;
 
 							break;
@@ -215,11 +221,11 @@ class Couchbase extends \LowCal\Module\Db\Db implements Db, Db\NoSQL
 
 			try
 			{
-				$this->_db_object = $this->_cluster_object->openBucket($name, (!empty($password)?$password:""));
+				$this->_db_object = $this->_cluster_object->openBucket($name);
 			}
 			catch(\Exception $e)
 			{
-				$error_string = 'Failed to open to bucket.';
+				$error_string = 'Failed to open to bucket. '.$e->getMessage().'/'.$e->getCode();
 
 				$this->_Base->log()->add('couchbase_db', $error_string);
 
