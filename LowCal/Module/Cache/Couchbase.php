@@ -570,7 +570,7 @@ class Couchbase extends \LowCal\Module\Cache\Cache implements Cache
 			}
 		}
 
-		if(isset($new_id) && !empty($new_id) && is_numeric($new_id))
+		if(isset($new_id) && is_numeric($new_id))
 		{
 			$this->_timeout_retry_count = 0;
 
