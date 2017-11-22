@@ -23,7 +23,7 @@ class Curl
 
 		$curl_resource = curl_init();
 
-		$options = array(
+		$options = array_replace(array(
 			CURLOPT_URL => $url,
 			CURLOPT_POST => 1,
 			CURLOPT_POSTFIELDS => $payload,
@@ -31,7 +31,7 @@ class Curl
 			CURLOPT_FORBID_REUSE => 1,
 			CURLOPT_HEADER => 0,
 			CURLOPT_RETURNTRANSFER => 1,
-		)+$options;
+		), $options);
 
 		curl_setopt_array($curl_resource, $options);
 
