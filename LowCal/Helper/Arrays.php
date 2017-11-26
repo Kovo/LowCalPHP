@@ -116,4 +116,120 @@ class Arrays
 			}
 		}
 	}
+
+	/**
+	 * @param array $input_array
+	 * @param int $precision
+	 * @return string
+	 */
+	public static function bcArraySum(array &$input_array, int $precision = 0): string
+	{
+		$return = null;
+
+		if(empty($input_array))
+		{
+			return '0';
+		}
+
+		foreach($input_array as $value)
+		{
+			if($return === null)
+			{
+				$return = (string)$value;
+			}
+			else
+			{
+				$return = bcadd($return, (string)$value, $precision);
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * @param array $input_array
+	 * @param int $precision
+	 * @return string
+	 */
+	public static function bcArraySub(array &$input_array, int $precision = 0): string
+	{
+		$return = null;
+
+		if(empty($input_array))
+		{
+			return '0';
+		}
+
+		foreach($input_array as $value)
+		{
+			if($return === null)
+			{
+				$return = (string)$value;
+			}
+			else
+			{
+				$return = bcsub($return, (string)$value, $precision);
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * @param array $input_array
+	 * @param int $precision
+	 * @return string
+	 */
+	public static function bcArrayMul(array &$input_array, int $precision = 0): string
+	{
+		$return = null;
+
+		if(empty($input_array))
+		{
+			return '0';
+		}
+
+		foreach($input_array as $value)
+		{
+			if($return === null)
+			{
+				$return = (string)$value;
+			}
+			else
+			{
+				$return = bcmul($return, (string)$value, $precision);
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * @param array $input_array
+	 * @param int $precision
+	 * @return string
+	 */
+	public static function bcArrayDiv(array &$input_array, int $precision = 0): string
+	{
+		$return = null;
+
+		if(empty($input_array))
+		{
+			return '0';
+		}
+
+		foreach($input_array as $value)
+		{
+			if($return === null)
+			{
+				$return = (string)$value;
+			}
+			else
+			{
+				$return = bcdiv($return, (string)$value, $precision);
+			}
+		}
+
+		return $return;
+	}
 }
