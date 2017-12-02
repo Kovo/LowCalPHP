@@ -4,7 +4,7 @@ declare(strict_types=1);
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice, contribtuions, and original author information.
  * @author Kevork Aghazarian
- * @website http://www.lowcalphp.com
+ * @website https://github.com/Kovo/LowCalPHP
  */
 /*
  * NOTE: Try not to modify bootstrap.php to make your application compatible with future updates.
