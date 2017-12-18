@@ -223,4 +223,25 @@ class Strings
 
 		return $word;
 	}
+
+	/**
+	 * @param string $string
+	 * @param string $replacement
+	 * @param int $start
+	 * @param int $length
+	 * @param null|string $encoding
+	 * @return string
+	 */
+	public static function mb_substr_replace(string $string, string $replacement, int $start, int $length = 0, ?string $encoding = null): string
+	{
+		$result  = mb_substr($string, 0, $start, $encoding);
+		$result .= $replacement;
+
+		if($length > 0)
+		{
+			$result .= mb_substr($string, ($start + $length), null, $encoding);
+		}
+
+		return $result;
+	}
 }

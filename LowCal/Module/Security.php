@@ -281,13 +281,10 @@ class Security extends Module
 	{
 		foreach($constraints as $coords)
 		{
-			if($coords[0] <= strlen($input))
-			{
-				$input = substr_replace($input, str_repeat('|', $coords[1]), $coords[0], $coords[1]);
-			}
+			$input = Strings::mb_substr_replace($input, '', $coords[0], $coords[1], 'UTF-8');
 		}
 
-		return str_replace('|', '', $input);
+		return $input;
 	}
 
 	/**
@@ -316,11 +313,16 @@ class Security extends Module
 		$unhashed_characters = array();
 		for($i=0;$i<$input_length;$i++)
 		{
-			$this_character_array_key = array_search(mb_substr($input, $i, 1, 'UTF-8'), $this->_hash_table_to);
+			$substring = mb_substr($input, $i, 1, 'UTF-8');
+			$this_character_array_key = array_search($substring, $this->_hash_table_to);
 
 			if($this_character_array_key !== false)
 			{
 				$unhashed_characters[] = $this->_hash_table_from[$this_character_array_key];
+			}
+			else
+			{
+				$unhashed_characters[] = $substring;
 			}
 		}
 
@@ -428,8 +430,17 @@ class Security extends Module
 
 			for($i=0;$i<$input_length;$i++)
 			{
-				$this_character_array_key = array_search(mb_substr($input, $i, 1, 'UTF-8'), $this->_hash_table_from);
-				$hashed_characters[] = $this->_hash_table_to[$this_character_array_key];
+				$substring = mb_substr($input, $i, 1, 'UTF-8');
+				$this_character_array_key = array_search($substring, $this->_hash_table_from);
+
+				if($this_character_array_key !== false)
+				{
+					$hashed_characters[] = $this->_hash_table_to[$this_character_array_key];
+				}
+				else
+				{
+					$hashed_characters[] = $substring;
+				}
 			}
 
 			$final_output = implode('', $hashed_characters);
@@ -457,9 +468,11 @@ class Security extends Module
 	 */
 	protected function _poisonString(string $input, array $constraints, int $type = Strings::HEX): string
 	{
-		foreach($constraints as $coords)
+		$original_length = strlen($input);
+
+		foreach(array_reverse($constraints) as $coords)
 		{
-			if($coords[0] <= strlen($input))
+			if($coords[0] <= $original_length)
 			{
 				$part1 = mb_substr($input, 0, $coords[0], 'UTf-8');
 				$part2 = mb_substr($input, $coords[0], null,'UTf-8');
