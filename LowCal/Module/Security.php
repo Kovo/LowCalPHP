@@ -413,11 +413,11 @@ class Security extends Module
 			{
 				if(isset($custom_rules[self::HASH]) && $custom_rules[self::HASH] !== '')
 				{
-					$final_output = substr($final_output, 0, strlen(hash($custom_rules[self::HASH], $input)));
+					$final_output = mb_substr($final_output, 0, strlen(hash($custom_rules[self::HASH], $input)), 'UTF-8');
 				}
 				else
 				{
-					$final_output = substr($final_output, 0, strlen(hash($this->_hash, $input)));
+					$final_output = mb_substr($final_output, 0, strlen(hash($this->_hash, $input)), 'UTF-8');
 				}
 			}
 		}
@@ -428,7 +428,7 @@ class Security extends Module
 
 			for($i=0;$i<$input_length;$i++)
 			{
-				$this_character_array_key = array_search(substr($input, $i, 1), $this->_hash_table_from);
+				$this_character_array_key = array_search(mb_substr($input, $i, 1, 'UTF-8'), $this->_hash_table_from);
 				$hashed_characters[] = $this->_hash_table_to[$this_character_array_key];
 			}
 
@@ -461,8 +461,8 @@ class Security extends Module
 		{
 			if($coords[0] <= strlen($input))
 			{
-				$part1 = substr($input, 0, $coords[0]);
-				$part2 = substr($input, $coords[0]);
+				$part1 = mb_substr($input, 0, $coords[0], 'UTf-8');
+				$part2 = mb_substr($input, $coords[0], null,'UTf-8');
 
 				$part1 = $part1.Strings::createCode($coords[1], $type);
 				$input = $part1.$part2;
