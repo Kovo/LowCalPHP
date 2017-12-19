@@ -32,15 +32,14 @@ class Strings
 	 * Advanced trim function that detects various hidden characters that show-up in certain strings from different languages.
 	 * When possible, use this method over PHP's standard trim.
 	 * @param string $string
-	 * @param string $charlist
 	 * @return string
 	 */
-	public static function trim(string $string, string $charlist = " \t\n\r\0\x0B\xC2\xA0"): string
+	public static function trim(string $string): string
 	{
 		$string = str_replace("\xC2\xA0", ' ', $string);
 		$string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
 
-		return trim($string, $charlist);
+		return mb_ereg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','', $string);
 	}
 
 	/**

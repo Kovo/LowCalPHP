@@ -468,14 +468,14 @@ class Security extends Module
 	 */
 	protected function _poisonString(string $input, array $constraints, int $type = Strings::HEX): string
 	{
-		$original_length = strlen($input);
+		$original_length = mb_strlen($input, 'UTF-8');
 
 		foreach(array_reverse($constraints) as $coords)
 		{
-			if($coords[0] <= $original_length)
+			if(($coords[0]+$coords[1]) <= $original_length)
 			{
-				$part1 = mb_substr($input, 0, $coords[0], 'UTf-8');
-				$part2 = mb_substr($input, $coords[0], null,'UTf-8');
+				$part1 = mb_substr($input, 0, $coords[0], 'UTF-8');
+				$part2 = mb_substr($input, $coords[0], null,'UTF-8');
 
 				$part1 = $part1.Strings::createCode($coords[1], $type);
 				$input = $part1.$part2;
