@@ -39,7 +39,7 @@ class Strings
 		$string = str_replace("\xC2\xA0", ' ', $string);
 		$string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
 
-		return mb_ereg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','', $string);
+		return trim($string);
 	}
 
 	/**
@@ -238,7 +238,7 @@ class Strings
 
 		if($length > 0)
 		{
-			$result .= mb_substr($string, ($start + $length), null, $encoding);
+			$result .= mb_substr($string, ($start+$length), null, $encoding);
 		}
 
 		return $result;

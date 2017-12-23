@@ -298,6 +298,15 @@ class Security extends Module
 	{
 		$de_poison = false;
 
+		$new_input = '';
+
+		foreach(preg_split("/\\r\\n|\\r|\\n/", $input) as $line)
+		{
+			$new_input .= Strings::trim($line).PHP_EOL;
+		}
+
+		$new_input = Strings::trim($new_input);
+
 		if(in_array(self::DE_POISON, $flags) === true)
 		{
 			$de_poison = true;
@@ -305,15 +314,15 @@ class Security extends Module
 
 		if($de_poison === true)
 		{
-			$input = $this->_depoisonString($input, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
+			$new_input = $this->_depoisonString($new_input, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
 		}
 
-		$input_length = strlen($input);
+		$input_length = strlen($new_input);
 
 		$unhashed_characters = array();
 		for($i=0;$i<$input_length;$i++)
 		{
-			$substring = mb_substr($input, $i, 1, 'UTF-8');
+			$substring = mb_substr($new_input, $i, 1, 'UTF-8');
 			$this_character_array_key = array_search($substring, $this->_hash_table_to);
 
 			if($this_character_array_key !== false)
@@ -326,9 +335,9 @@ class Security extends Module
 			}
 		}
 
-		$input = implode('', $unhashed_characters);
+		$new_input = implode('', $unhashed_characters);
 
-		return $input;
+		return $new_input;
 	}
 
 	/**
@@ -426,11 +435,20 @@ class Security extends Module
 		//we are going to produce a two-way encrypted string (which will be extremely hard to crack without source code access)
 		elseif($two_way === true)
 		{
+			$new_input = '';
+
+			foreach(preg_split("/\\r\\n|\\r|\\n/", $input) as $line)
+			{
+				$new_input .= Strings::trim($line).PHP_EOL;
+			}
+
+			$new_input = Strings::trim($new_input);
+
 			$hashed_characters = array();
 
 			for($i=0;$i<$input_length;$i++)
 			{
-				$substring = mb_substr($input, $i, 1, 'UTF-8');
+				$substring = mb_substr($new_input, $i, 1, 'UTF-8');
 				$this_character_array_key = array_search($substring, $this->_hash_table_from);
 
 				if($this_character_array_key !== false)
