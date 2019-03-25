@@ -211,10 +211,6 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 					->setInsertId($this->_db_object->insert_id)
 					->setReturnedRows($result->num_rows)
 					->setResults($result);
-
-				$result->free();
-				$result = null;
-				unset($result);
 			}
 		}
 		catch(\Exception $e)

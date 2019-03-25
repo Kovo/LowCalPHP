@@ -770,7 +770,7 @@ class Routing extends Module
 
 			$siteUrl = $this->stripBaseUri($siteUrl);
 
-			if(($this->_secure || $secure) && $secure !== false)
+			if($this->_secure || $secure)
 			{
 				$siteUrl = str_replace('http://','https://', $siteUrl);
 			}

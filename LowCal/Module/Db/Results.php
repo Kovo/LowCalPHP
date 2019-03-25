@@ -82,7 +82,7 @@ class Results extends Module
 	 */
 	public function free(): void
 	{
-		if($this->_result_type === '\mysqli_result')
+		if($this->_result_type === 'mysqli_result' && !empty($this->_results))
 		{
 			$this->_results->free();
 		}
@@ -206,11 +206,11 @@ class Results extends Module
 
 			$this->_result_type = 'array';
 		}
-		elseif(is_object($results) && get_class($results) === '\mysqli_result')
+		elseif(is_object($results) && get_class($results) === 'mysqli_result')
 		{
-			$this->_results = clone $results;
+			$this->_results = $results;
 
-			$this->_result_type = '\mysqli_result';
+			$this->_result_type = 'mysqli_result';
 		}
 		elseif(is_object($results))
 		{
@@ -277,7 +277,7 @@ class Results extends Module
 				}
 			}
 		}
-		elseif($this->_result_type === '\mysqli_result')
+		elseif($this->_result_type === 'mysqli_result')
 		{
 			return $this->_results->fetch_assoc();
 		}
