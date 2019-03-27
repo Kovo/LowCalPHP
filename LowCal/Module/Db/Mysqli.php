@@ -348,11 +348,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 				$this->_last_error_number = '';
 
 				$Results->setAffectedRows($this->_db_object->affected_rows)
-					->setInsertId($this->_db_object->insert_id)
-					->setReturnedRows($result->num_rows)
-					->setResults($result);
+					->setInsertId($this->_db_object->insert_id);
 
-				$result->free();
 				$result = null;
 				unset($result);
 			}
