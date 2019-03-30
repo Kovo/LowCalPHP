@@ -295,6 +295,17 @@ class Db extends Module
 	}
 
 	/**
+	 * Abstracted sanitation method targeted for non-numeric values containing HTML.
+	 * @param $value
+	 * @param string $server_identifier
+	 * @return array|mixed|string
+	 */
+	public function sanitizeQueryValueHTML($value, string $server_identifier = '')
+	{
+		return $this->interact($server_identifier)->sanitize($value, false, Security::CLEAN_JS_STYLE_COMMENTS);
+	}
+
+	/**
 	 * Abstracted sanitation method targeted for all value types and will respect the input type.
 	 * @param $value
 	 * @param string $server_identifier

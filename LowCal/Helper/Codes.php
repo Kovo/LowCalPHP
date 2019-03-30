@@ -91,4 +91,9 @@ class Codes
 	const CACHE_CANNOT_OPEN_DATABASE = 193;
 	const CACHE_CANNOT_SET_LOCK = 194;
 	const CACHE_CANNOT_SET_KEYVALUE = 195;
+
+	/*
+	 * Image helper related errors.
+	 */
+	const IMAGE_UNKNOWN_FORMAT = 200;
 }
