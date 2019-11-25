@@ -22,7 +22,7 @@ use LowCal\Module\Db\Results;
  * Class Sample
  * @package LowCal\Model\NoSQL\Entity
  */
-class Sample extends Data implements \LowCal\Interfaces\Model\Data
+class Sample extends Data implements \LowCal\Interfaces\Model\NoSQL\Data
 {
 	/**
 	 * Request constructor.

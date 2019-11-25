@@ -96,4 +96,12 @@ class Codes
 	 * Image helper related errors.
 	 */
 	const IMAGE_UNKNOWN_FORMAT = 200;
+
+	/*
+	 * LDAP helper related errors.
+	 */
+	const LDAP_CONNECT_FAILED = 300;
+	const LDAP_BIND_FAILED = 301;
+	const LDAP_SEARCH_FAILED = 302;
+	const LDAP_DATA_FETCH_FAILED = 303;
 }

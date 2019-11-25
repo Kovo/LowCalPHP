@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace LowCal\Interfaces\Model;
+namespace LowCal\Interfaces\Model\NoSQL;
 
 use LowCal\Module\Db\Results;
 
