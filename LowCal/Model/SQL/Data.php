@@ -225,6 +225,66 @@ class Data extends Model
 	}
 
 	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
+	protected function insertDate(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$columns_string .= $change.',';
+			$values_string .= (empty($this->$variable_var)?"null":"'".$this->_LowCal->db()->sanitizeQueryValueNonNumeric(Format::getTimestamp(strtotime($this->$variable_var)))."'").",";
+		}
+	}
+
+	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
+	protected function insertString(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$columns_string .= $change.',';
+			$values_string .= "'".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($this->$variable_var)."',";
+		}
+	}
+
+	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
+	protected function insertInt(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$columns_string .= $change.',';
+			$values_string .= $this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var).",";
+		}
+	}
+
+	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
+	protected function insertBool(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$columns_string .= $change.',';
+			$values_string .= ($this->$variable_var?"1":"0").",";
+		}
+	}
+
+	/**
 	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
@@ -276,7 +336,7 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= $change." = ".($this->$variable_var?"true":"false").",";
+			$query_string .= $change." = ".($this->$variable_var?"1":"0").",";
 		}
 	}
 
@@ -332,7 +392,32 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= " ".$change." = ".($this->$variable_var?"true":"false");
+			$query_string .= " ".$change." = ".($this->$variable_var?"1":"0");
+		}
+	}
+
+	/**
+	 * @param string $data_type
+	 * @param array $changes
+	 * @param string $column_string
+	 * @param string $values_string
+	 */
+	protected function _baseChangeLoopInsert(string $data_type, array $changes, string &$column_string, string &$values_string): void
+	{
+		switch($data_type)
+		{
+			case 'date':
+				$this->insertDate($changes, $column_string, $values_string);
+				break;
+			case 'string':
+				$this->insertString($changes, $column_string, $values_string);
+				break;
+			case 'int':
+				$this->insertInt($changes, $column_string, $values_string);
+				break;
+			case 'bool':
+				$this->insertBool($changes, $column_string, $values_string);
+				break;
 		}
 	}
 
@@ -387,12 +472,19 @@ class Data extends Model
 	}
 
 	/**
-	 * @param string $query_string
+	 * @param string $query_beginning
+	 * @param string $column_string
+	 * @param string $values_string
+	 * @param string $query_end
 	 * @return Results
 	 */
-	protected function _baseInsert(string $query_string): Results
+	protected function _baseChangeInsert(string $query_beginning, string $column_string, string $values_string, string $query_end): Results
 	{
-		return $this->_LowCal->db()->insert($query_string);
+		$Result = $this->_LowCal->db()->insert($query_beginning." (".substr($column_string,0, -1).") VALUES (".substr($values_string,0, -1).") ".$query_end);
+
+		$this->_changes = array();
+
+		return $Result;
 	}
 
 	/**
@@ -401,7 +493,7 @@ class Data extends Model
 	 * @param string $query_end
 	 * @return Results
 	 */
-	protected function _baseChangeUpdate(string &$query_beginning, string &$query_string, string &$query_end): Results
+	protected function _baseChangeUpdate(string $query_beginning, string $query_string, string $query_end): Results
 	{
 		$Result = $this->_LowCal->db()->update($query_beginning.substr($query_string,0, -1).$query_end);
 
@@ -428,7 +520,7 @@ class Data extends Model
 	 * @param int|null $search_offset
 	 * @return Results
 	 */
-	protected function _baseChangeSearch(string &$query_beginning, string &$search_query_string, array $search_order = array(), ?int $search_limit = null, ?int $search_offset = null): Results
+	protected function _baseChangeSearch(string $query_beginning, string $search_query_string, array $search_order = array(), ?int $search_limit = null, ?int $search_offset = null): Results
 	{
 		$query_end = '';
 

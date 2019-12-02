@@ -999,7 +999,7 @@ class Data extends Model
 	 * @param 
 	 * @return Results
 	 */
-	protected function _basePostChangeUpdate(string &$query_beginning, string &$query_string, string &$query_end, string &$query_string_2, string &$query_string_3): Results
+	protected function _basePostChangeUpdate(string $query_beginning, string $query_string, string $query_end, string $query_string_2, string $query_string_3): Results
 	{
 		$Result = $this->_LowCal->db()->update($query_beginning.substr($query_string,0, -1).$query_end);
 
@@ -1062,7 +1062,7 @@ class Data extends Model
 	 * @param 
 	 * @return Results
 	 */
-	protected function _basePostChangeDelete(string &$query_beginning, string &$set_query_string, string &$query_end, string &$unset_query_string, string &$set_query_string_2): Results
+	protected function _basePostChangeDelete(string $query_beginning, string $set_query_string, string $query_end, string $unset_query_string, string $set_query_string_2): Results
 	{
 		$Result = $this->_LowCal->db()->update($query_beginning." SET ".substr($set_query_string,0, -1)." ".(!empty($unset_query_string)?" UNSET ".substr($unset_query_string,0,-1):"").$query_end);
 
@@ -1095,7 +1095,7 @@ class Data extends Model
 	 * @param int|null $search_offset
 	 * @return Results
 	 */
-	protected function _basePostChangeSearch(string &$query_beginning, string &$search_query_string, array $search_order = array(), ?int $search_limit = null, ?int $search_offset = null): Results
+	protected function _basePostChangeSearch(string $query_beginning, string $search_query_string, array $search_order = array(), ?int $search_limit = null, ?int $search_offset = null): Results
 	{
 		$this->_LowCal->db()->interact()->setQueryConsistencyRequestPlus();
 

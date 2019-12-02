@@ -139,9 +139,24 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	 */
 	public function insert(): Results
 	{
-		$query_string = "INSERT INTO user (uid) VALUES ('".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($this->_uid)."')";
+		if(!empty($this->_changes))
+		{
+			$query_beginning = "INSERT INTO sample ";
 
-		return $this->_baseInsert($query_string);
+			$column_string = "";
+			$values_string = "";
+
+			foreach($this->_changes as $data_type => $changes)
+			{
+				$this->_baseChangeLoopInsert($data_type, $changes, $column_string, $values_string);
+			}
+
+			return $this->_baseChangeInsert($query_beginning, $column_string, $values_string, "");
+		}
+		else
+		{
+			throw new \Exception('Cannot insert Sample if no changes provided.', Codes::DB_DATA_NOT_FOUND);
+		}
 	}
 
 	/**
