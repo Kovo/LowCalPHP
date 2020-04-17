@@ -216,8 +216,8 @@ class Data extends Model
 	{
 		$this->ignoreChanges();
 
-		$this->_id = $full_row['id'] ?? 0;
-		$this->_status_id = $full_row['status_id'] ?? null;
+		$this->_id = (isset($full_row['id'])?(int)$full_row['id']:0);
+		$this->_status_id = (isset($full_row['status_id'])?(int)$full_row['status_id']:0);
 		$this->_date_modified = $full_row['date_modified'] ?? '';
 		$this->_date_created = $full_row['date_created'] ?? '';
 
