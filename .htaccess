@@ -14,6 +14,17 @@ deny from all
 satisfy all
 </Files>
 
+###Prevent direct access to any .php file except bootstrap
+<Files *.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files bootstrap.php>
+    Order Allow,Deny
+    Allow from all
+</Files>
+
 ##CATCHALL FOR ROUTING
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule .* bootstrap.php [NC]
