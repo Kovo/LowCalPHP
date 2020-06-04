@@ -85,3 +85,5 @@ echo $LowCal->routing()->listen();
 # There Is a Lot More
 LowCal PHP has a lot under the hood, that tries to keep your application as streamlined as possible, without getting in the way of your own architecture and creativity. LowCal's code should be very easy to read, and comes commented as well. So go ahead, and start your next web app with LowCal PHP!
 
+
+This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")

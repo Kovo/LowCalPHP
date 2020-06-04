@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2017, Consultation Kevork Aghazarian
+ * All rights reserved.
+ */
 declare(strict_types=1);
 /************************************************************************************
  ************************************************************************************
@@ -18,7 +22,7 @@ use LowCal\Model\SQL\Data;
 use LowCal\Module\Db\Results;
 
 /**
- * Class User
+ * Class Sample
  * @package Model\SQL\Entity
  */
 class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
@@ -114,7 +118,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	{
 		if(!empty($this->_id))
 		{
-			$select = $this->_LowCal->db()->interact()->select("SELECT id, uid, access_code, date_added, date_modified FROM user WHERE id = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->_id)." LIMIT 1");
+			$select = $this->_LowCal->db()->interact()->select("SELECT id, uid, access_code, date_added, date_modified FROM sample WHERE id = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->_id)." LIMIT 1");
 
 			if($select->getReturnedRows() > 0 && !$select->getErrorDetected())
 			{
@@ -122,12 +126,12 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 			}
 			else
 			{
-				throw new \Exception('Could not populate User entity.', Codes::DB_DATA_NOT_FOUND);
+				throw new \Exception('Could not populate Sample entity.', Codes::DB_DATA_NOT_FOUND);
 			}
 		}
 		else
 		{
-			throw new \Exception('Cannot populate User object without an Id.', Codes::DB_IDENTIFIER_MISSING);
+			throw new \Exception('Cannot populate Sample object without an Id.', Codes::DB_IDENTIFIER_MISSING);
 		}
 
 		return $this;
@@ -167,7 +171,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	{
 		if(!empty($this->_changes) && !empty($this->_id))
 		{
-			$query_beginning = "UPDATE user SET ";
+			$query_beginning = "UPDATE sample SET ";
 
 			$query_string = "";
 
@@ -182,7 +186,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 		}
 		else
 		{
-			throw new \Exception('Cannot update User if no Id provided.', Codes::DB_IDENTIFIER_MISSING);
+			throw new \Exception('Cannot update Sample if no Id provided.', Codes::DB_IDENTIFIER_MISSING);
 		}
 	}
 
@@ -194,11 +198,11 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	{
 		if(!empty($this->_id))
 		{
-			return $this->_baseDelete("DELETE FROM user WHERE id = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->_id)." LIMIT 1");
+			return $this->_baseDelete("DELETE FROM sample WHERE id = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->_id)." LIMIT 1");
 		}
 		else
 		{
-			throw new \Exception('Cannot delete User if no Id provided.', Codes::DB_IDENTIFIER_MISSING);
+			throw new \Exception('Cannot delete Sample if no Id provided.', Codes::DB_IDENTIFIER_MISSING);
 		}
 	}
 
@@ -213,7 +217,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	 */
 	public function search(bool $full_rows = false, string $search_fields = '', string $search_terms = '', array $search_ids = array(), array $search_statuses = array()): Results
 	{
-		$query_beginning = "SELECT ".(!empty($full_rows)?"*":(!empty($search_fields)?$this->_LowCal->db()->sanitizeQueryValueNonNumeric($search_fields):"id"))." FROM user WHERE ";
+		$query_beginning = "SELECT ".(!empty($full_rows)?"*":(!empty($search_fields)?$this->_LowCal->db()->sanitizeQueryValueNonNumeric($search_fields):"id"))." FROM sample WHERE ";
 		$search_query_string = "";
 
 		if(!empty($this->_changes) || !empty($search_terms) || !empty($search_ids))
@@ -235,7 +239,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 		}
 		else
 		{
-			throw new \Exception('Cannot search for User if no instructions provided.', Codes::DB_IDENTIFIER_MISSING);
+			throw new \Exception('Cannot search for Sample if no instructions provided.', Codes::DB_IDENTIFIER_MISSING);
 		}
 
 		return $this->_baseChangeSearch($query_beginning, $search_query_string);

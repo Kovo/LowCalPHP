@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2017, Consultation Kevork Aghazarian
+ * All rights reserved.
+ */
 declare(strict_types=1);
 /*
  * NOTE: Your application starts here. Everything below this comment block is provided as a guideline.
