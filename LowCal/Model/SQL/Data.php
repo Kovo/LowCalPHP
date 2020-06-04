@@ -354,7 +354,7 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= " ".$change." = \"".$this->_LowCal->db()->sanitizeQueryValueNonNumeric(Format::getTimestamp(strtotime($this->$variable_var)))."\"";
+			$query_string .= " ".$change." = \"".$this->_LowCal->db()->sanitizeQueryValueNonNumeric(Format::getTimestamp(strtotime($this->$variable_var)))."\" AND ";
 		}
 	}
 
@@ -368,7 +368,7 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= " ".$change." = \"".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($this->$variable_var)."\"";
+			$query_string .= " ".$change." = \"".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($this->$variable_var)."\" AND ";
 		}
 	}
 
@@ -382,7 +382,7 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= " ".$change." = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var);
+			$query_string .= " ".$change." = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var)." AND ";
 		}
 	}
 
@@ -396,7 +396,7 @@ class Data extends Model
 		foreach($changes as $change)
 		{
 			$variable_var = '_'.$change;
-			$query_string .= " ".$change." = ".($this->$variable_var?"1":"0");
+			$query_string .= " ".$change." = ".($this->$variable_var?"1":"0")." AND ";
 		}
 	}
 
@@ -555,6 +555,15 @@ class Data extends Model
 		elseif(!empty($search_limit))
 		{
 			$query_end .= " LIMIT ".$this->_LowCal->db()->sanitizeQueryValueNumeric($search_limit);
+		}
+
+		if(!empty($search_query_string))
+		{
+			$search_query_string = substr($search_query_string, 0, -4);
+		}
+		else
+		{
+			$query_beginning = substr($query_beginning, 0, -6);
 		}
 
 		$Result =  $this->_LowCal->db()->select($query_beginning.$search_query_string.$query_end);

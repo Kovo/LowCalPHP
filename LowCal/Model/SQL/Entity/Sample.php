@@ -220,26 +220,22 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 		$query_beginning = "SELECT ".(!empty($full_rows)?"*":(!empty($search_fields)?$this->_LowCal->db()->sanitizeQueryValueNonNumeric($search_fields):"id"))." FROM sample WHERE ";
 		$search_query_string = "";
 
-		if(!empty($this->_changes) || !empty($search_terms) || !empty($search_ids))
+		if(!empty($search_ids))
 		{
-			if(!empty($search_ids))
-			{
-				$search_query_string .= "AND id IN (".Format::typeSafeImplodeForQuery($this->_LowCal->db()->sanitizeQueryValueTypeSafe($search_ids)).") ";
-			}
+			$search_query_string .= " id IN (".Format::typeSafeImplodeForQuery($this->_LowCal->db()->sanitizeQueryValueTypeSafe($search_ids)).") AND ";
+		}
 
-			if(!empty($search_statuses))
-			{
-				$search_query_string .= "AND status_id IN (".Format::typeSafeImplodeForQuery($this->_LowCal->db()->sanitizeQueryValueTypeSafe($search_statuses)).") ";
-			}
+		if(!empty($search_statuses))
+		{
+			$search_query_string .= " status_id IN (".Format::typeSafeImplodeForQuery($this->_LowCal->db()->sanitizeQueryValueTypeSafe($search_statuses)).") AND ";
+		}
 
+		if(!empty($this->_changes))
+		{
 			foreach($this->_changes as $data_type => $changes)
 			{
 				$this->_baseChangeLoopSearch($data_type, $changes, $search_query_string);
 			}
-		}
-		else
-		{
-			throw new \Exception('Cannot search for Sample if no instructions provided.', Codes::DB_IDENTIFIER_MISSING);
 		}
 
 		return $this->_baseChangeSearch($query_beginning, $search_query_string);
