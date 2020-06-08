@@ -414,6 +414,11 @@ class Routing extends Module
 			}
 		}
 
+		if(substr($pattern, -1) !== '?')
+		{
+			$pattern .= '/';
+		}
+
 		return '#^'.$pattern.'$#uD';
 	}
 
@@ -491,11 +496,10 @@ class Routing extends Module
 	public function stripBaseUri(string $uri): string
 	{
 		$uri = $this->stripBothSlashes($uri);
-		$base_uri = $this->stripTrailingSlash($this->_base_uri);
 
 		if($this->_base_uri !== '')
 		{
-			$base_uri_exploded = explode('/', $base_uri);
+			$base_uri_exploded = explode('/', $uri);
 
 			$uri_exploded = explode('/', $uri);
 
@@ -510,7 +514,7 @@ class Routing extends Module
 			$uri = implode('/', $uri_exploded);
 		}
 
-		return $uri;
+		return $uri.'/';
 	}
 
 	/**
@@ -744,10 +748,9 @@ class Routing extends Module
 	 */
 	public function stripBothSlashes(string $string): string
 	{
-		$string = $this->stripTrailingSlash($string);
-		$string = $this->stripLeadingSlash($string);
-
-		return $string;
+		return $this->stripTrailingSlash(
+			$this->stripLeadingSlash($string)
+		);
 	}
 
 	/**
