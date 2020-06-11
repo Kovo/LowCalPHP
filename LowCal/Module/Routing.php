@@ -789,7 +789,7 @@ class Routing extends Module
 
 			$merged_pattern = $this->_mergeTermsWithPattern($terms, $this->_routes[$identifier][self::PATTERN], $this->_routes[$identifier][self::CONSTRAINTS]);
 
-			return $this->addTrailingSlash($this->addTrailingSlash($siteUrl).'/'.$merged_pattern);
+			return $this->addTrailingSlash($this->addTrailingSlash($siteUrl).$merged_pattern);
 		}
 		else
 		{
