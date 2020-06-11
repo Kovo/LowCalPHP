@@ -209,15 +209,33 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 	/**
 	 * @param bool $full_rows
 	 * @param string $search_fields
-	 * @param string $search_terms
 	 * @param array $search_ids
 	 * @param array $search_statuses
+	 * @param array $search_term
+	 * @param array $search_order
+	 * @param int|null $search_limit
+	 * @param int|null $search_offset
 	 * @return Results
-	 * @throws \Exception
 	 */
-	public function search(bool $full_rows = false, string $search_fields = '', string $search_terms = '', array $search_ids = array(), array $search_statuses = array()): Results
+	public function search(bool $full_rows = false, string $search_fields = '', array $search_ids = array(), array $search_statuses = array(), $search_term = array(), array $search_order = array(), ?int $search_limit = null, ?int $search_offset = null): Results
 	{
-		$query_beginning = "SELECT ".(!empty($full_rows)?"*":(!empty($search_fields)?$this->_LowCal->db()->sanitizeQueryValueNonNumeric($search_fields):"id"))." FROM sample WHERE ";
+		$query_beginning = "SELECT ";
+
+		if(!empty($full_rows))
+		{
+			$query_beginning .= " * ";
+		}
+		elseif(!empty($search_fields))
+		{
+			$query_beginning .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($search_fields);
+		}
+		else
+		{
+			$query_beginning .= " COUNT(id) as total_result_rows ";
+		}
+
+		$query_beginning .= " FROM sample WHERE ";
+
 		$search_query_string = "";
 
 		if(!empty($search_ids))
@@ -230,6 +248,14 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 			$search_query_string .= " status_id IN (".Format::typeSafeImplodeForQuery($this->_LowCal->db()->sanitizeQueryValueTypeSafe($search_statuses)).") AND ";
 		}
 
+		if(!empty($search_term))
+		{
+			foreach($search_term as $term_info)
+			{
+				$this->_baseSearchTermLoopSearch($term_info, $search_query_string);
+			}
+		}
+
 		if(!empty($this->_changes))
 		{
 			foreach($this->_changes as $data_type => $changes)
@@ -238,6 +264,6 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 			}
 		}
 
-		return $this->_baseChangeSearch($query_beginning, $search_query_string);
+		return $this->_baseChangeSearch($query_beginning, $search_query_string, $search_order, $search_limit, $search_offset);
 	}
 }
