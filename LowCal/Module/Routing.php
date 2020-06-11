@@ -837,7 +837,7 @@ class Routing extends Module
 				$term = $match[0] ?? null;
 				$term_name = $match[1] ?? null;
 
-				if(isset($terms[$term_name]))
+				if(isset($terms[$term_name]) && $terms[$term_name] !== '')
 				{
 					$merged_term = htmlentities(str_replace($term, $terms[$term_name], $patternTerm));
 				}
