@@ -204,6 +204,10 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 				$this->_last_error_message = $this->_db_object->error;
 				$this->_last_error_number = $this->_db_object->errno;
 
+				$Results->setErrorDetected();
+
+				$Results->setErrorMessage($this->_last_error_number.' / '.$this->_last_error_message);
+
 				$this->_Base->log()->add('mysqli', 'Query failed: "'.$query.' | Error: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 			}
 			else
@@ -223,6 +227,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_number = $e->getCode();
 
 			$Results->setErrorDetected();
+
+			$Results->setErrorMessage($this->_last_error_number.' / '.$this->_last_error_message);
 
 			$this->_Base->log()->add('mysqli', 'Excpetion during query: "'.$query.' | Exception: "#'.$this->_last_error_message.' / '.$this->_last_error_number.'"');
 		}
@@ -338,6 +344,10 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 				$this->_last_error_number = $this->_db_object->errno;
 
 				$this->_Base->log()->add('mysqli', 'Query failed: "'.$query.'". | Error: "#'.$this->_last_error_number.' / '.$this->_last_error_message.'"');
+
+				$Results->setErrorDetected();
+
+				$Results->setErrorMessage($this->_last_error_number.' / '.$this->_last_error_message);
 			}
 			elseif($retry_count > 0 && $retry_count < $this->_deadlock_second_interval_retries)
 			{
@@ -364,6 +374,8 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 			$this->_last_error_number = $e->getCode();
 
 			$Results->setErrorDetected();
+
+			$Results->setErrorMessage($this->_last_error_number.' / '.$this->_last_error_message);
 
 			$this->_Base->log()->add('mysqli', 'Exception during query: "'.$query.' | Exception: "#'.$this->_last_error_number.' / '.$this->_last_error_message.'"');
 		}
