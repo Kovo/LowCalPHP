@@ -679,7 +679,7 @@ class Data extends Model
 		{
 			$query_beginning = substr($query_beginning, 0, -6)." ";
 		}
-		var_dump($query_beginning.$search_query_string.$query_end);
+
 		$Result =  $this->_LowCal->db()->select($query_beginning.$search_query_string.$query_end);
 
 		return $Result;
