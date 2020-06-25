@@ -250,10 +250,7 @@ class Sample extends Data implements \LowCal\Interfaces\Model\SQL\Data
 
 		if(!empty($search_term))
 		{
-			foreach($search_term as $term_info)
-			{
-				$this->_baseSearchTermLoopSearch($term_info, $search_query_string);
-			}
+			$this->_baseSearchTermLoopSearch($search_term, $search_query_string);
 		}
 
 		if(!empty($this->_changes))

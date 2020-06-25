@@ -497,67 +497,95 @@ class Data extends Model
 	}
 
 	/**
-	 * @param array $term_info
+	 * @param array $search_terms
 	 * @param string $search_query_string
 	 */
-	protected function _baseSearchTermLoopSearch(array $term_info, string &$search_query_string): void
+	protected function _baseSearchTermLoopSearch(array $search_terms, string &$search_query_string): void
 	{
-		switch($term_info[self::SEARCH_TERM_TYPE])
+		$ands = '';
+		$ors = '';
+
+		foreach($search_terms as $term_info)
 		{
-			case self::SEARCH_TERM_TYPE_BETWEEN:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." BETWEEN '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES][0])."' AND '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES][1])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_EQUAL:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." = '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_NOTEQUAL:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." <> '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_LIKE:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." LIKE '%".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."%' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_LLIKE:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." LIKE '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."%' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_RLIKE:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." LIKE '%".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_LESSTHAN:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." < ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_LESSTHANE:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." <= ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_GREATERTHAN:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." > ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_GREATERTHANE:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." >= ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_IN:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." IN ( ";
+			switch($term_info[self::SEARCH_TERM_TYPE])
+			{
+				case self::SEARCH_TERM_TYPE_BETWEEN:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." BETWEEN '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES][0])."' AND '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES][1])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_EQUAL:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." = '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_NOTEQUAL:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." <> '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_LIKE:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." LIKE '%".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."%' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_LLIKE:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." LIKE '".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."%' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_RLIKE:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." LIKE '%".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_VALUES])."' ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_LESSTHAN:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." < ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_LESSTHANE:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." <= ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_GREATERTHAN:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." > ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_GREATERTHANE:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." >= ".$this->_LowCal->db()->sanitizeQueryValueNumeric($term_info[self::SEARCH_TERM_VALUES])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_IN:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." IN ( ";
 
-				foreach($term_info[self::SEARCH_TERM_VALUES] as $value)
+					foreach($term_info[self::SEARCH_TERM_VALUES] as $value)
+					{
+						$query .= "'".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($value)."', ";
+					}
+
+					$query = substr($query,0,-2)." ";
+
+					$query .= " ) ".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+				case self::SEARCH_TERM_TYPE_NOTIN:
+					$query = $this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_FIELD])." NOT IN ( ";
+
+					foreach($term_info[self::SEARCH_TERM_VALUES] as $value)
+					{
+						$query .= "'".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($value)."', ";
+					}
+
+					$query = substr($query,0,-2)." ";
+
+					$query .= " ) ".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($term_info[self::SEARCH_TERM_ANDOR])." ";
+					break;
+			}
+
+			if(isset($query))
+			{
+				if($term_info[self::SEARCH_TERM_ANDOR] == self::SEARCH_TERM_ANDOR_AND)
 				{
-					$search_query_string .= "'".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($value)."', ";
+					$ands .= $query;
 				}
-
-				$search_query_string = substr($search_query_string,0,-2)." ";
-
-				$search_query_string .= " ) ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
-			case self::SEARCH_TERM_TYPE_NOTIN:
-				$search_query_string .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_FIELD])." NOT IN ( ";
-
-				foreach($term_info[self::SEARCH_TERM_VALUES] as $value)
+				else
 				{
-					$search_query_string .= "'".$this->_LowCal->db()->sanitizeQueryValueTypeSafe($value)."', ";
+					$ors .= $query;
 				}
+			}
+		}
 
-				$search_query_string = substr($search_query_string,0,-2)." ";
+		if(strlen($ands) > 0)
+		{
+			$search_query_string .= $ands;
+		}
 
-				$search_query_string .= " ) ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($term_info[self::SEARCH_TERM_ANDOR])." ";
-				break;
+		if(strlen($ors) > 0)
+		{
+			$search_query_string .= "(".substr($ors,0,-3).") AND ";
 		}
 	}
 
@@ -651,7 +679,7 @@ class Data extends Model
 		{
 			$query_beginning = substr($query_beginning, 0, -6)." ";
 		}
-
+		var_dump($query_beginning.$search_query_string.$query_end);
 		$Result =  $this->_LowCal->db()->select($query_beginning.$search_query_string.$query_end);
 
 		return $Result;
