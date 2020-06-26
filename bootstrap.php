@@ -18,6 +18,7 @@ try
 	$loader = new Psr4Autoloader();
 	$loader->register();
 	$loader->addNamespace('LowCal\\', 'LowCal/');
+	$loader->addNamespace('PHPMailer\\', 'LowCal/PHPMailer/');
 
 	###BASE CONFIG###
 	$LOWCAL_CONFIG_ARRAY['BASE_DIR'] = __DIR__.DIRECTORY_SEPARATOR;
