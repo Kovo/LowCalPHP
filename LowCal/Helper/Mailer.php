@@ -153,7 +153,7 @@ class Mailer
 
 		if(!file_exists($file))
 		{
-			throw new Exception('Template could not be found.');
+			throw new \Exception('Template could not be found.');
 		}
 
 		$parameters['LowCal'] = $LowCal;
