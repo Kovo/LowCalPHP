@@ -37,9 +37,9 @@ class Controller
 	 * @param string $lang
 	 * @param string $action
 	 * @param string $controller
-	 * @return null|string
+	 * @return void
 	 */
-	public function before(string $lang, string $action, string $controller): ?string
+	public function before(string $lang, string $action, string $controller): void
 	{
 		if(!empty($lang))
 		{
@@ -48,8 +48,6 @@ class Controller
 				$this->_Base->locale()->setCurrentLocale($lang);
 			}
 		}
-
-		return null;
 	}
 
 	/**
