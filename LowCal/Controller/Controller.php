@@ -47,6 +47,10 @@ class Controller
 			{
 				$this->_Base->locale()->setCurrentLocale($lang);
 			}
+			else
+			{
+				throw new \Exception('Invalid language provided.');
+			}
 		}
 	}
 
