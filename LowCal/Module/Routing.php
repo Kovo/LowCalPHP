@@ -246,9 +246,16 @@ class Routing extends Module
 			'terms'	=> array()
 		);
 
+		$base_uri = $this->stripBaseUri($this->getUri());
+
+		if($base_uri === '/')
+		{
+			$base_uri = '';
+		}
+
 		foreach($this->_routes as $routeKey => $routeValues)
 		{
-			if(preg_match($routeValues[self::RULES], $this->stripBaseUri($this->getUri()), $terms))
+			if(preg_match($routeValues[self::RULES], $base_uri, $terms))
 			{
 				$result_from_parse['foundKey'] = $routeKey;
 				$result_from_parse['finalRouteValues'] = $routeValues;
