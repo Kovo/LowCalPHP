@@ -635,7 +635,11 @@ class Data extends Model
 				$query_end .= $this->_LowCal->db()->sanitizeQueryValueNonNumeric($instructions['field'])." ".$this->_LowCal->db()->sanitizeQueryValueNonNumeric($instructions['direction']).", ";
 			}
 
-			if(!empty($query_end))
+			if($query_end === " ORDER BY ")
+			{
+				$query_end = substr($query_end,0,-9);
+			}
+			elseif(!empty($query_end))
 			{
 				$query_end = substr($query_end,0,-2);
 			}
