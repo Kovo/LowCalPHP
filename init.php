@@ -76,12 +76,12 @@ catch(Exception $e)
 	{
 		$LowCal->response()->setHeader('Status', '404 Not Found');
 		$LowCal->response()->setHeader('HTTP/1.0 404 Not Found');
-		echo $LowCal->view()->render('404', array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
+		echo $LowCal->view()->render(Config::get('APP_404_VIEW'), array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
 	}
 	else
 	{
 		$LowCal->response()->setHeader('Status', '500 Internal Server Error');
 		$LowCal->response()->setHeader('HTTP/1.0 500 Internal Server Error');
-		echo $LowCal->view()->render('500', array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
+		echo $LowCal->view()->render(Config::get('APP_500_VIEW'), array('exception_msg' => $e->getMessage(), 'exception_code' => $e->getCode()));
 	}
 }
