@@ -39,5 +39,68 @@ catch(\Throwable $t)
 	exit();
 }
 
-###BEGIN YOUR APP###
-include Config::get('BASE_DIR').'init.php';
+try
+{
+	/*
+	 * Configuration for routing
+	 */
+	$LowCal->routing()->setSiteUrl(Config::get('APP_ROOT_URL'));
+	$LowCal->routing()->setBaseUri(Config::get('APP_ROOT_URI'));
+
+	/*
+	 * Constants for routing patterns commonly used in web apps
+	 */
+	define('ROUTING_LANG_REG_EX', '[a-z]{2,3}+');
+	define('ROUTING_ID_REG_EX', '[0-9]+');
+	define('ROUTING_NAME_REG_EX', '[a-zA-Z0-9\-]+');
+
+	/*
+	* Set view engine
+	*/
+	$LowCal->view()->setViewEngineType(Config::get('VIEW_ENGINE_PHP'))
+		->setViewEngineObject(new \LowCal\Module\View\PHP($LowCal))
+		->getViewEngineObject()
+		->setViewDir(Config::get('VIEWS_DIR'));
+
+	###BEGIN YOUR APP###
+	require_once Config::get('BASE_DIR').'init.php';
+
+	#Module initiation
+	$LowCal->loadAdditionalModules();
+
+	echo $LowCal->routing()->listen();
+}
+catch(Exception $e)
+{
+	if(
+		in_array(
+			$e->getCode(),
+			Config::get('APP_404_ERROR_CODES')
+		)
+	)
+	{
+		$LowCal->response()->setHeader('Status', '404 Not Found');
+		$LowCal->response()->setHeader('HTTP/1.0 404 Not Found');
+
+		echo $LowCal->view()->render(
+			Config::get('APP_404_VIEW'),
+			array(
+				'exception_msg' => $e->getMessage(),
+				'exception_code' => $e->getCode()
+			)
+		);
+	}
+	else
+	{
+		$LowCal->response()->setHeader('Status', '500 Internal Server Error');
+		$LowCal->response()->setHeader('HTTP/1.0 500 Internal Server Error');
+
+		echo $LowCal->view()->render(
+			Config::get('APP_500_VIEW'),
+			array(
+				'exception_msg' => $e->getMessage(),
+				'exception_code' => $e->getCode()
+			)
+		);
+	}
+}

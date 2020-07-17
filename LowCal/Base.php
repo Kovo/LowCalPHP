@@ -190,6 +190,58 @@ class Base
 	}
 
 	/**
+	 * Loads any detected additional LowCalPHP modules
+	 */
+	public function loadAdditionalModules(): void
+	{
+		if(!Config::get('APP_SCAN_FOR_ADD_MODULES'))
+		{
+			return;
+		}
+
+		$modules = array();
+
+		foreach(scandir(Config::get('BASE_DIR')) as $file)
+		{
+			if($file === '.' || $file === '..')
+			{
+				continue;
+			}
+
+			if(substr($file, 0, 12) === 'init_module_')
+			{
+				$modules[substr($file, 0, -4)] = $file;
+			}
+		}
+
+		if(isset($modules['init_module_admin']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_admin'];
+
+			unset($modules['init_module_admin']);
+		}
+		else
+		{
+			return;
+		}
+
+		if(isset($modules['init_module_frontend']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_frontend'];
+
+			unset($modules['init_module_frontend']);
+		}
+
+		if(!empty($modules))
+		{
+			foreach($modules as $module_init_name => $module_init_file)
+			{
+				require_once Config::get('BASE_DIR').$module_init_file;
+			}
+		}
+	}
+
+	/**
 	 * Returns an instantiated Cache module object.
 	 * @return Cache
 	 */
