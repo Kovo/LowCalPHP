@@ -289,6 +289,20 @@ class Data extends Model
 	}
 
 	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
+	protected function insertNull(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$columns_string .= $change.',';
+			$values_string .= "NULL,";
+		}
+	}
+
+	/**
 	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
@@ -349,6 +363,19 @@ class Data extends Model
 	 * @param array $changes
 	 * @param string $query_string
 	 */
+	protected function updateNull(array $changes, string &$query_string): void
+	{
+		foreach($changes as $change)
+		{
+			$query_string .= $change." = NULL,";
+		}
+	}
+
+	/**
+	 * Method made for constructing N1QL query fragments.
+	 * @param array $changes
+	 * @param string $query_string
+	 */
 	protected function searchDate(array $changes, string &$query_string): void
 	{
 		foreach($changes as $change)
@@ -401,6 +428,19 @@ class Data extends Model
 	}
 
 	/**
+	 * Method made for constructing N1QL query fragments.
+	 * @param array $changes
+	 * @param string $query_string
+	 */
+	protected function searchNull(array $changes, string &$query_string): void
+	{
+		foreach($changes as $change)
+		{
+			$query_string .= " ".$change." IS NULL AND ";
+		}
+	}
+
+	/**
 	 * @param string $data_type
 	 * @param array $changes
 	 * @param string $column_string
@@ -421,6 +461,9 @@ class Data extends Model
 				break;
 			case 'bool':
 				$this->insertBool($changes, $column_string, $values_string);
+				break;
+			case 'null':
+				$this->insertNull($changes, $column_string, $values_string);
 				break;
 		}
 	}
@@ -445,6 +488,9 @@ class Data extends Model
 				break;
 			case 'bool':
 				$this->updateBool($changes, $query_string);
+				break;
+			case 'null':
+				$this->updateNull($changes, $query_string);
 				break;
 		}
 	}
@@ -471,6 +517,9 @@ class Data extends Model
 				break;
 			case 'bool':
 				$this->searchBool($changes, $search_query_string);
+				break;
+			case 'null':
+				$this->searchNull($changes, $search_query_string);
 				break;
 		}
 	}
