@@ -172,7 +172,7 @@ class Mailer
 
 			$mail_body['html'] = $content;
 
-			$mail_body['plain'] = strip_tags(str_replace(array('<br>','<br/>','<br />'), "\r\n", $content));
+			$mail_body['plain'] = strip_tags(str_replace(array('<br>','<br/>','<br />','</p>'), "\r\n", $content));
 		}
 		catch(\Throwable $t)
 		{
