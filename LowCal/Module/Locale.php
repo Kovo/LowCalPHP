@@ -77,19 +77,33 @@ class Locale extends Module
 	/**
 	 * Get an array of exposed translations keys.
 	 * To expose a translation, make sure its key starts with "exposed".
+	 * @param bool $get_all
 	 * @return array
 	 */
-	public function getExposed(): array
+	public function getExposed(bool $get_all = false): array
 	{
 		$exposed = array();
 
-		if(!empty($this->_translations[$this->_current_locale]))
+		if(!$get_all && !empty($this->_translations[$this->_current_locale]))
 		{
 			foreach($this->_translations[$this->_current_locale] as $key => $value)
 			{
 				if(substr($key,0,7) === 'exposed')
 				{
-					$exposed[$key] = $value;
+					$exposed[$this->_current_locale][$key] = $value;
+				}
+			}
+		}
+		elseif($get_all)
+		{
+			foreach($this->_translations as $lang_id => $values)
+			{
+				foreach($values as $key => $value)
+				{
+					if(substr($key,0,7) === 'exposed')
+					{
+						$exposed[$lang_id][$key] = $value;
+					}
 				}
 			}
 		}
