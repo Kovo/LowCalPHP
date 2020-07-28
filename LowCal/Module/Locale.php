@@ -117,6 +117,15 @@ class Locale extends Module
 	}
 
 	/**
+	 * Get all registered languages
+	 * @return array
+	 */
+	public function getLanguages(): array
+	{
+		return $this->_languages;
+	}
+
+	/**
 	 * Set the current language by short-hand id.
 	 * @param string $shortform
 	 * @param bool $autoload

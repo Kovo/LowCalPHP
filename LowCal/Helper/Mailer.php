@@ -144,11 +144,6 @@ class Mailer
 	{
 		global $LowCal;
 
-		$mail_body = array(
-			'html' => '',
-			'plain' => ''
-		);
-
 		$file = Config::get('MAIL_TEMPLATES_DIR').$template_name.'.'.$template_ext;
 
 		if(!file_exists($file))
@@ -170,9 +165,7 @@ class Mailer
 
 			ob_end_clean();
 
-			$mail_body['html'] = $content;
-
-			$mail_body['plain'] = strip_tags(str_replace(array('<br>','<br/>','<br />','</p>'), "\r\n", $content));
+			$mail_body = self::prepareTextForEmail($content);
 		}
 		catch(\Throwable $t)
 		{
@@ -182,5 +175,17 @@ class Mailer
 		}
 
 		return $mail_body;
+	}
+
+	/**
+	 * @param string $content
+	 * @return array
+	 */
+	public static function prepareTextForEmail(string $content): array
+	{
+		return array(
+			'html' => $content,
+			'plain' => strip_tags(str_replace(array('<br>','<br/>','<br />','</p>'), "\r\n", $content)),
+		);
 	}
 }
