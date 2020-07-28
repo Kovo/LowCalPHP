@@ -54,6 +54,23 @@ class Mailer
 				$mail->SMTPSecure = Config::get('APP_MAIL_SMTP_ENCRYPTION_METHOD');
 				$mail->Port = Config::get('APP_MAIL_SMTP_PORT');
 			}
+			else
+			{
+				switch(Config::get('APP_MAIL_MTA'))
+				{
+					case 'sendmail':
+						$mail->isSendmail();
+						break;
+					case 'qmail':
+						$mail->isQmail();
+						break;
+					case 'mail':
+						$mail->isMail();
+						break;
+					default:
+						$mail->isMail();
+				}
+			}
 
 			$mail->setFrom(
 				(!empty($from_email)?$from_email:Config::get('APP_MAIL_DEFAULT_FROM_EMAIL')),
