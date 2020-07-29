@@ -202,7 +202,17 @@ class Mailer
 	{
 		return array(
 			'html' => $content,
-			'plain' => strip_tags(str_replace(array('<br>','<br/>','<br />','</p>'), "\r\n", $content)),
+			'plain' => str_replace(
+				'&nbsp;',
+				' ',
+				strip_tags(
+					str_replace(
+						array('<br>','<br/>','<br />','</p>'),
+						"\r\n",
+						$content
+					)
+				)
+			),
 		);
 	}
 }
