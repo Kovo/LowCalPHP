@@ -89,6 +89,11 @@ class Base
 	protected $_Psr4Autoloader = null;
 
 	/**
+	 * @var array
+	 */
+	protected $_registered_additional_modules = array();
+
+	/**
 	 * Base constructor.
 	 * @param null|\Psr4Autoloader $Psr4Autoloader
 	 * @throws \Exception
@@ -211,6 +216,8 @@ class Base
 			if(substr($file, 0, 12) === 'init_module_')
 			{
 				$modules[substr($file, 0, -4)] = $file;
+
+				$this->_registered_additional_modules[] = substr(explode('init_module_', $file)[1], 0, -4);
 			}
 		}
 
@@ -239,6 +246,14 @@ class Base
 				require_once Config::get('BASE_DIR').$module_init_file;
 			}
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAdditionalModules(): array
+	{
+		return $this->_registered_additional_modules;
 	}
 
 	/**
