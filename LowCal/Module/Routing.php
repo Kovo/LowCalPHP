@@ -789,7 +789,11 @@ class Routing extends Module
 				$siteUrl = str_replace('http://','https://', $siteUrl);
 			}
 
-			if(isset($this->_routes[$identifier][self::CONSTRAINTS]['lang']))
+			if(isset($terms['lang']))
+			{
+				$terms['lang'] = $this->_Base->locale()->getShortLocaleId($terms['lang']);
+			}
+			elseif(isset($this->_routes[$identifier][self::CONSTRAINTS]['lang']))
 			{
 				$terms['lang'] = $this->_Base->locale()->getCurrentLocale();
 			}
