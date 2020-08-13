@@ -54,6 +54,42 @@ class Strings
 	}
 
 	/**
+	 * Keep only alphanumeric and space characters
+	 * @param string $string
+	 * @param int|null $max_len
+	 * @return string
+	 */
+	public static function stripNonAlphaNumNonSpaceChars(string $string, ?int $max_len = null): string
+	{
+		$string = preg_replace("/[^A-Za-z0-9 ]/", "", $string);
+
+		if(!empty($max_len))
+		{
+			$string = mb_substr($string,0, $max_len, 'UTF-8');
+		}
+
+		return $string;
+	}
+
+	/**
+	 * Keep only alphanumeric characters
+	 * @param string $string
+	 * @param int|null $max_len
+	 * @return string
+	 */
+	public static function stripNonAlphaNumChars(string $string, ?int $max_len = null): string
+	{
+		$string = preg_replace("/[^A-Za-z0-9]/", "", $string);
+
+		if(!empty($max_len))
+		{
+			$string = mb_substr($string,0, $max_len, 'UTF-8');
+		}
+
+		return $string;
+	}
+
+	/**
 	 * Generate a cryptographically secure random string of characters.
 	 * @param int $length
 	 * @param int $type
