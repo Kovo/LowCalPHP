@@ -151,6 +151,11 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 			}
 		}
 
+		if($this->_is_connected)
+		{
+			$this->_db_object->set_charset("utf8");
+		}
+
 		return true;
 	}
 
