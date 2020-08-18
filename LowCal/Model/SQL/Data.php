@@ -52,6 +52,12 @@ class Data extends Model
 	protected $_changes = array();
 
 	/**
+	 * This var tracks changes for fields in different related tables.
+	 * @var array
+	 */
+	protected $_additional_changes = array();
+
+	/**
 	 * A flag to ignore incoming changes (or not).
 	 * @var bool
 	 */
@@ -118,6 +124,38 @@ class Data extends Model
 	public function getChanges(): array
 	{
 		return $this->_changes;
+	}
+
+	/**
+	 *  Clear any changes currently logged (will not remove values from the object itself).
+	 * @return Data
+	 */
+	public function clearAdditionalChanges(): self
+	{
+		$this->_additional_changes = array();
+
+		return $this;
+	}
+
+	/**
+	 * Set the changes array (override it).
+	 * @param array $additional_changes
+	 * @return Data
+	 */
+	public function setAdditionalChanges(array $additional_changes): self
+	{
+		$this->_additional_changes = $additional_changes;
+
+		return $this;
+	}
+
+	/**
+	 * Get the changes array.
+	 * @return array
+	 */
+	public function getAdditionalChanges(): array
+	{
+		return $this->_additional_changes;
 	}
 
 	/**
