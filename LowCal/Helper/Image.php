@@ -28,7 +28,7 @@ class Image
 
 		$width_height_ratio = $source_width/$source_height;
 
-		if($crop === false)
+		if($crop === true)
 		{
 			if($source_width > $source_height)
 			{
