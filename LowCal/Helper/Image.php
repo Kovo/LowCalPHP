@@ -77,6 +77,14 @@ class Image
 
 		$destination_image = imagecreatetruecolor($final_width, $final_height);
 
+		if($extension === 'png')
+		{
+			imagealphablending($destination_image, false);
+			imagesavealpha($destination_image, true);
+			$transparent = imagecolorallocatealpha($destination_image, 255, 255, 255, 127);
+			imagefilledrectangle($destination_image, 0, 0, $final_width, $final_height, $transparent);
+		}
+
 		imagecopyresampled($destination_image, $new_source_image, 0, 0, 0, 0, $final_width, $final_height, $source_width, $source_height);
 
 		switch($extension)
