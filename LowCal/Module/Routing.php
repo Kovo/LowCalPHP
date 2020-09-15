@@ -804,7 +804,7 @@ class Routing extends Module
 		}
 		else
 		{
-			throw new \Exception('Route not found.', Codes::ROUTING_ERROR_NO_ROUTE);
+			throw new \Exception('Route "'.$identifier.'" not found.', Codes::ROUTING_ERROR_NO_ROUTE);
 		}
 	}
 
@@ -822,7 +822,7 @@ class Routing extends Module
 		}
 		else
 		{
-			throw new \Exception('Route not found.', Codes::ROUTING_ERROR_NO_ROUTE);
+			throw new \Exception('Route "'.$identifier.'" not found.', Codes::ROUTING_ERROR_NO_ROUTE);
 		}
 	}
 

@@ -232,11 +232,32 @@ class Base
 			return;
 		}
 
+		if(isset($modules['init_module_products']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_products'];
+
+			unset($modules['init_module_products']);
+		}
+
 		if(isset($modules['init_module_frontend']))
 		{
 			require_once Config::get('BASE_DIR').$modules['init_module_frontend'];
 
 			unset($modules['init_module_frontend']);
+		}
+
+		if(isset($modules['init_module_register']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_register'];
+
+			unset($modules['init_module_register']);
+		}
+
+		if(isset($modules['init_module_productsfrontend']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_productsfrontend'];
+
+			unset($modules['init_module_productsfrontend']);
 		}
 
 		if(!empty($modules))
