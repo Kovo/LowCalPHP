@@ -232,13 +232,6 @@ class Base
 			return;
 		}
 
-		if(isset($modules['init_module_products']))
-		{
-			require_once Config::get('BASE_DIR').$modules['init_module_products'];
-
-			unset($modules['init_module_products']);
-		}
-
 		if(isset($modules['init_module_frontend']))
 		{
 			require_once Config::get('BASE_DIR').$modules['init_module_frontend'];
@@ -251,6 +244,13 @@ class Base
 			require_once Config::get('BASE_DIR').$modules['init_module_register'];
 
 			unset($modules['init_module_register']);
+		}
+
+		if(isset($modules['init_module_products']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_products'];
+
+			unset($modules['init_module_products']);
 		}
 
 		if(isset($modules['init_module_productsfrontend']))
