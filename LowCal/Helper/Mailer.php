@@ -36,6 +36,11 @@ class Mailer
 	{
 		if(empty($to))
 		{
+			$to = Config::get('APP_MAIL_DEFAULT_ADMIN_EMAILS');
+		}
+
+		if(empty($to))
+		{
 			throw new Exception('No recipients provided.');
 		}
 
