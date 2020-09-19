@@ -52,6 +52,12 @@ class Routing extends Module
 	const RULES = 4;
 
 	/**
+	 * Key value for injecting terms into the uri with defined values.
+	 * @var int
+	 */
+	const INJECTED_TERMS = 5;
+
+	/**
 	 * Regex pattern used for detecting terms in route rules.
 	 * @var string
 	 */
@@ -277,6 +283,21 @@ class Routing extends Module
 					else
 					{
 						$result_from_parse['terms'][$offset] = $term;
+					}
+				}
+			}
+
+			if(isset($result_from_parse['finalRouteValues'][self::INJECTED_TERMS]))
+			{
+				foreach($result_from_parse['finalRouteValues'][self::INJECTED_TERMS] as $injected_term => $injected_value)
+				{
+					if($injected_term === 'lang')
+					{
+						$result_from_parse['terms'] = array($injected_term=>$injected_value)+$result_from_parse['terms'];
+					}
+					else
+					{
+						$result_from_parse['terms'][$injected_term] = $injected_value;
 					}
 				}
 			}
@@ -532,9 +553,10 @@ class Routing extends Module
 	 * @param string $action
 	 * @param array $constraints
 	 * @param bool $expose
+	 * @param array $injected_term_values
 	 * @return Routing
 	 */
-	public function add(string $identifier, string $pattern, string $controller, string $action, array $constraints = array(), bool $expose = false): Routing
+	public function add(string $identifier, string $pattern, string $controller, string $action, array $constraints = array(), bool $expose = false, $injected_term_values = array()): Routing
 	{
 		$this->_routes[$identifier] = array(
 			self::PATTERN => $this->stripBothSlashes($pattern),
@@ -542,6 +564,7 @@ class Routing extends Module
 			self::ACTION => $action,
 			self::CONSTRAINTS => $constraints,
 			self::RULES => $this->_generateRules($pattern, $constraints),
+			self::INJECTED_TERMS => $injected_term_values,
 		);
 
 		if($expose)
