@@ -19,10 +19,10 @@ class FTP
 	 * @return array
 	 * @throws \Exception
 	 */
-	public static function connect(string $host, string $username, string $password)
+	public static function connect(string $host, string $username, string $password, int $port = 21)
 	{
 		// set up basic connection
-		$conn_id = ftp_connect($host);
+		$conn_id = ftp_connect($host, $port);
 
 		// login with username and password
 		$login_result = ftp_login($conn_id, $username, $password);
@@ -37,15 +37,17 @@ class FTP
 	}
 
 	/**
+	 * @param string $host
 	 * @param string $username
 	 * @param string $password
-	 * @return array
+	 * @param int $port
+	 * @return resource
 	 * @throws \Exception
 	 */
-	public static function sconnect(string $host, string $username, string $password)
+	public static function sconnect(string $host, string $username, string $password, int $port = 21)
 	{
 		// set up basic connection
-		$conn_id = ftp_ssl_connect($host);
+		$conn_id = ftp_ssl_connect($host, $port);
 
 		// login with username and password
 		$login_result = ftp_login($conn_id, $username, $password);
