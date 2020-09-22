@@ -1,6 +1,6 @@
-# LowCal PHP
+# LowCalPHP
 
-LowCal PHP is a microframework built for PHP 7.1+.
+LowCalPHP is a microframework built for PHP 7.3+.
 
   - Lightweight (small memory footprint)
   - Easy to use (get a web app up and running in under 2 minutes)
@@ -64,7 +64,7 @@ The supplied init.php allows you to start putting all of your application specif
 		       ->setViewDir(Config::get('VIEWS_DIR'));
 ```
 
-**Setup a Mysql database connection (only connects when needed):**
+**Setup a Mysql database connection (connects on demand):**
 ```php
     $LowCal->db()->addServer(
         'firstmysqliserver', 
@@ -83,7 +83,7 @@ The supplied init.php allows you to start putting all of your application specif
 ```
 
 # There Is a Lot More
-LowCal PHP has a lot under the hood, that tries to keep your application as streamlined as possible, without getting in the way of your own architecture and creativity. LowCal's code should be very easy to read, and comes commented as well. So go ahead, and start your next web app with LowCal PHP!
+LowCalPHP has a lot under the hood, that tries to keep your application as streamlined as possible, without getting in the way of your own architecture and creativity. LowCal's code should be very easy to read, and comes commented as well. So go ahead, and start your next web app with LowCal PHP!
 
 
 This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")

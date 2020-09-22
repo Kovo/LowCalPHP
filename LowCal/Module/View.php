@@ -32,6 +32,11 @@ class View extends Module
 	protected $_engine_object = null;
 
 	/**
+	 * @var array
+	 */
+	protected $_view_overrides = array();
+
+	/**
 	 * View constructor.
 	 * @param Base $Base
 	 */
@@ -83,6 +88,18 @@ class View extends Module
 	}
 
 	/**
+	 * @param string $original_view
+	 * @param string $new_view
+	 * @return bool
+	 */
+	public function override(string $original_view, string $new_view): bool
+	{
+		$this->_view_overrides[$original_view] = $new_view;
+
+		return true;
+	}
+
+	/**
 	 * Abstracted render method.
 	 * @param string $view
 	 * @param array $parameters
@@ -95,6 +112,8 @@ class View extends Module
 		{
 			throw new \Exception('No View Engine object has been set.', Codes::VIEW_ENGINE_NOT_STARTED);
 		}
+
+		$view = $this->_view_overrides[$view] ?? $view;
 
 		switch($this->_engine_type)
 		{
