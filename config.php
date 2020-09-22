@@ -44,8 +44,8 @@ $LOWCAL_CONFIG_ARRAY['DOMAIN_SOLUTION'] = array('type' => '', 'value' => '');
 $LOWCAL_CONFIG_ARRAY['SECURITY_HASH_TABLE'] = array();
 $LOWCAL_CONFIG_ARRAY['SECURITY_SALT'] = 'q!a<.r]_d#B^M#@^|>2x =<7r)t%M%y@X]8mK3b+9:e86.*6;|diL#&^|o$Ovu#K*Y>';
 $LOWCAL_CONFIG_ARRAY['SECURITY_POISON_CONSTRAINTS'] = array();
-$LOWCAL_CONFIG_ARRAY['SECURITY_REHASH_DEPTH'] = 1024;
 $LOWCAL_CONFIG_ARRAY['SECURITY_CHECKSUM'] = '';
+$LOWCAL_CONFIG_ARRAY['SECURITY_ARGONID_OPTIONS'] = array('memory_cost' => 4072, 'time_cost' => 13, 'threads' => 1);
 
 /*
  * Cache system configurations

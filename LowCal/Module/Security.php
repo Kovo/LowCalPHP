@@ -32,18 +32,6 @@ class Security extends Module
 	const ONE_WAY = 4;
 
 	/**
-	 * Flag for strict hashing/encryption.
-	 * @var int
-	 */
-	const STRICT = 5;
-
-	/**
-	 * Custom rules flag array key for override hash.
-	 * @var int
-	 */
-	const HASH = 6;
-
-	/**
 	 * Custom rules flag array key for override salt.
 	 * @var int
 	 */
@@ -66,18 +54,6 @@ class Security extends Module
 	 * @var int
 	 */
 	const DE_POISON = 10;
-
-	/**
-	 * Depth for rehashing.
-	 * @var int
-	 */
-	protected $_salt_depth = 1024;
-
-	/**
-	 * Default hash method.
-	 * @var string
-	 */
-	protected $_hash = 'md5';
 
 	/**
 	 * Default salt.
@@ -156,6 +132,7 @@ class Security extends Module
 	/**
 	 * Security constructor.
 	 * @param Base $Base
+	 * @throws \Exception
 	 */
 	function __construct(Base $Base)
 	{
@@ -164,7 +141,6 @@ class Security extends Module
 		$new_hash_table = Config::get('SECURITY_HASH_TABLE');
 		$new_salt = Config::get('SECURITY_SALT');
 		$new_poison_constraints = Config::get('SECURITY_POISON_CONSTRAINTS');
-		$new_rehash_depth = Config::get('SECURITY_REHASH_DEPTH');
 		$previous_installation_checksum = Config::get('SECURITY_CHECKSUM');
 
 		if(!empty($new_hash_table))
@@ -180,11 +156,6 @@ class Security extends Module
 		if(!empty($new_poison_constraints))
 		{
 			$this->replacePoisonConstraints($new_poison_constraints);
-		}
-
-		if(!empty($new_rehash_depth))
-		{
-			$this->replaceRehashDepth($new_rehash_depth);
 		}
 
 		if(!empty($previous_installation_checksum))
@@ -232,7 +203,12 @@ class Security extends Module
 	 */
 	public function oneWayHashComparison(string $unhashed_value, string $hashed_comparison_value): bool
 	{
-		return $this->compareHashes($unhashed_value, $hashed_comparison_value, array(self::ONE_WAY));
+		$salt = $this->_getSalt();
+
+		//depoison the comparison hash
+		$hashed_comparison_value = $this->_depoisonString($hashed_comparison_value, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
+
+		return password_verify($salt.$unhashed_value.$salt, $hashed_comparison_value);
 	}
 
 	/**
@@ -243,27 +219,14 @@ class Security extends Module
 	 */
 	public function twoWayHashComparison(string $unhashed_value, string $hashed_comparison_value): bool
 	{
-		return $this->compareHashes($unhashed_value, $hashed_comparison_value);
-	}
-
-	/**
-	 * Underlying method used to compare string to encrypted strings.
-	 * @param string $input_string
-	 * @param string $comparison_hash
-	 * @param array $flags
-	 * @param array $custom_rules
-	 * @return bool
-	 */
-	public function compareHashes(string $input_string, string $comparison_hash, array $flags = array(self::TWO_WAY), array $custom_rules = array()): bool
-	{
 		//encrypt string first
-		$hashed_input_string = $this->encrypt($input_string, $flags, $custom_rules);
+		$hashed_input_string = $this->encrypt($unhashed_value);
 
 		//depoison it
-		$hashed_input_string = $this->_depoisonString($hashed_input_string, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
+		$hashed_input_string = $this->_depoisonString($hashed_input_string, $this->_poison_constraints);
 
 		//depoison the comparison hash
-		$comparison_hash = $this->_depoisonString($comparison_hash, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
+		$comparison_hash = $this->_depoisonString($hashed_comparison_value, (isset($custom_rules[self::POISON_CONSTRAINTS])?$custom_rules[self::POISON_CONSTRAINTS]:$this->_poison_constraints));
 
 		if($hashed_input_string === $comparison_hash)
 		{
@@ -348,6 +311,22 @@ class Security extends Module
 	}
 
 	/**
+	 * @param array $custom_rules
+	 * @return string
+	 */
+	protected function _getSalt(array $custom_rules = array())
+	{
+		return (
+			isset($custom_rules[self::SALT])&&$custom_rules[self::SALT]!==''
+				?$custom_rules[self::SALT]
+				:$this->_salt).(
+			isset($custom_rules[self::UNIQUE_SALT])&&$custom_rules[self::UNIQUE_SALT]!==''
+				?$custom_rules[self::UNIQUE_SALT]
+				:''
+			);
+	}
+
+	/**
 	 * Encrypt a string.
 	 * @param string $input
 	 * @param array $flags
@@ -365,7 +344,6 @@ class Security extends Module
 		//main flags default states
 		$one_way = false;
 		$two_way = false;
-		$strict = false;
 
 		//the following statements modify the above default flag states (if necessary)
 		if(in_array(self::TWO_WAY, $flags) === true)
@@ -377,45 +355,12 @@ class Security extends Module
 			$one_way = true;
 		}
 
-		if(in_array(self::STRICT, $flags) === true)
-		{
-			$strict = true;
-		}
-
 		//we are going to produce a oneway, super strong encryption (virtually irreversible)
 		if($one_way === true)
 		{
-			$salt_one = hash((isset($custom_rules[self::HASH])&&$custom_rules[self::HASH]!==''?$custom_rules[self::HASH]:$this->_hash), $input.(isset($custom_rules[self::SALT])&&$custom_rules[self::SALT]!==''?$custom_rules[self::SALT]:$this->_salt).(isset($custom_rules[self::UNIQUE_SALT])&&$custom_rules[self::UNIQUE_SALT]!==''?$custom_rules[self::UNIQUE_SALT]:''));
+			$salt = $this->_getSalt($custom_rules);
 
-			for($x=0; $x<$this->_salt_depth; $x++)
-			{
-				$salt_one = hash((isset($custom_rules[self::HASH])&&$custom_rules[self::HASH]!==''?$custom_rules[self::HASH]:$this->_hash), $salt_one);
-			}
-
-			//get list of supported hashing algorithims
-			$supported_hashes = hash_algos();
-
-			//first encrypt with salt first
-			$final_output = (isset($supported_hashes['whirlpool'])?
-				hash('whirlpool',$salt_one.$input):
-				(isset($supported_hashes['sha512'])?
-					hash('sha512',$salt_one.$input):
-					(isset($supported_hashes['ripemd320'])?
-						hash('ripemd320',$salt_one.$input):hash('md5', $salt_one.$input)
-					)
-				)
-			);
-
-			//then encrypt with salt last
-			$final_output = (isset($supported_hashes['whirlpool'])?
-				hash('whirlpool',$final_output.$salt_one):
-				(isset($supported_hashes['sha512'])?
-					hash('sha512',$final_output.$salt_one):
-					(isset($supported_hashes['ripemd320'])?
-						hash('ripemd320',$final_output.$salt_one):hash('md5', $final_output.$salt_one)
-					)
-				)
-			);
+			$final_output = password_hash($salt.$input.$salt, PASSWORD_ARGON2ID, Config::get('SECURITY_ARGONID_OPTIONS'));
 
 			//begin poisoning
 			if(!isset($custom_rules[self::POISON_CONSTRAINTS]) && !empty($this->_poison_constraints))
@@ -425,18 +370,6 @@ class Security extends Module
 			elseif(isset($custom_rules[self::POISON_CONSTRAINTS]) && !empty($custom_rules[self::POISON_CONSTRAINTS]))
 			{
 				$final_output = $this->_poisonString($final_output, $custom_rules[self::POISON_CONSTRAINTS]);
-			}
-
-			if($strict === true && $one_way === true)
-			{
-				if(isset($custom_rules[self::HASH]) && $custom_rules[self::HASH] !== '')
-				{
-					$final_output = mb_substr($final_output, 0, strlen(hash($custom_rules[self::HASH], $input)), 'UTF-8');
-				}
-				else
-				{
-					$final_output = mb_substr($final_output, 0, strlen(hash($this->_hash, $input)), 'UTF-8');
-				}
 			}
 		}
 		//we are going to produce a two-way encrypted string (which will be extremely hard to crack without source code access)
@@ -565,24 +498,11 @@ class Security extends Module
 	 */
 	public function getChecksum(): string
 	{
-		$strung_string = md5($this->_salt_depth);
-		$strung_string .= md5($this->_hash);
-		$strung_string .= md5($this->_salt);
+		$strung_string = md5($this->_salt);
 		$strung_string .= md5(var_export($this->_poison_constraints,true));
 		$strung_string .= md5(var_export($this->_hash_table_from,true));
 		$strung_string .= md5(var_export($this->_hash_table_to,true));
-
-		$supported_hashes = hash_algos();
-
-		$strung_string .=  md5((isset($supported_hashes['whirlpool'])?
-			md5('whirlpool'):
-			(isset($supported_hashes['sha512'])?
-				md5('sha512'):
-				(isset($supported_hashes['ripemd320'])?
-					md5('ripemd320'):md5('md5')
-				)
-			)
-		));
+		$strung_string .=  PASSWORD_ARGON2ID ?? '';
 
 		return md5($strung_string);
 	}
@@ -673,14 +593,5 @@ class Security extends Module
 	public function replacePoisonConstraints(array $new_constraints): void
 	{
 		$this->_poison_constraints = $new_constraints;
-	}
-
-	/**
-	 * Replace rehash depth.
-	 * @param int $new_depth
-	 */
-	public function replaceRehashDepth(int $new_depth): void
-	{
-		$this->_salt_depth = $new_depth;
 	}
 }
