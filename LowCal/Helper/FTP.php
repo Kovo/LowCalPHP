@@ -145,11 +145,20 @@ class FTP
 	/**
 	 * @param $conn_id
 	 * @param string $destination_dir
-	 * @return bool
+	 * @return array
 	 */
-	public static function mlsd($conn_id, string $destination_dir): bool
+	public static function nlist($conn_id, string $destination_dir): array
 	{
-		return ftp_mlsd($conn_id, $destination_dir);
+		$return = ftp_nlist($conn_id, $destination_dir);
+
+		if($return === false)
+		{
+			return array();
+		}
+		else
+		{
+			return $return;
+		}
 	}
 
 	/**
