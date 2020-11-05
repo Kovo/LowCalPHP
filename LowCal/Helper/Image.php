@@ -27,20 +27,20 @@ class Image
 		list($source_width, $source_height) = getimagesize($file);
 
 		$width_height_ratio = $source_width/$source_height;
+		$new_width_height_ratio = $target_width/$target_height;
 
 		if($crop === true)
 		{
-			if($source_width > $source_height)
+			if($width_height_ratio >= $new_width_height_ratio)
 			{
-				$source_width = (int)ceil($source_width-($source_width*abs($width_height_ratio-$target_width/$target_height)));
+				$final_height = $target_height;
+				$final_width = (int)($source_width / ($source_height / $target_height));
 			}
 			else
 			{
-				$source_height = (int)ceil($source_height-($source_height*abs($width_height_ratio-$target_width/$target_height)));
+				$final_width = $target_width;
+				$final_height = (int)($source_height/($source_width/$target_height));
 			}
-
-			$final_width = $target_width;
-			$final_height = $target_height;
 		}
 		else
 		{
@@ -75,7 +75,14 @@ class Image
 				throw new \Exception('Unknown image format provided.', Codes::IMAGE_UNKNOWN_FORMAT);
 		}
 
-		$destination_image = imagecreatetruecolor($final_width, $final_height);
+		if($crop === true)
+		{
+			$destination_image = imagecreatetruecolor($target_width, $target_height);
+		}
+		else
+		{
+			$destination_image = imagecreatetruecolor($final_width, $final_height);
+		}
 
 		if($extension === 'png')
 		{
@@ -85,7 +92,21 @@ class Image
 			imagefilledrectangle($destination_image, 0, 0, $final_width, $final_height, $transparent);
 		}
 
-		imagecopyresampled($destination_image, $new_source_image, 0, 0, 0, 0, $final_width, $final_height, $source_width, $source_height);
+		if($crop === true)
+		{
+			imagecopyresampled(
+				$destination_image,
+				$new_source_image,
+				(int)(0 - ($final_width - $target_width) / 2), // Center the image horizontally
+				(int)(0 - ($final_height - $target_height) / 2), // Center the image vertically
+				0, 0,
+				$final_width, $final_height,
+				$source_width, $source_height);
+		}
+		else
+		{
+			imagecopyresampled($destination_image, $new_source_image, 0, 0, 0, 0, $final_width, $final_height, $source_width, $source_height);
+		}
 
 		switch($extension)
 		{
