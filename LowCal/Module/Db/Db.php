@@ -202,7 +202,7 @@ class Db extends Module
 
 				if(method_exists($this->_db_object, 'real_escape_string'))
 				{
-					$value = $this->_db_object->real_escape_string($value);
+					$value = $this->_db_object->real_escape_string((string)$value);
 				}
 			}
 
