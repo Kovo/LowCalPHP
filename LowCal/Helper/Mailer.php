@@ -146,6 +146,8 @@ class Mailer
 
 			$mail->AltBody = $plain_message;
 
+			$mail->CharSet = 'UTF-8';
+
 			return $mail->send();
 		}
 		catch(Exception $e)
