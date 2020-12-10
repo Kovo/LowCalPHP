@@ -32,7 +32,7 @@ class Mailer
 	 * @return bool
 	 * @throws Exception
 	 */
-	public static function sendMail(array $to, string $subject, string $html_message, string $plain_message = '', array $attachments = array(), string $replyto_email = '', $replyto_name = '', string $from_email = '', string $from_name = '', array $cc = array(), array $bcc = array()): bool
+	public static function sendMail(array $to, string $subject, string $html_message, string $plain_message = '', array $attachments = array(), string $replyto_email = '', $replyto_name = '', string $from_email = '', string $from_name = '', array $cc = array(), array $bcc = array(), string $smtp_user_override = '', string $smtp_password_override = ''): bool
 	{
 		if(empty($to))
 		{
@@ -54,8 +54,22 @@ class Mailer
 				$mail->isSMTP();
 				$mail->Host = Config::get('APP_MAIL_SMTP_HOST');
 				$mail->SMTPAuth = Config::get('APP_MAIL_SMTP_ENABLE_AUTH');
-				$mail->Username = Config::get('APP_MAIL_SMTP_USERNAME');
-				$mail->Password = Config::get('APP_MAIL_SMTP_PASSWORD');
+				if(empty($smtp_user_override))
+				{
+					$mail->Username = Config::get('APP_MAIL_SMTP_USERNAME');
+				}
+				else
+				{
+					$mail->Username = $smtp_user_override;
+				}
+				if(empty($smtp_password_override))
+				{
+					$mail->Password = Config::get('APP_MAIL_SMTP_PASSWORD');
+				}
+				else
+				{
+					$mail->Password = $smtp_password_override;
+				}
 				$mail->SMTPSecure = Config::get('APP_MAIL_SMTP_ENCRYPTION_METHOD');
 				$mail->Port = Config::get('APP_MAIL_SMTP_PORT');
 			}
@@ -186,8 +200,6 @@ class Mailer
 			require $file;
 
 			$content = ob_get_clean();
-
-			ob_end_clean();
 
 			$mail_body = self::prepareTextForEmail($content);
 		}
