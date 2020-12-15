@@ -227,7 +227,7 @@ class Mailer
 				strip_tags(
 					str_replace(
 						array('<br>','<br/>','<br />','</p>'),
-						"\r\n",
+						"\r\n\r\n",
 						$content
 					)
 				)
