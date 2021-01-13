@@ -168,6 +168,7 @@ class Security extends Module
 	 * Two-way encrypt a string. Two-way encrypted strings can be de-crypted using LowCal's built-in encryption.
 	 * @param string $value
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function twoWayEncrypt(string $value): string
 	{
@@ -189,6 +190,7 @@ class Security extends Module
 	 * it would be very difficult.
 	 * @param string $value
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function oneWayEncrypt(string $value): string
 	{
@@ -216,6 +218,7 @@ class Security extends Module
 	 * @param string $unhashed_value
 	 * @param string $hashed_comparison_value
 	 * @return bool
+	 * @throws \Exception
 	 */
 	public function twoWayHashComparison(string $unhashed_value, string $hashed_comparison_value): bool
 	{
@@ -332,6 +335,7 @@ class Security extends Module
 	 * @param array $flags
 	 * @param array $custom_rules
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function encrypt(string $input, array $flags = array(self::TWO_WAY), array $custom_rules = array()): string
 	{
@@ -423,6 +427,7 @@ class Security extends Module
 	 * @param array $constraints
 	 * @param int $type
 	 * @return string
+	 * @throws \Exception
 	 */
 	protected function _poisonString(string $input, array $constraints, int $type = Strings::HEX): string
 	{
@@ -546,6 +551,7 @@ class Security extends Module
 	/**
 	 * Generate a new salt.
 	 * @return string
+	 * @throws \Exception
 	 */
 	public function regenerateSalt(): string
 	{
@@ -564,6 +570,7 @@ class Security extends Module
 	/**
 	 * Generate a new set of poison constraints. This will not replace the current poison constraints.
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function regeneratePoisonConstraints(): array
 	{

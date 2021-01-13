@@ -94,6 +94,7 @@ class Strings
 	 * @param int $length
 	 * @param int $type
 	 * @return string
+	 * @throws \Exception
 	 */
 	public static function createCode(int $length, int $type = self::ALPHANUMERIC): string
 	{
@@ -207,6 +208,7 @@ class Strings
 	 * Generates a random, pronounceable word.
 	 * @param int $length
 	 * @return string
+	 * @throws \Exception
 	 */
 	public static function randomPronounceableWord(int $length = 6): string
 	{
@@ -234,7 +236,7 @@ class Strings
 			'ts', 'tch',
 		);
 
-		// wovels
+		//vowels
 		$vows = array(
 			// single vowels
 			'a', 'e', 'i', 'o', 'u', 'y',

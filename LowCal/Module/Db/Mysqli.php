@@ -180,6 +180,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	/**
 	 * Get \mysqli object.
 	 * @return \mysqli|null
+	 * @throws \Exception
 	 */
 	public function getDbObject(): ?\mysqli
 	{
@@ -192,6 +193,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	 * Execute a generic query.
 	 * @param string $query
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function query(string $query): Results
 	{
@@ -255,6 +257,7 @@ class Mysqli extends \LowCal\Module\Db\Db implements Db
 	 * Perform an insert operation, and attempt to mitigate deadlocks.
 	 * @param string $query
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function insert(string $query): Results
 	{

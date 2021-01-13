@@ -136,8 +136,30 @@ This allows you to load different configuration values depending on your environ
 
 **CACHE_TYPE_***: Set one of these variables as the value for *CACHE_SELECTED_TYPE*.
 
-**SETTING_CACHE_***: These aree various varibles defining how LowCal should interact with the chosen caching system.
+**SETTING_CACHE_***: These are various varibles defining how LowCal should interact with the chosen caching system.
 
+**DATABASE_SELECTED_TYPE**: LowCal supports mysql and couchbase (nosql) database systems. This variable tells LowCal which Classes to use when database methods are used.
 
+**DATABASE_TYPE_***: Set one of these variables as the value for *DATABASE_SELECTED_TYPE*.
+
+**SETTING_DB_***: These are various variables defining how LowCal should interact with the chosen database system.
+
+**APP_NAME**: Your application's name. This variable is used for default messages LowCal uses.
+
+**APP_404_VIEW**: The view LowCal should call when a 404 is generated.
+
+**APP_500_VIEW**: The view LowCal should call when a 500 is generated.
+
+**APP_SCAN_FOR_ADD_MODULES**: Tell LowCal to scan for LowCal Modules and initiate them.
+
+**APP_404_ERROR_CODES**: What exception codes should LowCal listen to and throw a 4040 error page up for.
+
+**APP_\*_URL**: These variables set the various URLs for your application so that you can use them across your website. These are important as you can easily support different environments with different URLs, by just using these variables.
+
+**APP_DB_***: These variables define access credentials to your chosen database system.
+
+**APP_LDAP_***: These variables define access credentials for LDAP access.
+
+**APP_MAIL_***: These variables define various variables when sending emails using the LowCalPHP Mailer helper.
 
 This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")

@@ -104,6 +104,7 @@ class Arrays
 	}
 
 	/**
+	 * Remove keys in target array that are not in allowed_keys variable.
 	 * @param array $array
 	 * @param array $allowed_keys
 	 */
@@ -122,6 +123,7 @@ class Arrays
 	}
 
 	/**
+	 * Sum values of array using bcmath methods to support larger numbers and high precision.
 	 * @param array $input_array
 	 * @param int $precision
 	 * @return string
@@ -151,6 +153,7 @@ class Arrays
 	}
 
 	/**
+	 * Subtract values of array using first value as starting value, using bcmath methods to support larger numbers and high precision.
 	 * @param array $input_array
 	 * @param int $precision
 	 * @return string
@@ -180,6 +183,7 @@ class Arrays
 	}
 
 	/**
+	 * Multiply values of array using bcmath methods to support larger numbers and high precision.
 	 * @param array $input_array
 	 * @param int $precision
 	 * @return string
@@ -209,6 +213,7 @@ class Arrays
 	}
 
 	/**
+	 * Divide values of array using bcmath methods to support larger numbers and high precision.
 	 * @param array $input_array
 	 * @param int $precision
 	 * @return string
@@ -238,6 +243,7 @@ class Arrays
 	}
 
 	/**
+	 * array_slice but preserve keys
 	 * @param $input
 	 * @param $offset
 	 * @param $length

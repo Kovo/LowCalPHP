@@ -343,6 +343,7 @@ class Data extends Model
 	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $query_string
+	 * @throws \Exception
 	 */
 	protected function updateArray(array $changes, string &$query_string): void
 	{
@@ -388,6 +389,7 @@ class Data extends Model
 	 * @param array $changes
 	 * @param string $query_string
 	 * @param string $query_string_2
+	 * @throws \Exception
 	 */
 	protected function updateObjectLocaleArray(array $changes, string &$query_string, string &$query_string_2): void
 	{
@@ -540,6 +542,7 @@ class Data extends Model
 	 * Method made for constructing N1QL query fragments.
 	 * @param array $changes
 	 * @param string $set_query_string
+	 * @throws \Exception
 	 */
 	protected function deleteArray(array $changes, string &$set_query_string): void
 	{

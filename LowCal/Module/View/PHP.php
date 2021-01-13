@@ -36,6 +36,7 @@ class PHP extends \LowCal\Module\View\View implements \LowCal\Interfaces\Module\
 	{
 		return $this->_view_dir;
 	}
+
 	/**
 	 * This method will render the supplied view and expose any parameters to it.
 	 * @param string $view

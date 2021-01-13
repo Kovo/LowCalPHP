@@ -190,6 +190,7 @@ class Db extends Module
 	 * Returns the interaction object from the server object for further interaction.
 	 * @param string $identifier
 	 * @return Couchbase|Mysqli|null
+	 * @throws \Exception
 	 */
 	public function interact(string $identifier = '')
 	{
@@ -217,6 +218,7 @@ class Db extends Module
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function select(string $query, string $server_identifier = ''): Results
 	{
@@ -233,6 +235,7 @@ class Db extends Module
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function insert(string $query, string $server_identifier = ''): Results
 	{
@@ -249,6 +252,7 @@ class Db extends Module
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function update(string $query, string $server_identifier = ''): Results
 	{
@@ -265,6 +269,7 @@ class Db extends Module
 	 * @param string $query
 	 * @param string $server_identifier
 	 * @return Results
+	 * @throws \Exception
 	 */
 	public function delete(string $query, string $server_identifier = ''): Results
 	{
@@ -281,6 +286,7 @@ class Db extends Module
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
+	 * @throws \Exception
 	 */
 	public function sanitizeQueryValueNumeric($value, string $server_identifier = '')
 	{
@@ -292,6 +298,7 @@ class Db extends Module
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
+	 * @throws \Exception
 	 */
 	public function sanitizeQueryValueNonNumeric($value, string $server_identifier = '')
 	{
@@ -303,6 +310,7 @@ class Db extends Module
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
+	 * @throws \Exception
 	 */
 	public function sanitizeQueryValueHTML($value, string $server_identifier = '')
 	{
@@ -314,6 +322,7 @@ class Db extends Module
 	 * @param $value
 	 * @param string $server_identifier
 	 * @return array|mixed|string
+	 * @throws \Exception
 	 */
 	public function sanitizeQueryValueTypeSafe($value, string $server_identifier = '')
 	{

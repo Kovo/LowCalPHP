@@ -45,6 +45,7 @@ class Locale extends Module
 	/**
 	 * Locale constructor.
 	 * @param Base $Base
+	 * @throws \Exception
 	 */
 	function __construct(Base $Base)
 	{
@@ -117,6 +118,7 @@ class Locale extends Module
 	 * @param string $longForm
 	 * @param bool $autoload
 	 * @return Locale
+	 * @throws \Exception
 	 */
 	public function addLanguage(string $shortForm, string $longForm, bool $autoload = false): Locale
 	{
@@ -144,6 +146,7 @@ class Locale extends Module
 	 * @param string $shortform
 	 * @param bool $autoload
 	 * @return Locale
+	 * @throws \Exception
 	 */
 	public function setCurrentLocale(string $shortform, bool $autoload = true): Locale
 	{

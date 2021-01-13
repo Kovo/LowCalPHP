@@ -77,6 +77,7 @@ class Config
 	 * @param string $lowcal_config_file
 	 * @param string $dir
 	 * @return bool
+	 * @throws \Exception
 	 */
 	public static function loadConfigForEnv(string $lowcal_config_file, string $dir = ''): bool
 	{
