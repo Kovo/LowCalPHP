@@ -6,6 +6,10 @@ LowCalPHP is a microframework built for PHP 7.3+.
   - Easy to use (get a web app up and running in under 2 minutes)
   - Non-obtrusive (will not get in the way of your own architecture) 
   - Strictly typed (as much as PHP allows for it)
+  
+# Table of Contents
+1. [Getting Started](#getting-started)
+2. [Basic Usage](#basic-usage)
 
 # Getting Started
 
@@ -28,7 +32,7 @@ The supplied bootstrap.php contains all the ncessary start code for your applica
 ```php
     $LowCal = new Base($loader);
 ```
-## That's it!
+## Basic Usage
 You now have the basis for your web app. Below are the following steps you'll probably take depending on what you are building.
 
 The supplied init.php allows you to start putting all of your application specific logic/setup.
