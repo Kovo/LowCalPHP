@@ -9,7 +9,22 @@ LowCalPHP is a microframework built for PHP 7.3+.
   
 # Table of Contents
 1. [Getting Started](#getting-started)
-2. [Basic Usage](#basic-usage)
+    1. [Basic Usage](#basic-usage)
+2. [Under the Hood](#under-the-hood)
+    1. [bootstrap.php](#bootstrapphp)
+    2. [init.php](#initphp)
+    3. [Config Files](#config-files)
+    4. [Config Variables](#config-variables)
+3. [Modules](#modules)
+    1. [Cache](#cache)
+    2. [Db](#db)
+    3. [Locale](#locale)
+    4. [Log](#log)
+    5. [Request](#request)
+    6. [Response](#response)
+    7. [Routing](#routing)
+    8. [Security](#security)
+    9. [View](#view)
 
 # Getting Started
 
@@ -165,5 +180,84 @@ This allows you to load different configuration values depending on your environ
 **APP_LDAP_***: These variables define access credentials for LDAP access.
 
 **APP_MAIL_***: These variables define various variables when sending emails using the LowCalPHP Mailer helper.
+
+# Modules
+
+All modules are called through the Base class, which is instantiated in bootstrap.php. 
+
+## Cache
+
+The Cache module provides agnostic methods to interact with your selected caching system. This means that you could switch between Local, Memcached, and Couchbase as a caching system with minimal changes to your application logic.
+
+## Db
+
+The Db module provides agnostic methods to interact with your selected database system. This means that you could switch between Mysql, and Couchbase as a database system with minimal changes to your application logic.
+
+## Locale
+
+The Locale modules allows you to support more than one language in your application. You can define multiple languages, and load different translation files for specific languages.
+
+```php
+    $LowCal->locale()->addLanguage('en', 'en-us');
+    $LowCal->locale()->addLanguage('fr', 'fr-ca');
+    $LowCal->locale()->setCurrentLocale('en');
+```
+
+By default, LowCalPHP will load translation files from LowCal/Resources/translations/. Your translation files should be named by the short-form of each language (en, fr, etc...)
+
+You can load additional translation files using the following method:
+
+```php
+    $LowCal->locale()->addAdditionalFile(
+        '/another/directory/en.php', 
+        'en'
+    );
+```
+
+If a translation key exists in multiple files, the most recently loaded file will take precedence. 
+
+Translation files are php files that define one array with zero or more keys:
+
+```php
+    <?php
+    $translations = array(
+        'key_name' => 'My string'
+    );
+```
+
+To return a translation key value, use the translate() method:
+
+```php
+    echo $LowCal->locale()->translate('key_name');
+```
+
+You can define variables in your translatrion keys by enclosing them with percentage symbols:
+
+```php
+    $translations = array(
+        'key_name' => 'My %string%'
+    );
+
+    echo $LowCal->locale()->translate(
+        'key_name', 
+        array('string' => 'Something else')
+    );
+```
+
+## Log
+
+This module allows you to write to a log file. You can create as many log files as you want, and you can write to them easily using their unique identifier. 
+
+```php
+    $LowCal->log()->registerFile('mysqli', Config::get('LOGS_DIR'));
+
+    $LowCal->log()->add('mysqli', 'Error in some query.');
+```
+
+## Request
+## Response
+## Routing
+## Security
+## View
 
 This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")
