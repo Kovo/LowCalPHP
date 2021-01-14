@@ -312,8 +312,32 @@ You can also define optional sections of the route:
 
 ## Security
 
+The Security module provides useful methods to secure raw password strings, or other secrets.
 
+You can generate strong one-way hashed strings like so:
+
+```php
+    $hashed_password = $LowCal->security()->oneWayEncrypt('plain text password');
+```
+
+This method uses the ARGON2ID algorithm. The string is also poisoned by default (the hash has extra sections injected into it to make reverse hashing more difficult).
+
+LowCal also supports two-way encryption. This means you can encrypted a string asnd then late decrypt it to see its original form.
+
+```php
+    $hashed_string = $LowCal->security()->twoWayEncrypt('plain text string');
+
+    echo $LowCal->security()->twoWayDecrypt($hashed_string);
+```
 
 ## View
+
+The View module provides basic methods to render views, or override views. Rendering views is simple:
+
+```php
+    echo $this->_Base->view()->render('index');
+```
+
+
 
 This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")
