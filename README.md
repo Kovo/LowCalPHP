@@ -255,9 +255,65 @@ This module allows you to write to a log file. You can create as many log files 
 ```
 
 ## Request
+
+The Request module exposes methods related to the current request. For example, getting the requestor IP address, accept encodings, etc...
+
 ## Response
+
+The Response module exposes functionality to afect the response sent to the requestor. For example, redirecting to another URL, setting header values, etc...
+
 ## Routing
+
+The Routing module allows you to setup routing for your application. For example, you can call a specific action if someone goes to example.com/hello/ with the following code:
+
+```php
+    $LowCal->routing()->add(
+        'hello_route_id', 
+        '/hello/', 
+        '\LowCal\Controller\Home', 
+        'indexAction'
+    );
+
+    echo $LowCal->routing()->listen();
+```
+
+The listen() method should only be called once in your application, and after you have completed all configuration loading, and route defining. It will analyze the request URI and load the correct route, if found.
+
+You can support variables in your routes as well, like the following:
+
+```php
+    $LowCal->routing()->add(
+        'user_profile_page', 
+        '/profile/<userid>/', 
+        '\LowCal\Controller\Home', 
+        'profileAction',
+        array(
+            'userid' => '[0-9]+'
+        )
+    );
+```
+
+In the above example, we constrain the userid value in the URI to a number only, using a regex rule. The userid variable will be passed to the profileAction() method. If multiple variables are present in the route, they are passed to the target action in order.
+
+You can also define optional sections of the route:
+
+```php
+    $LowCal->routing()->add(
+       'user_profile_page', 
+       '/profile/<userid>/(<optional>/)', 
+       '\LowCal\Controller\Home', 
+       'profileAction',
+       array(
+           'userid' => '[0-9]+',
+           'optional' => '[a-zA-Z]+'
+       )
+    ); 
+```
+
 ## Security
+
+
+
 ## View
 
 This work is copyright (c) 2017, Consultation Kevork Aghazarian, and is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/ "License")
