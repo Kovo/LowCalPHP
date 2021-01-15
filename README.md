@@ -48,6 +48,7 @@ The supplied bootstrap.php contains all the ncessary start code for your applica
     $LowCal = new Base($loader);
 ```
 ## Basic Usage
+
 You now have the basis for your web app. Below are the following steps you'll probably take depending on what you are building.
 
 The supplied init.php allows you to start putting all of your application specific logic/setup.
@@ -102,7 +103,9 @@ The supplied init.php allows you to start putting all of your application specif
 ```
 
 # Under the Hood
+
 ## bootstrap.php
+
 This file is where your application starts and finishes. Your .htaccess file (or equivalent) will direct all php requests to bootstrap.php, and your code starts from there.
 
 The main task of this file is to load the PSR4 autoloader, setup LowCal's required namespaces, set the most important environment variables, initiate an instance of Base, and finally, load the init.php file.
@@ -110,11 +113,13 @@ The main task of this file is to load the PSR4 autoloader, setup LowCal's requir
 You should not modify this file in any way if you want to keep your app easy to update with future LowCal versions.
 
 ## init.php
+
 This file is loaded by bootstrap.php and is the true beginning of your application. This is where you define all of your routing rules, languages, database connections, view overrides, and class overrides. 
 
 You should not put application logic here. Instead, you should use common patterns like MVC to put relevant logic in controllers, views, and models.
 
 ## Config Files
+
 LowCal comes with a config.php file and a config_local.php file. LowCal PHP uses a cascading configuration system where a base config file is first processed (config.php), and then an environment specific config file (config_local.php) is processed after, overwriting any config values found within it.  
 
 This allows you to load different configuration values depending on your environment (local, staging, prod, etc...). You only need to define a subset of the configuration values in your environment specific configuration files. In other words, only supply the variables that differ from the base file (though you could define them all if you want).
