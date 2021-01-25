@@ -308,7 +308,7 @@ class Strings
 		$url = str_replace($a, $b, $url);
 
 		// adding - for spaces and union characters
-		$find = array(' ', '&', '\r\n', '\n', '+',',');
+		$find = array(' ', '&', '\r\n', '\n', '+',',','.');
 		$url = str_replace ($find, '-', $url);
 
 		//delete and replace rest of special chars
