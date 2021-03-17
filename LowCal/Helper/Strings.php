@@ -39,8 +39,9 @@ class Strings
 	 * @param int|null $max_len
 	 * @return string
 	 */
-	public static function trim(string $string, ?int $max_len = null): string
+	public static function trim(?string $string, ?int $max_len = null): string
 	{
+		$string = (string)$string;
 		$string = str_replace("\xC2\xA0", ' ', $string);
 		$string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
 		$string = trim($string);
