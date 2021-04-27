@@ -168,7 +168,9 @@ class Db extends Module
 				{
 					if(Config::get('SETTING_DB_32BIT'))
 					{
-						if((string)(float)$value == $value)
+						$floatVal = floatval($value);
+
+						if($floatVal && intval($floatVal) != $floatVal)
 						{
 							$decimal_places_ex = explode('.', (string)$value);
 							$decimal_places = isset($decimal_places_ex[1])?strlen($decimal_places_ex[1]):2;
@@ -184,7 +186,9 @@ class Db extends Module
 					}
 					else
 					{
-						if((string)(float)$value == $value)
+						$floatVal = floatval($value);
+
+						if($floatVal && intval($floatVal) != $floatVal)
 						{
 							$decimal_places_ex = explode('.', (string)$value);
 							$decimal_places = isset($decimal_places_ex[1])?strlen($decimal_places_ex[1]):2;

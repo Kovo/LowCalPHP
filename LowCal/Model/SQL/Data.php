@@ -316,6 +316,21 @@ class Data extends Model
 	 * @param string $columns_string
 	 * @param string $values_string
 	 */
+	protected function insertFloat(array $changes, string &$columns_string, string &$values_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$columns_string .= $change.',';
+			$values_string .= $this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var).",";
+		}
+	}
+
+	/**
+	 * @param array $changes
+	 * @param string $columns_string
+	 * @param string $values_string
+	 */
 	protected function insertBool(array $changes, string &$columns_string, string &$values_string): void
 	{
 		foreach($changes as $change)
@@ -374,6 +389,20 @@ class Data extends Model
 	 * @param string $query_string
 	 */
 	protected function updateInt(array $changes, string &$query_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$query_string .= $change." = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var).",";
+		}
+	}
+
+	/**
+	 * Method made for constructing N1QL query fragments.
+	 * @param array $changes
+	 * @param string $query_string
+	 */
+	protected function updateFloat(array $changes, string &$query_string): void
 	{
 		foreach($changes as $change)
 		{
@@ -456,6 +485,20 @@ class Data extends Model
 	 * @param array $changes
 	 * @param string $query_string
 	 */
+	protected function searchFloat(array $changes, string &$query_string): void
+	{
+		foreach($changes as $change)
+		{
+			$variable_var = '_'.$change;
+			$query_string .= " ".$change." = ".$this->_LowCal->db()->sanitizeQueryValueNumeric($this->$variable_var)." AND ";
+		}
+	}
+
+	/**
+	 * Method made for constructing N1QL query fragments.
+	 * @param array $changes
+	 * @param string $query_string
+	 */
 	protected function searchBool(array $changes, string &$query_string): void
 	{
 		foreach($changes as $change)
@@ -497,6 +540,9 @@ class Data extends Model
 			case 'int':
 				$this->insertInt($changes, $column_string, $values_string);
 				break;
+			case 'float':
+				$this->insertFloat($changes, $column_string, $values_string);
+				break;
 			case 'bool':
 				$this->insertBool($changes, $column_string, $values_string);
 				break;
@@ -523,6 +569,9 @@ class Data extends Model
 				break;
 			case 'int':
 				$this->updateInt($changes, $query_string);
+				break;
+			case 'float':
+				$this->updateFloat($changes, $query_string);
 				break;
 			case 'bool':
 				$this->updateBool($changes, $query_string);
@@ -552,6 +601,9 @@ class Data extends Model
 				break;
 			case 'int':
 				$this->searchInt($changes, $search_query_string);
+				break;
+			case 'float':
+				$this->searchFloat($changes, $search_query_string);
 				break;
 			case 'bool':
 				$this->searchBool($changes, $search_query_string);
