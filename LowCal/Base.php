@@ -260,6 +260,13 @@ class Base
 			unset($modules['init_module_productsfrontend']);
 		}
 
+		if(isset($modules['init_module_ecommerce']))
+		{
+			require_once Config::get('BASE_DIR').$modules['init_module_ecommerce'];
+
+			unset($modules['init_module_ecommerce']);
+		}
+
 		if(!empty($modules))
 		{
 			foreach($modules as $module_init_name => $module_init_file)
