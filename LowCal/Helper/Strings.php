@@ -73,6 +73,24 @@ class Strings
 	}
 
 	/**
+	 * Keep only alphanumeric and space characters and support common European characters
+	 * @param string $string
+	 * @param int|null $max_len
+	 * @return string
+	 */
+	public static function stripNonAlphaNumNonSpaceCharsEurope(string $string, ?int $max_len = null): string
+	{
+		$string = preg_replace("/[^A-Za-z0-9 \u0370-\u03FF\u0400-\u04FFÀ-ž]/", "", $string);
+
+		if(!empty($max_len))
+		{
+			$string = mb_substr($string,0, $max_len, 'UTF-8');
+		}
+
+		return $string;
+	}
+
+	/**
 	 * Keep only alphanumeric characters
 	 * @param string $string
 	 * @param int|null $max_len
