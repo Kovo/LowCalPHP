@@ -72,6 +72,8 @@ try
 }
 catch(Exception $e)
 {
+	error_log('LowCal Top-level Exception: '.$e->getMessage());
+
 	if(
 		in_array(
 			$e->getCode(),
