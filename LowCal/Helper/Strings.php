@@ -62,7 +62,7 @@ class Strings
 	 */
 	public static function stripNonAlphaNumNonSpaceChars(string $string, ?int $max_len = null): string
 	{
-		$string = preg_replace("/[^A-Za-z0-9 ]/", "", $string);
+		$string = mb_ereg_replace("[^A-Za-z0-9 ]", "", $string);
 
 		if(!empty($max_len))
 		{
@@ -80,7 +80,7 @@ class Strings
 	 */
 	public static function stripNonAlphaNumNonSpaceCharsEurope(string $string, ?int $max_len = null): string
 	{
-		$string = preg_replace("/[^A-Za-z0-9 \u0370-\u03FF\u0400-\u04FFÀ-ž]/", "", $string);
+		$string = mb_ereg_replace("[^A-Za-z0-9 \u0370-\u03FF\u0400-\u04FFÀ-ž \p{Han}+]", "", $string);
 
 		if(!empty($max_len))
 		{
@@ -98,7 +98,7 @@ class Strings
 	 */
 	public static function stripNonAlphaNumChars(string $string, ?int $max_len = null): string
 	{
-		$string = preg_replace("/[^A-Za-z0-9]/", "", $string);
+		$string = mb_ereg_replace("[^A-Za-z0-9]", "", $string);
 
 		if(!empty($max_len))
 		{
