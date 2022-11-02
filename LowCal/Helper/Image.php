@@ -26,6 +26,11 @@ class Image
 	{
 		list($source_width, $source_height) = getimagesize($file);
 
+		if(empty($source_width) || empty($source_height))
+		{
+			return false;
+		}
+
 		$width_height_ratio = $source_width/$source_height;
 		$new_width_height_ratio = $target_width/$target_height;
 
