@@ -73,6 +73,24 @@ class Strings
 	}
 
 	/**
+	 * Keep only alphanumeric and space characters
+	 * @param string $string
+	 * @param int|null $max_len
+	 * @return string
+	 */
+	public static function stripNonAlphaNumNonSpaceNonDashNonUnderscoreChars(string $string, ?int $max_len = null): string
+	{
+		$string = mb_ereg_replace("[^A-Za-z0-9 _\-]", "", $string);
+
+		if(!empty($max_len))
+		{
+			$string = mb_substr($string,0, $max_len, 'UTF-8');
+		}
+
+		return $string;
+	}
+
+	/**
 	 * Keep only alphanumeric and space characters and support common European characters
 	 * @param string $string
 	 * @param int|null $max_len
